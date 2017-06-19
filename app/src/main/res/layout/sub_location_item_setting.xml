@@ -40,11 +40,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/mapView"
+        <com.nhn.android.maps.NMapView
+            android:id="@+id/mapview"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_height="match_parent" />
     </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -55,18 +54,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right">
+
             <Button
+                android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:text="Cancel"
-                android:layout_marginRight="5dp"/>
+                android:layout_marginRight="5dp"
+                android:background="#00ff0000"
+                android:text="취소"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
             <Button
+                android:id="@+id/btn_ok"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:text="Save"
-                android:layout_marginLeft="5dp"/>
+                android:layout_marginLeft="5dp"
+                android:background="#00ff0000"
+                android:text="확인"
+                android:textSize="13sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>
