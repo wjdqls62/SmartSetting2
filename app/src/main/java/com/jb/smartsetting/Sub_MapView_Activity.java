@@ -9,41 +9,38 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
 
-import com.nhn.android.maps.NMapActivity;
-import com.nhn.android.maps.NMapCompassManager;
-import com.nhn.android.maps.NMapController;
-import com.nhn.android.maps.NMapLocationManager;
-import com.nhn.android.maps.NMapOverlayItem;
-import com.nhn.android.maps.NMapView;
-import com.nhn.android.maps.maplib.NGeoPoint;
-import com.nhn.android.maps.overlay.NMapPOIitem;
-import com.nhn.android.mapviewer.overlay.NMapMyLocationOverlay;
-import com.nhn.android.mapviewer.overlay.NMapOverlayManager;
-import com.nhn.android.mapviewer.overlay.NMapResourceProvider;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 
 /**
  * Created by jeongbin.son on 2017-06-19.
  */
 
-public class Sub_AddLocation_Activity extends NMapActivity implements View.OnClickListener{
-    private final String CLIENT_ID = "_8FNGPHUyEXgG3pNLL6Q";
+public class Sub_MapView_Activity extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback{
     private Button btn_ok, btn_cancel;
-    private NMapView mMapView;
+    private GoogleMap map;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sub_location_item_setting);
 
-        mMapView = (NMapView) findViewById(R.id.mapview);
         btn_cancel = (Button) findViewById(R.id.btn_cancel);
         btn_ok = (Button) findViewById(R.id.btn_ok);
 
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapview);
+        mapFragment.getMapAsync(this);
         btn_ok.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
+
 
 
 
@@ -65,5 +62,19 @@ public class Sub_AddLocation_Activity extends NMapActivity implements View.OnCli
                 getLocationSuccess();
                 break;
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        LatLng SEOUL = new LatLng(37.56, 126.97);
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(SEOUL);
+        markerOptions.title("서울");
+        markerOptions.snippet("한국의 수도");
+        map.addMarker(markerOptions);
+
+        map.moveCamera(CameraUpdateFactory.newLatLng(SEOUL));
+        map.animateCamera(CameraUpdateFactory.zoomTo(10));
     }
 }
