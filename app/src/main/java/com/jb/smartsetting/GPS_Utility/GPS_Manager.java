@@ -13,16 +13,13 @@ import android.util.Log;
  */
 
 public class GPS_Manager implements LocationListener{
-    private final String TAG = this.getClass().getName();
-    private boolean isDebug = true;
-
     public final static int READY_GPS_NETWORK = 1;
     public final static int GPS_NETWORK_NOT_ENABLED = -1;
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
     private static final long MIN_TIME_BW_UPDATES = 0;
 
-    public GPS_Network_Callback callback;
+
     private LocationManager locationManager;
     private Location location;
     private Criteria criteria;
@@ -33,6 +30,11 @@ public class GPS_Manager implements LocationListener{
     private boolean isGPSEnabled = false;
     private boolean isNetworkEnabled = false;
     private int ReadyToWork = 0;
+
+    private final String TAG = this.getClass().getName();
+    private boolean isDebug = true;
+
+    public GPS_Network_Callback callback;
 
     public interface GPS_Network_Callback{
         public void onLocationChaged(Location location);
@@ -94,27 +96,6 @@ public class GPS_Manager implements LocationListener{
         }
         return location;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Override
     public void onLocationChanged(Location location) {

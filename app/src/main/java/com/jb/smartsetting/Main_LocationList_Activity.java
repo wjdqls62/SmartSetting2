@@ -39,7 +39,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         setContentView(R.layout.activity_main__location_list_);
         setSupportActionBar(toolbar);
 
-
         init_View();
         init_Listener();
 
@@ -49,18 +48,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(locationItemAdapter);
-
-        locationItemAdapter.testAdd("Home");
-        locationItemAdapter.testAdd("Company");
-        locationItemAdapter.testAdd("School");
-        locationItemAdapter.testAdd("School");
-        locationItemAdapter.testAdd("School");
-        locationItemAdapter.testAdd("School");
-        locationItemAdapter.testAdd("School");
-        locationItemAdapter.testAdd("School");
-        locationItemAdapter.testAdd("School");
-        locationItemAdapter.testAdd("School");
-        locationItemAdapter.testAdd("School");
 
 
     }
@@ -94,6 +81,11 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void action_Add_Location(){
+        Intent intent = new Intent(Main_LocationList_Activity.this, Sub_MapView_Activity.class);
+        startActivity(intent);
     }
 
     @Override
