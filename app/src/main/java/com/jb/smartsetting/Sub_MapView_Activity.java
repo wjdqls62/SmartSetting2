@@ -169,7 +169,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         finish();
     }
 
-    // View.OnClickListener Interface
+    // View.OnClickListeexner Interface
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
