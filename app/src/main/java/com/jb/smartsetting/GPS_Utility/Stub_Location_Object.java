@@ -1,19 +1,6 @@
 package com.jb.smartsetting.GPS_Utility;
 
 import android.graphics.Bitmap;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.google.android.gms.games.snapshot.Snapshot;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.jb.smartsetting.R;
-
-import org.w3c.dom.Text;
-
 import java.io.Serializable;
 
 /**
@@ -21,24 +8,37 @@ import java.io.Serializable;
  */
 
 public class Stub_Location_Object implements Serializable {
-
+    private static final long serialVersionUID = 8124905464753305656L;
     // 위치정보 변수 정의
-    public String locationName;
+    public String locationName="DDD";
     public double Latitude, Longitude, Altitude;
     public float Accuracy;
     public boolean isEnabled = false;
-    public ImageView imageView;
+    public Bitmap bitmap;
+    public String imgFileName;
+    public String objFilePath;
+    public String objFileName;
+
+
 
     public void parseLocation(android.location.Location location){
+        locationName = "DDD";
         Latitude = location.getLatitude();
         Longitude = location.getLongitude();
         Accuracy = location.getAccuracy();
         Altitude = location.getAltitude();
-        this.imageView = imageView;
+        objFileName = Altitude+Latitude+".sjb";
+        imgFileName = Altitude+Latitude+".png";
+        objFilePath = "/data/data/com.jb.smartsetting/files/";
     }
 
     public String getLocationName(){
         return locationName;
+    }
+
+    public void setEnabled(boolean value){
+        isEnabled = value;
+
     }
 
 

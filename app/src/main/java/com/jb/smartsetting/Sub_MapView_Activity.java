@@ -18,8 +18,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.games.snapshot.Snapshot;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,10 +32,6 @@ import com.jb.smartsetting.GPS_Utility.Stub_Location_Object;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-
-import static java.lang.System.out;
 
 
 /**
@@ -68,12 +62,15 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
     private Button btn_ok, btn_cancel;
 
+    private boolean isDebug = true;
+    private String TAG = getClass().getName();
+
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sub_location_item_setting);
+        setContentView(R.layout.sub_map_view);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapview);
         mapFragment.getMapAsync(this);
@@ -88,10 +85,11 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             @Override
             public void onSnapshotReady(Bitmap bitmap) {
                 try {
-                    String fileName = String.valueOf(lastLocation.getAltitude())+"_"+String.valueOf(lastLocation.getLongitude());
-                    Log.d("TEST", fileName);
-                    //FileOutputStream out = new FileOutputStream("/data/data/com.jb.smartsetting/files/TEST.jpg");
-                    FileOutputStream out = new FileOutputStream("/sdcard/"+fileName+".png");
+                    if(isDebug){
+                        Log.d(TAG, "Create to "+stubLocation.objFilePath + stubLocation.imgFileName);
+                    }
+                    FileOutputStream out = new FileOutputStream(stubLocation.objFilePath + stubLocation.imgFileName);
+                    //FileOutputStream out = new FileOutputStream("/sdcard/"+imgFileName+".png");
                     bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -156,10 +154,11 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     public void move_ItemSetting_Activity() {
         Intent intent = new Intent(this, Sub_ItemSetting_Activity.class);
 
-        map.snapshot(SnapshotCallback);
-
         stubLocation = new Stub_Location_Object();
-        stubLocation.parseLocation(lastLocation);
+        if(lastLocation != null){
+            stubLocation.parseLocation(lastLocation);
+            map.snapshot(SnapshotCallback);
+        }
         bundle = new Bundle();
         bundle.putSerializable("Location", stubLocation);
 

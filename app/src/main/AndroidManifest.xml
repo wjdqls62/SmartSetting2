@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jb.smartsetting">
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -32,9 +33,11 @@
             android:label="@string/title_activity_sub__item_setting_"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
+        <service android:name=".GPS_Utility.ProximityLocationService"></service>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDiECqmJQEK0kx-zXzKIdRxQrziLMIYB30" />
+            android:value="AIzaSyDmrrzrlDIjW-LT5E8fZasHQt_rKFNdmAM" />
     </application>
 
 </manifest>
