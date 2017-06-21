@@ -46,7 +46,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main__location_list_);
-        setSupportActionBar(toolbar);
+
 
         init_View();
         init_Listener();
@@ -71,6 +71,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         recyclerView = (RecyclerView) findViewById(R.id.location_listview);
         fab_newLocation = (FloatingActionButton) findViewById(R.id.fab_add_location);
+        setSupportActionBar(toolbar);
     }
     private void init_Listener(){
         fab_newLocation.setOnClickListener(this);

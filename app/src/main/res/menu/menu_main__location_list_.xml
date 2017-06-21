@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.jb.smartsetting.Main_LocationList_Activity">
     <item
-        android:id="@+id/action_settings"
-        android:icon="@android:drawable/ic_menu_preferences"
-        app:showAsAction="always"
-        android:title="Setting" />
-    <item
         android:id="@+id/action_delete"
         android:icon="@android:drawable/ic_menu_delete"
-        app:showAsAction="always"
-        android:title="Trash" />
+        android:title="Trash"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="Setting"
+        app:showAsAction="always" />
 </menu>
