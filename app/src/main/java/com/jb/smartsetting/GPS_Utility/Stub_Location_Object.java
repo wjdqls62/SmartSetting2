@@ -10,6 +10,7 @@ import java.io.Serializable;
 public class Stub_Location_Object implements Serializable {
     private static final long serialVersionUID = 8124905464753305656L;
     // 위치정보 변수 정의
+    public int indentificationNumber = 0;
     public String locationName="DDD";
     public double Latitude, Longitude, Altitude;
     public float Accuracy;
@@ -27,6 +28,7 @@ public class Stub_Location_Object implements Serializable {
         Longitude = location.getLongitude();
         Accuracy = location.getAccuracy();
         Altitude = location.getAltitude();
+        indentificationNumber = (int) (Altitude+Latitude);
         objFileName = Altitude+Latitude+".sjb";
         imgFileName = Altitude+Latitude+".png";
         objFilePath = "/data/data/com.jb.smartsetting/files/";

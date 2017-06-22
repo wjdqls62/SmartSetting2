@@ -33,8 +33,11 @@
             android:label="@string/title_activity_sub__item_setting_"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
-        <service android:name=".GPS_Utility.ProximityLocationService"></service>
-
+        <service android:name=".GPS_Utility.ProximityLocationService" >
+            <intent-filter>
+                <action android:name="" />
+            </intent-filter>
+        </service>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDmrrzrlDIjW-LT5E8fZasHQt_rKFNdmAM" />

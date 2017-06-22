@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 24
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "com.jb.smartsetting"
         minSdkVersion 16
@@ -32,7 +32,4 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:11.0.1'
     compile 'com.google.android.gms:play-services:11.0.1'
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
-
-
-
 }

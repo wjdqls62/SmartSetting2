@@ -12,6 +12,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
+
 /**
  * Created by jeongbin.son on 2017-06-21.
  */
@@ -19,6 +21,7 @@ import android.widget.Toast;
 public class ProximityLocationService extends Service {
     private LocationManager locationManager;
     private GPS_Receiver gpsReceiver;
+    private ObjectReaderWriter objectReaderWriter;
     private Context context;
 
     private Intent intent;
@@ -30,6 +33,11 @@ public class ProximityLocationService extends Service {
 
     PermissionCallback pCallback;
     SettingCallback sCallback;
+    AddProximityAlertCallback aCallback;
+
+    public interface AddProximityAlertCallback {
+        public void addProximityAlert();
+    }
 
     public interface PermissionCallback{
         public void requestPermission();
@@ -37,6 +45,19 @@ public class ProximityLocationService extends Service {
     public interface SettingCallback{
         public void changeCustomSetting();
         public void restoreSetting();
+    }
+
+    public void setPermissionCallback(PermissionCallback callback){
+        pCallback = callback;
+    }
+
+    public void setSettingCallback(SettingCallback callback){
+        sCallback = callback;
+    }
+
+    public void setProximityCallback(AddProximityAlertCallback callback){
+        Log.d(TAG, "AddProximityAlertCallback");
+        aCallback = callback;
     }
 
     @Override
@@ -48,14 +69,17 @@ public class ProximityLocationService extends Service {
         intentFilter = new IntentFilter("com.jb.smartsetting");
         intent = new Intent("com.jb.smartsetting");
         pendingIntent = PendingIntent.getBroadcast(context, 1, intent, 0);
+        objectReaderWriter = new ObjectReaderWriter(getApplicationContext());
+        Log.d(TAG, "onCreate");
 
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "Intent : "+intent.getAction());
         try{
             registerReceiver(gpsReceiver, intentFilter);
-            locationManager.addProximityAlert(37.484893, 126.878963, 100f,-1, pendingIntent);
+            aCallback.addProximityAlert();
         }catch (SecurityException e){
             pCallback.requestPermission();
         }
@@ -82,9 +106,7 @@ public class ProximityLocationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
     }
-
     private class GPS_Receiver extends BroadcastReceiver{
 
         @Override
@@ -92,10 +114,10 @@ public class ProximityLocationService extends Service {
                 boolean isEntering = intent.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false);
                 if(isEntering){
                     Toast.makeText(context, "목표지점에 근접합니다.", Toast.LENGTH_SHORT).show();
-                    sCallback.changeCustomSetting();
+                    //sCallback.changeCustomSetting();
                 }else{
                     Toast.makeText(context, "목표지점에서 떨어졌습니다.", Toast.LENGTH_SHORT).show();
-                    sCallback.restoreSetting();
+                    //sCallback.restoreSetting();
                 }
             }
         }

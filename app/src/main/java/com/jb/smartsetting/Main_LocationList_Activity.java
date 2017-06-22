@@ -38,9 +38,17 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private Toolbar toolbar;
     private FloatingActionButton fab_newLocation;
 
+    private ArrayList<Stub_Location_Object> items;
     private ArrayList<Stub_Location_Object> arrLocationList;
     private ObjectReaderWriter objectReaderWriter;
     private Bundle bundle;
+
+
+
+    private int selectItemPosition;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +63,15 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         arrLocationList = objectReaderWriter.readObject();
         Toast.makeText(getApplicationContext(),""+arrLocationList.size(), Toast.LENGTH_SHORT).show();
 
-
-
         locationItemAdapter = new LocationItemAdapter();
         locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_NORMAL_MODE);
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(locationItemAdapter);
+
+
+
 
 
     }
@@ -115,9 +124,14 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         }
     }
 
-    public class LocationItemAdapter extends Adapter<LocationListViewHolder> implements View.OnClickListener {
+    private class LocationItemAdapter extends Adapter<LocationListViewHolder> implements View.OnClickListener {
+
+
         private int RECYCLER_MODE = -1;
-        private ArrayList<Stub_Location_Object> items;
+
+
+
+
 
         public LocationItemAdapter(){
             items = new ArrayList<Stub_Location_Object>();
@@ -154,18 +168,20 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                 @Override
                 public void onClick(View v) {
                     // 활성화 -> 비활성화
+                    selectItemPosition = position;
                     if(arrLocationList.get(position).isEnabled){
                         arrLocationList.get(position).setEnabled(false);
                         objectReaderWriter.saveObject(arrLocationList.get(position));
                         Toast.makeText(Main_LocationList_Activity.this, "isEnabled : "+arrLocationList.get(position).isEnabled, Toast.LENGTH_SHORT).show();
-                        stopService(new Intent(Main_LocationList_Activity.this, ProximityLocationService.class));
+
+
                     }else{
                         arrLocationList.get(position).setEnabled(true);
                         objectReaderWriter.saveObject(arrLocationList.get(position));
                         Toast.makeText(Main_LocationList_Activity.this, "isEnabled : "+arrLocationList.get(position).isEnabled, Toast.LENGTH_SHORT).show();
-                        startService(new Intent(Main_LocationList_Activity.this, ProximityLocationService.class));
-                    }
+                        //stopService(new Intent(Main_LocationList_Activity.this, proximityLocationService.getClass()));
 
+                    }
                 }
             });
             holder.itemLayout.setOnClickListener(this);
@@ -186,5 +202,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                     break;
             }
         }
+
+
     }
 }

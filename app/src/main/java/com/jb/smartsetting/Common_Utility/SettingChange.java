@@ -13,5 +13,4 @@ public class SettingChange {
     private Context context;
     private ProximityLocationService.SettingCallback settingCallback;
 
-
 }
