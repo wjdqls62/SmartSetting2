@@ -1,4 +1,4 @@
-package com.jb.smartsetting;
+package com.jb.smartsetting.View;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jb.smartsetting.GPS_Utility.GPS_Manager;
 import com.jb.smartsetting.GPS_Utility.Stub_Location_Object;
+import com.jb.smartsetting.R;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -161,7 +162,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         }
         bundle = new Bundle();
         bundle.putSerializable("Location", stubLocation);
-
+        bundle.putString("DISPLAY_MODE", "WRITE");
         intent.putExtras(bundle);
 
         startActivity(intent);

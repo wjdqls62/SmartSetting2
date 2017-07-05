@@ -10,10 +10,18 @@ import java.io.Serializable;
 public class Stub_Location_Object implements Serializable {
     private static final long serialVersionUID = 8124905464753305656L;
     // 위치정보 변수 정의
-    public int indentificationNumber = 0;
-    public String locationName="DDD";
+    public double indentificationNumber = 0;
+
+    public String locationName;
+    public int ringtone = 0;
+    public int notification = 0;
+    public int touchfeedback = 0;
+    public int media = 0;
+
     public double Latitude, Longitude, Altitude;
     public float Accuracy;
+
+
     public boolean isEnabled = false;
     public Bitmap bitmap;
     public String imgFileName;
@@ -23,12 +31,11 @@ public class Stub_Location_Object implements Serializable {
 
 
     public void parseLocation(android.location.Location location){
-        locationName = "DDD";
         Latitude = location.getLatitude();
         Longitude = location.getLongitude();
         Accuracy = location.getAccuracy();
         Altitude = location.getAltitude();
-        indentificationNumber = (int) (Altitude+Latitude);
+        indentificationNumber =Altitude+Latitude;
         objFileName = Altitude+Latitude+".sjb";
         imgFileName = Altitude+Latitude+".png";
         objFilePath = "/data/data/com.jb.smartsetting/files/";
@@ -40,7 +47,13 @@ public class Stub_Location_Object implements Serializable {
 
     public void setEnabled(boolean value){
         isEnabled = value;
+    }
 
+    public void setSoundVolume(int ringtone, int notification, int touchfeedback, int media){
+        this.ringtone = ringtone;
+        this.notification = notification;
+        this.touchfeedback = touchfeedback;
+        this.media = media;
     }
 
 

@@ -5,52 +5,88 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.jb.smartsetting.Sub_ItemSetting_Activity"
-    tools:showIn="@layout/activity_sub__item_setting_">
+    tools:context="com.jb.smartsetting.View.Sub_ItemSetting_Activity"
+    tools:showIn="@layout/activity_sub__item_setting_"
+    android:padding="10px">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-
-
+        <EditText
+            android:id="@+id/location_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:hint="Location Name" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="벨소리" />
-
-            <LinearLayout
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5px">
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@android:drawable/ic_lock_silent_mode_off" />
-                <SeekBar
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"/>
-            </LinearLayout>
-
-
+                android:text="Ringtone"/>
+            <SeekBar
+                android:id="@+id/sb_ringtone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="15"/>
         </LinearLayout>
-
-
-
-
-
-
-
-
-
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5px">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Notification Sound"/>
+            <SeekBar
+                android:id="@+id/sb_notification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="15"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5px">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Touch feedback system"/>
+            <SeekBar
+                android:id="@+id/sb_touchfeedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="15"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5px">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Music, Video, Games, other media"/>
+            <SeekBar
+                android:id="@+id/sb_media"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="15"/>
+        </LinearLayout>
     </LinearLayout>
+
+
+
+
+
+
+
+
 </android.support.v4.widget.NestedScrollView>

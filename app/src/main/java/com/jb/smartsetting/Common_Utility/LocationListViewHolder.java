@@ -19,6 +19,7 @@ public class LocationListViewHolder extends RecyclerView.ViewHolder {
     public ImageButton toggleButton;
     public CheckBox checkBox;
     public LinearLayout itemLayout;
+    public TextView indentification;
 
     public LocationListViewHolder(View itemView) {
         super(itemView);
@@ -26,5 +27,6 @@ public class LocationListViewHolder extends RecyclerView.ViewHolder {
         toggleButton = (ImageButton) itemView.findViewById(R.id.toggle);
         checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
         itemLayout = (LinearLayout) itemView.findViewById(R.id.item_layout);
+        indentification = (TextView) itemView.findViewById(R.id.indentification);
         }
 }

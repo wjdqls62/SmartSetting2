@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Main_LocationList_Activity"
+            android:name=".View.Main_LocationList_Activity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -27,16 +27,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Sub_MapView_Activity" />
+        <activity android:name=".View.Sub_MapView_Activity" />
         <activity
-            android:name=".Sub_ItemSetting_Activity"
+            android:name=".View.Sub_ItemSetting_Activity"
             android:label="@string/title_activity_sub__item_setting_"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <service android:name=".GPS_Utility.ProximityLocationService" >
-            <intent-filter>
-                <action android:name="" />
-            </intent-filter>
         </service>
         <meta-data
             android:name="com.google.android.geo.API_KEY"

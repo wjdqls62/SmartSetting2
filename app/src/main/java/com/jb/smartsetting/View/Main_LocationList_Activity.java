@@ -1,4 +1,4 @@
-package com.jb.smartsetting;
+package com.jb.smartsetting.View;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,18 +9,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jb.smartsetting.Common_Utility.LocationListViewHolder;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
-import com.jb.smartsetting.GPS_Utility.ProximityLocationService;
 import com.jb.smartsetting.GPS_Utility.Stub_Location_Object;
+import com.jb.smartsetting.R;
 
 import java.util.ArrayList;
 
@@ -33,6 +34,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
+    private LinearLayout ItemLayout;
 
     private LocationItemAdapter locationItemAdapter;
     private Toolbar toolbar;
@@ -43,25 +45,18 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private ObjectReaderWriter objectReaderWriter;
     private Bundle bundle;
 
-
-
     private int selectItemPosition;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main__location_list_);
 
-
         init_View();
         init_Listener();
 
         objectReaderWriter = new ObjectReaderWriter(getApplicationContext());
         arrLocationList = objectReaderWriter.readObject();
-        Toast.makeText(getApplicationContext(),""+arrLocationList.size(), Toast.LENGTH_SHORT).show();
 
         locationItemAdapter = new LocationItemAdapter();
         locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_NORMAL_MODE);
@@ -80,6 +75,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         recyclerView = (RecyclerView) findViewById(R.id.location_listview);
         fab_newLocation = (FloatingActionButton) findViewById(R.id.fab_add_location);
+        ItemLayout = new LinearLayout(getApplicationContext());
         setSupportActionBar(toolbar);
     }
     private void init_Listener(){
@@ -124,14 +120,9 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         }
     }
 
-    private class LocationItemAdapter extends Adapter<LocationListViewHolder> implements View.OnClickListener {
-
-
+    private class LocationItemAdapter extends Adapter<LocationListViewHolder> {
+        private int position;
         private int RECYCLER_MODE = -1;
-
-
-
-
 
         public LocationItemAdapter(){
             items = new ArrayList<Stub_Location_Object>();
@@ -163,6 +154,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                 holder.checkBox.setVisibility(View.VISIBLE);
             }
 
+            holder.indentification.setText(arrLocationList.get(position).indentificationNumber+"");
             holder.locationName.setText(arrLocationList.get(position).getLocationName());
             holder.toggleButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -184,25 +176,23 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                     }
                 }
             });
-            holder.itemLayout.setOnClickListener(this);
-
+            holder.itemLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    bundle = new Bundle();
+                    bundle.putString("DISPLAY_MODE", "MODIFY");
+                    bundle.putDouble("indentificationNumber", arrLocationList.get(position).indentificationNumber);
+                    Intent intent = new Intent(Main_LocationList_Activity.this, Sub_ItemSetting_Activity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            });
         }
 
         @Override
         public int getItemCount() {
             return arrLocationList.size();
         }
-
-        // RecyclerView내에서의 클릭리스너
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.item_layout :
-                    Snackbar.make(v,"Selected ItemLayout", Snackbar.LENGTH_SHORT).show();
-                    break;
-            }
-        }
-
 
     }
 }

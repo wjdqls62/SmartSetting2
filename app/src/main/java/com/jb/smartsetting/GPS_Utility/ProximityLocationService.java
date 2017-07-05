@@ -8,11 +8,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
+import com.jb.smartsetting.ILocationService;
 
 /**
  * Created by jeongbin.son on 2017-06-21.
@@ -30,35 +32,6 @@ public class ProximityLocationService extends Service {
 
     private String TAG = getClass().getName();
     private boolean isDebug = true;
-
-    PermissionCallback pCallback;
-    SettingCallback sCallback;
-    AddProximityAlertCallback aCallback;
-
-    public interface AddProximityAlertCallback {
-        public void addProximityAlert();
-    }
-
-    public interface PermissionCallback{
-        public void requestPermission();
-    }
-    public interface SettingCallback{
-        public void changeCustomSetting();
-        public void restoreSetting();
-    }
-
-    public void setPermissionCallback(PermissionCallback callback){
-        pCallback = callback;
-    }
-
-    public void setSettingCallback(SettingCallback callback){
-        sCallback = callback;
-    }
-
-    public void setProximityCallback(AddProximityAlertCallback callback){
-        Log.d(TAG, "AddProximityAlertCallback");
-        aCallback = callback;
-    }
 
     @Override
     public void onCreate() {
@@ -79,11 +52,8 @@ public class ProximityLocationService extends Service {
         Log.d(TAG, "Intent : "+intent.getAction());
         try{
             registerReceiver(gpsReceiver, intentFilter);
-            aCallback.addProximityAlert();
         }catch (SecurityException e){
-            pCallback.requestPermission();
         }
-
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -107,6 +77,7 @@ public class ProximityLocationService extends Service {
     public void onDestroy() {
         super.onDestroy();
     }
+
     private class GPS_Receiver extends BroadcastReceiver{
 
         @Override
