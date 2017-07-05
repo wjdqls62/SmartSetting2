@@ -1,10 +1,12 @@
 package com.jb.smartsetting.View;
 
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
@@ -39,13 +41,11 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private LocationItemAdapter locationItemAdapter;
     private Toolbar toolbar;
     private FloatingActionButton fab_newLocation;
-
+    private DividerItemDecoration dividerItemDecoration;
     private ArrayList<Stub_Location_Object> items;
     private ArrayList<Stub_Location_Object> arrLocationList;
     private ObjectReaderWriter objectReaderWriter;
     private Bundle bundle;
-
-    private int selectItemPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +121,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     }
 
     private class LocationItemAdapter extends Adapter<LocationListViewHolder> {
-        private int position;
         private int RECYCLER_MODE = -1;
 
         public LocationItemAdapter(){
@@ -154,13 +153,21 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                 holder.checkBox.setVisibility(View.VISIBLE);
             }
 
+            // StubObject의 isEnabled값을 가져와 ToggleSwitch의 상태를 변경
+            if(arrLocationList.get(position).isEnabled){
+                holder.toggleButton.setChecked(true);
+            }else{
+                holder.toggleButton.setChecked(false);
+            }
+
+
+
             holder.indentification.setText(arrLocationList.get(position).indentificationNumber+"");
             holder.locationName.setText(arrLocationList.get(position).getLocationName());
             holder.toggleButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // 활성화 -> 비활성화
-                    selectItemPosition = position;
                     if(arrLocationList.get(position).isEnabled){
                         arrLocationList.get(position).setEnabled(false);
                         objectReaderWriter.saveObject(arrLocationList.get(position));

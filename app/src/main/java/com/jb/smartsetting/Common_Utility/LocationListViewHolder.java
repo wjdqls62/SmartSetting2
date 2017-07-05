@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.jb.smartsetting.R;
@@ -16,7 +17,7 @@ import com.jb.smartsetting.R;
 public class LocationListViewHolder extends RecyclerView.ViewHolder {
 
     public TextView locationName;
-    public ImageButton toggleButton;
+    public Switch toggleButton;
     public CheckBox checkBox;
     public LinearLayout itemLayout;
     public TextView indentification;
@@ -24,7 +25,7 @@ public class LocationListViewHolder extends RecyclerView.ViewHolder {
     public LocationListViewHolder(View itemView) {
         super(itemView);
         locationName = (TextView) itemView.findViewById(R.id.location_name);
-        toggleButton = (ImageButton) itemView.findViewById(R.id.toggle);
+        toggleButton = (Switch) itemView.findViewById(R.id.toggle);
         checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
         itemLayout = (LinearLayout) itemView.findViewById(R.id.item_layout);
         indentification = (TextView) itemView.findViewById(R.id.indentification);
