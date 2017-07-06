@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.ILocationService;
 
+import java.util.ArrayList;
+
 /**
  * Created by jeongbin.son on 2017-06-21.
  */
@@ -24,6 +26,8 @@ public class ProximityLocationService extends Service {
     private LocationManager locationManager;
     private GPS_Receiver gpsReceiver;
     private ObjectReaderWriter objectReaderWriter;
+    private ArrayList<Stub_Location_Object> mEnabledTargetLocation;
+
     private Context context;
 
     private Intent intent;
@@ -37,11 +41,10 @@ public class ProximityLocationService extends Service {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
+        mEnabledTargetLocation = new ArrayList<Stub_Location_Object>();
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         gpsReceiver = new GPS_Receiver();
-        intentFilter = new IntentFilter("com.jb.smartsetting");
-        intent = new Intent("com.jb.smartsetting");
-        pendingIntent = PendingIntent.getBroadcast(context, 1, intent, 0);
+
         objectReaderWriter = new ObjectReaderWriter(getApplicationContext());
         Log.d(TAG, "onCreate");
 
@@ -49,12 +52,26 @@ public class ProximityLocationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "Intent : "+intent.getAction());
-        try{
-            registerReceiver(gpsReceiver, intentFilter);
-        }catch (SecurityException e){
+        // 서비스가 시작되면 활성화되어 있는 Location을 찾는다
+        mEnabledTargetLocation = objectReaderWriter.readObject();
+        for(int i=0; i<mEnabledTargetLocation.size(); i++){
+            if(mEnabledTargetLocation.get(i).isEnabled){
+                try{
+                    this.intent = new Intent(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
+                    intentFilter = new IntentFilter(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
+                    pendingIntent = PendingIntent.getBroadcast(context, 1, this.intent, 0);
+                    registerReceiver(gpsReceiver, intentFilter);
+                    locationManager.addProximityAlert(
+                            mEnabledTargetLocation.get(i).Latitude,
+                            mEnabledTargetLocation.get(i).Longitude,
+                            100f,
+                            -1,
+                            pendingIntent);
+                }catch (SecurityException e){
+                }
+            }
         }
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     @Nullable
@@ -82,14 +99,20 @@ public class ProximityLocationService extends Service {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-                boolean isEntering = intent.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false);
-                if(isEntering){
-                    Toast.makeText(context, "목표지점에 근접합니다.", Toast.LENGTH_SHORT).show();
-                    //sCallback.changeCustomSetting();
-                }else{
-                    Toast.makeText(context, "목표지점에서 떨어졌습니다.", Toast.LENGTH_SHORT).show();
-                    //sCallback.restoreSetting();
+            boolean isEntering = intent.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false);
+            for(int i=0; i<mEnabledTargetLocation.size(); i++){
+                if(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber)== intent.getAction()){
+                    if(isEntering){
+                        Toast.makeText(context, mEnabledTargetLocation.get(i).getLocationName()+"과 근접합니다.", Toast.LENGTH_SHORT).show();
+                        //sCallback.changeCustomSetting();
+                    }else{
+                        Toast.makeText(context, mEnabledTargetLocation.get(i).getLocationName()+"과 멀어졌습니다.", Toast.LENGTH_SHORT).show();
+                        //sCallback.restoreSetting();
+                    }
                 }
+            }
+
+
             }
         }
     }
