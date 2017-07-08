@@ -54,6 +54,7 @@ public class ProximityLocationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // 서비스가 시작되면 활성화되어 있는 Location을 찾는다
         mEnabledTargetLocation = objectReaderWriter.readObject();
+
         for(int i=0; i<mEnabledTargetLocation.size(); i++){
             if(mEnabledTargetLocation.get(i).isEnabled){
                 try{
@@ -67,6 +68,7 @@ public class ProximityLocationService extends Service {
                             100f,
                             -1,
                             pendingIntent);
+                    Toast.makeText(getApplicationContext(), "Start Service", Toast.LENGTH_SHORT).show();
                 }catch (SecurityException e){
                 }
             }
@@ -92,7 +94,8 @@ public class ProximityLocationService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        Toast.makeText(getApplicationContext(), "Stop Service", Toast.LENGTH_SHORT).show();
+        unregisterReceiver(gpsReceiver);
     }
 
     private class GPS_Receiver extends BroadcastReceiver{

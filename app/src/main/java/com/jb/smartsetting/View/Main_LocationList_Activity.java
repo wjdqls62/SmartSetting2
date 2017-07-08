@@ -172,14 +172,11 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                     if(arrLocationList.get(position).isEnabled){
                         arrLocationList.get(position).setEnabled(false);
                         objectReaderWriter.saveObject(arrLocationList.get(position));
-                        Toast.makeText(Main_LocationList_Activity.this, "isEnabled : "+arrLocationList.get(position).isEnabled, Toast.LENGTH_SHORT).show();
                         stopService(new Intent(getApplicationContext(), ProximityLocationService.class));
 
                     }else{
                         arrLocationList.get(position).setEnabled(true);
                         objectReaderWriter.saveObject(arrLocationList.get(position));
-                        Toast.makeText(Main_LocationList_Activity.this, "isEnabled : "+arrLocationList.get(position).isEnabled, Toast.LENGTH_SHORT).show();
-                        //stopService(new Intent(Main_LocationList_Activity.this, proximityLocationService.getClass()));
                         startService(new Intent(getApplicationContext(), ProximityLocationService.class));
 
                     }

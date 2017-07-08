@@ -23,7 +23,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -34,7 +33,7 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <service android:name=".GPS_Utility.ProximityLocationService" >
-            <intent-filter and
+
         </service>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
