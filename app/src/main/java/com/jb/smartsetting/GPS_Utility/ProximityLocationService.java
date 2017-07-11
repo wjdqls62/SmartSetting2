@@ -61,21 +61,12 @@ public class ProximityLocationService extends Service {
             Log.d(TAG, "onStartCommand");
         }
 
-
-
         mEnabledTargetLocation = objectReaderWriter.readObject();
-<<<<<<< HEAD
-
-        for(int i=0; i<mEnabledTargetLocation.size(); i++){
-            if(mEnabledTargetLocation.get(i).isEnabled){
-                try{
-=======
         intentFilter = new IntentFilter();
 
         try {
             for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
                 if (mEnabledTargetLocation.get(i).isEnabled) {
->>>>>>> origin/master
                     this.intent = new Intent(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
                     pIntent = PendingIntent.getBroadcast(context, i, this.intent, 0);
 
@@ -87,11 +78,6 @@ public class ProximityLocationService extends Service {
                             mEnabledTargetLocation.get(i).Longitude,
                             100,
                             -1,
-<<<<<<< HEAD
-                            pendingIntent);
-                    Toast.makeText(getApplicationContext(), "Start Service", Toast.LENGTH_SHORT).show();
-                }catch (SecurityException e){
-=======
                             pIntent);
 
                     if (isDebug) {
@@ -102,7 +88,6 @@ public class ProximityLocationService extends Service {
                         Log.d(TAG, "Pending Intent Action : " + String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
                         Log.d(TAG, "==========================================================================");
                     }
->>>>>>> origin/master
                 }
             }
 
@@ -133,14 +118,10 @@ public class ProximityLocationService extends Service {
 
     @Override
     public void onDestroy() {
-<<<<<<< HEAD
-        Toast.makeText(getApplicationContext(), "Stop Service", Toast.LENGTH_SHORT).show();
-        unregisterReceiver(gpsReceiver);
-=======
         if (isDebug) Log.d(TAG, "onDestroy");
+
         unregisterReceiver(gpsReceiver);
         super.onDestroy();
->>>>>>> origin/master
     }
 
 
