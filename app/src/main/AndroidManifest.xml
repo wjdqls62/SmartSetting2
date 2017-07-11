@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jb.smartsetting">
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-library android:name="com.google.android.maps"/>
 
+    <uses-library android:name="com.google.android.maps" />
 
     <application
         android:allowBackup="true"
@@ -30,14 +31,25 @@
         <activity
             android:name=".View.Sub_ItemSetting_Activity"
             android:label="@string/title_activity_sub__item_setting_"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
+        <service android:name=".GPS_Utility.ProximityLocationService"
+            android:enabled="true"
+            android:exported="true" >
+
+<<<<<<< HEAD
         <service android:name=".GPS_Utility.ProximityLocationService" >
 
+=======
+>>>>>>> origin/master
         </service>
+
+        <receiver android:name=".GPS_Utility.ProximityLocationService$GPS_Receiver" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDmrrzrlDIjW-LT5E8fZasHQt_rKFNdmAM" />
+
     </application>
 
 </manifest>
