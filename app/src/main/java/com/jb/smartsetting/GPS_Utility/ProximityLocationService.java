@@ -1,18 +1,26 @@
 package com.jb.smartsetting.GPS_Utility;
 
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.LocationManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
+import com.jb.smartsetting.R;
 
 import java.util.ArrayList;
 
@@ -32,6 +40,10 @@ public class ProximityLocationService extends Service {
     private IntentFilter intentFilter;
     private PendingIntent pIntent;
     private ArrayList<PendingIntent> enabledPendingIntent;
+
+    private Bitmap bitmap;
+    private Uri soundUri;
+    private PendingIntent nIntent;
 
     private String TAG = getClass().getName();
     private boolean isDebug = true;
@@ -134,8 +146,23 @@ public class ProximityLocationService extends Service {
             if(isEntering){
                 for(int i=0; i<mEnabledTargetLocation.size(); i++){
                     if(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber).equals(intent.getAction())){
-                        Toast.makeText(getApplicationContext(), mEnabledTargetLocation.get(i).getLocationName()+"에 접근", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), mEnabledTargetLocation.get(i).getLocationName()+"에 접근", Toast.LENGTH_SHORT).show();
                         Current_Location = mEnabledTargetLocation.get(i).getLocationName();
+
+
+                        bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+                        soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
+                                .setSmallIcon(android.R.drawable.ic_menu_myplaces)
+                                .setLargeIcon(bitmap)
+                                .setContentTitle("SmartSetting")
+                                .setContentText(Current_Location + "지점에 근접합니다.")
+                                .setAutoCancel(true)
+                                .setSound(soundUri);
+
+                        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                        notificationManager.notify(0, notificationBuilder.build());
+
                         break;
                     }
                 }

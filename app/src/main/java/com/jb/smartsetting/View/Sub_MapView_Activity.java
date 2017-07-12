@@ -177,7 +177,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
                 move_ItemSetting_Activity();
                 break;
             case R.id.btn_cancel:
-                move_ItemSetting_Activity();
+                finish();
                 break;
         }
     }

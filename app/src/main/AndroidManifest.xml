@@ -33,6 +33,8 @@
             android:label="@string/title_activity_sub__item_setting_"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity android:name=".View.Sub_PermissionActivity" />
+
         <service android:name=".GPS_Utility.ProximityLocationService"
             android:enabled="true"
             android:exported="true" >

@@ -20,15 +20,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jb.smartsetting.Common_Utility.IRequestPermissionCallback;
 import com.jb.smartsetting.Common_Utility.LocationListViewHolder;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
+import com.jb.smartsetting.Common_Utility.PermissionManager;
 import com.jb.smartsetting.GPS_Utility.ProximityLocationService;
 import com.jb.smartsetting.GPS_Utility.Stub_Location_Object;
 import com.jb.smartsetting.R;
 
 import java.util.ArrayList;
 
-public class Main_LocationList_Activity extends AppCompatActivity implements View.OnClickListener {
+public class Main_LocationList_Activity extends AppCompatActivity implements View.OnClickListener, IRequestPermissionCallback{
     private final int RECYCLER_VIEW_NORMAL_MODE = 1;
     private final int RECYCLER_VIEW_DELETE_MODE = 2;
 
@@ -43,14 +45,25 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private Toolbar toolbar;
     private FloatingActionButton fab_newLocation;
     private DividerItemDecoration dividerItemDecoration;
+
+    private PermissionManager permissionManager;
+
     private ArrayList<Stub_Location_Object> items;
     private ArrayList<Stub_Location_Object> arrLocationList;
     private ObjectReaderWriter objectReaderWriter;
     private Bundle bundle;
 
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+
         setContentView(R.layout.activity_main__location_list_);
 
         init_View();
@@ -66,10 +79,13 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(locationItemAdapter);
 
+    }
 
-
-
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        permissionManager = new PermissionManager(this, getApplicationContext());
+        permissionManager.isPermissionCheck();
     }
 
     private void init_View(){
@@ -110,6 +126,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         startActivity(intent);
     }
 
+
     @Override
     public void onClick(View v) {
         switch(v.getId()){
@@ -119,6 +136,11 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                 startActivity(intent);
                 break;
         }
+    }
+
+    @Override
+    public void onRequestPermission() {
+
     }
 
     private class LocationItemAdapter extends Adapter<LocationListViewHolder> {
