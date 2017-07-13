@@ -3,6 +3,7 @@ package com.jb.smartsetting.View;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -12,11 +13,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
-import com.jb.smartsetting.GPS_Utility.Stub_Location_Object;
+import com.jb.smartsetting.GPS_Utility.LocationObject;
 import com.jb.smartsetting.R;
 
 import java.util.ArrayList;
@@ -26,8 +26,9 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
     private final int MODE_WRITE = 1;
     private final int MODE_MODIFY = 2;
 
-    private ArrayList<Stub_Location_Object> arrStubLocation;
-    private Stub_Location_Object stubLocation;
+    private ArrayList<LocationObject> arrLocation;
+    private Location location;
+    private LocationObject takedLocation;
     private double mRestoreIndentificationNumber;
 
     private Bundle bundle;
@@ -64,27 +65,29 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
         btn_save.setOnClickListener(this);
 
         objectReaderWriter = new ObjectReaderWriter(getApplicationContext());
-        arrStubLocation = new ArrayList<>();
-        arrStubLocation = objectReaderWriter.readObject();
+        arrLocation = new ArrayList<>();
+        arrLocation = objectReaderWriter.readObject();
         bundle = getIntent().getExtras();
 
         if(bundle != null){
             if(onDisplayTypeCheck(bundle) == MODE_WRITE){
-                stubLocation = (Stub_Location_Object) bundle.getSerializable("Location");
+                //takedLocation = (LocationObject) bundle.getSerializable("Location");
+                takedLocation = (LocationObject) bundle.getParcelable("Location");
+                Log.d("@@@TEST@@@", "Lat, Long : " + location.getLatitude() +", "+location.getLongitude());
                 MODE_CURRENT = MODE_WRITE;
                 Toast.makeText(getApplicationContext(), "MODE_WRITE", Toast.LENGTH_SHORT).show();
             }else if(onDisplayTypeCheck(bundle) == MODE_MODIFY){
                 mRestoreIndentificationNumber = bundle.getDouble("indentificationNumber");
-                for(int i=0; i< arrStubLocation.size(); i++){
-                    if(arrStubLocation.get(i).indentificationNumber == mRestoreIndentificationNumber){
-                        stubLocation = arrStubLocation.get(i);
+                for(int i = 0; i< arrLocation.size(); i++){
+                    if(arrLocation.get(i).indentificationNumber == mRestoreIndentificationNumber){
+                        takedLocation = arrLocation.get(i);
                         fillRestoreData();
                         break;
                     }
                 }
                 MODE_CURRENT = MODE_MODIFY;
                 Toast.makeText(getApplicationContext(), "MODE_MODIFY", Toast.LENGTH_SHORT).show();
-                Toast.makeText(getApplicationContext(), stubLocation.getLocationName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), takedLocation.getLocationName(), Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -105,14 +108,14 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
                 Toast.makeText(getApplicationContext(), "MODE_CURRENT : "+MODE_CURRENT, Toast.LENGTH_SHORT).show();
                 // 입력한 데이터를 stub객체에 삽입
                 if(MODE_CURRENT == MODE_MODIFY){
-                    stubLocation.locationName = etLocationName.getText().toString();
-                    stubLocation.setSoundVolume(
+                    takedLocation.locationName = etLocationName.getText().toString();
+                    takedLocation.setSoundVolume(
                             sbRingtoneSound.getProgress(),
                             sbNotificationSound.getProgress(),
                             sbTouch_feedbackSound.getProgress(),
                             sbMediaSound.getProgress());
                     // stub객체 저장
-                    objectReaderWriter.saveObject(stubLocation);
+                    objectReaderWriter.saveObject(takedLocation);
                     move_LocationList_Activity();
                     break;
                 }else if(MODE_CURRENT == MODE_WRITE){
@@ -122,14 +125,14 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
                         break;
                     // MODE_WRITE && 기존 저장된 데이터와 중복이 없을경우
                     }else{
-                        stubLocation.locationName = etLocationName.getText().toString();
-                        stubLocation.setSoundVolume(
+                        takedLocation.locationName = etLocationName.getText().toString();
+                        takedLocation.setSoundVolume(
                                 sbRingtoneSound.getProgress(),
                                 sbNotificationSound.getProgress(),
                                 sbTouch_feedbackSound.getProgress(),
                                 sbMediaSound.getProgress());
                         // stub객체 저장
-                        objectReaderWriter.saveObject(stubLocation);
+                        objectReaderWriter.saveObject(takedLocation);
                         move_LocationList_Activity();
                     }
                 }
@@ -148,13 +151,13 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
     private void fillRestoreData(){
         Log.d("TEST","fillRestoreData()");
         // 수정모드(MODE_MODIFY)의 경우 객체의 정보를 뷰에 채워준다.
-        etLocationName.setText(stubLocation.getLocationName());
+        etLocationName.setText(takedLocation.getLocationName());
     }
 
     private boolean isOverlap(){
         if(MODE_CURRENT == MODE_WRITE){
-            for(int i=0; i<arrStubLocation.size(); i++){
-                if(arrStubLocation.get(i).indentificationNumber == stubLocation.indentificationNumber){
+            for(int i = 0; i< arrLocation.size(); i++){
+                if(arrLocation.get(i).indentificationNumber == takedLocation.indentificationNumber){
                     return true;
                 }
             }

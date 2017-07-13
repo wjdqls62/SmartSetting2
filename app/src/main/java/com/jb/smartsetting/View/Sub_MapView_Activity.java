@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +30,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jb.smartsetting.GPS_Utility.GPS_Manager;
-import com.jb.smartsetting.GPS_Utility.Stub_Location_Object;
+import com.jb.smartsetting.GPS_Utility.LocationObject;
 import com.jb.smartsetting.R;
 
 import java.io.FileNotFoundException;
@@ -58,8 +60,9 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     private LatLng latLng;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
+    private LocationObject mLocation;
 
-    Stub_Location_Object stubLocation;
+    LocationObject sendLocation;
 
     private Button btn_ok, btn_cancel;
 
@@ -87,9 +90,9 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             public void onSnapshotReady(Bitmap bitmap) {
                 try {
                     if(isDebug){
-                        Log.d(TAG, "Create to "+stubLocation.objFilePath + stubLocation.imgFileName);
+                        Log.d(TAG, "Create to "+mLocation.objFilePath + mLocation.imgFileName);
                     }
-                    FileOutputStream out = new FileOutputStream(stubLocation.objFilePath + stubLocation.imgFileName);
+                    FileOutputStream out = new FileOutputStream(mLocation.objFilePath + mLocation.imgFileName);
                     //FileOutputStream out = new FileOutputStream("/sdcard/"+imgFileName+".png");
                     bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
                 } catch (FileNotFoundException e) {
@@ -155,14 +158,15 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     public void move_ItemSetting_Activity() {
         Intent intent = new Intent(this, Sub_ItemSetting_Activity.class);
 
-        stubLocation = new Stub_Location_Object();
         if(lastLocation != null){
-            stubLocation.parseLocation(lastLocation);
+            mLocation = new LocationObject(lastLocation.getProvider());
+            mLocation.initLocation();
             map.snapshot(SnapshotCallback);
         }
         bundle = new Bundle();
-        bundle.putSerializable("Location", stubLocation);
+        //bundle.putParcelable("Location", mLocation);
         bundle.putString("DISPLAY_MODE", "WRITE");
+        intent.putExtra("Location", mLocation);
         intent.putExtras(bundle);
 
         startActivity(intent);

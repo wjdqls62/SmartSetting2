@@ -10,7 +10,6 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
-import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.IBinder;
@@ -19,6 +18,9 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderApi;
+import com.google.android.gms.location.LocationServices;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.R;
 
@@ -32,9 +34,14 @@ public class ProximityLocationService extends Service {
     private LocationManager locationManager;
     private GPS_Receiver gpsReceiver;
     private ObjectReaderWriter objectReaderWriter;
-    private ArrayList<Stub_Location_Object> mEnabledTargetLocation;
+    private ArrayList<LocationObject> mEnabledTargetLocation;
+
+    private FusedLocationProviderApi fusedLocationProviderApi;
+    private GoogleApiClient.Builder builder;
+    private GoogleApiClient googleApiClient;
 
     private Context context;
+
 
     private Intent intent;
     private IntentFilter intentFilter;
@@ -50,10 +57,14 @@ public class ProximityLocationService extends Service {
 
     @Override
     public void onCreate() {
-
         context = getApplicationContext();
-        mEnabledTargetLocation = new ArrayList<Stub_Location_Object>();
+        setGoogleServiceBuilder();
+
+        mEnabledTargetLocation = new ArrayList<LocationObject>();
         enabledPendingIntent = new ArrayList<PendingIntent>();
+
+
+
 
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         gpsReceiver = new GPS_Receiver();
@@ -86,8 +97,8 @@ public class ProximityLocationService extends Service {
                     intentFilter.addAction(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
 
                     locationManager.addProximityAlert(
-                            mEnabledTargetLocation.get(i).Latitude,
-                            mEnabledTargetLocation.get(i).Longitude,
+                            mEnabledTargetLocation.get(i).getLatitude(),
+                            mEnabledTargetLocation.get(i).getLongitude(),
                             100,
                             -1,
                             pIntent);
@@ -95,8 +106,8 @@ public class ProximityLocationService extends Service {
                     if (isDebug) {
                         Log.d(TAG, "========================== addProximityAlert =============================");
                         Log.d(TAG, "Enable Location Name : " + mEnabledTargetLocation.get(i).locationName);
-                        Log.d(TAG, "Lat : " + mEnabledTargetLocation.get(i).Latitude);
-                        Log.d(TAG, "Long : " + mEnabledTargetLocation.get(i).Longitude);
+                        Log.d(TAG, "Lat : " + mEnabledTargetLocation.get(i).getLatitude());
+                        Log.d(TAG, "Long : " + mEnabledTargetLocation.get(i).getLongitude());
                         Log.d(TAG, "Pending Intent Action : " + String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
                         Log.d(TAG, "==========================================================================");
                     }
@@ -134,6 +145,13 @@ public class ProximityLocationService extends Service {
 
         unregisterReceiver(gpsReceiver);
         super.onDestroy();
+    }
+
+    public void setGoogleServiceBuilder(){
+        builder = new GoogleApiClient.Builder(getApplicationContext());
+        googleApiClient = builder.addApi(LocationServices.API).build();
+        googleApiClient.connect();
+
     }
 
 
