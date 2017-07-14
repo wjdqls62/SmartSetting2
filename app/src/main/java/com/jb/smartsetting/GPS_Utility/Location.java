@@ -1,18 +1,14 @@
 package com.jb.smartsetting.GPS_Utility;
 
-import android.graphics.Bitmap;
-import android.location.Location;
+import android.location.LocationManager;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.io.Serializable;
-import java.security.Provider;
 
 /**
  * Created by wjdql on 2017-06-17.
  */
 
-public class LocationObject extends Location implements Parcelable{
+public class Location extends android.location.Location implements Parcelable {
     //private static final long serialVersionUID = 8124905464753305656L;
     public double indentificationNumber;
     public String locationName;
@@ -23,21 +19,17 @@ public class LocationObject extends Location implements Parcelable{
     public int media = 0;
 
     public boolean isEnabled = false;
-    public Location location;
-    public Bitmap bitmap;
     public String imgFileName;
     public String objFilePath;
     public String objFileName;
 
-    public LocationObject(Location location ){
-        super(location);
-        objFileName = location.getLatitude()+location.getLongitude()+".sjb";
-        imgFileName = location.getLatitude()+location.getLongitude()+".png";
-        indentificationNumber = location.getLatitude()+location.getLongitude();
-        objFilePath = "/data/data/com.jb.smartsetting/files/";
+    public Location(String provider){
+        super(provider);
+
     }
 
-    protected LocationObject(Parcel in) {
+    protected Location(Parcel in) {
+        super(LocationManager.NETWORK_PROVIDER);
         indentificationNumber = in.readDouble();
         locationName = in.readString();
         ringtone = in.readInt();
@@ -45,7 +37,6 @@ public class LocationObject extends Location implements Parcelable{
         touchfeedback = in.readInt();
         media = in.readInt();
         isEnabled = in.readByte() != 0;
-        bitmap = in.readParcelable(Bitmap.class.getClassLoader());
         imgFileName = in.readString();
         objFilePath = in.readString();
         objFileName = in.readString();
@@ -61,7 +52,6 @@ public class LocationObject extends Location implements Parcelable{
         dest.writeInt(touchfeedback);
         dest.writeInt(media);
         dest.writeByte((byte) (isEnabled ? 1 : 0));
-        dest.writeParcelable(bitmap, flags);
         dest.writeString(imgFileName);
         dest.writeString(objFilePath);
         dest.writeString(objFileName);
@@ -72,24 +62,23 @@ public class LocationObject extends Location implements Parcelable{
         return 0;
     }
 
-    public static final Creator<LocationObject> CREATOR = new Creator<LocationObject>() {
+    public static final Creator<Location> CREATOR = new Creator<Location>() {
         @Override
-        public LocationObject createFromParcel(Parcel in) {
-            return new LocationObject(in);
+        public Location createFromParcel(Parcel in) {
+            return new Location(in);
         }
 
         @Override
-        public LocationObject[] newArray(int size) {
-            return new LocationObject[size];
+        public Location[] newArray(int size) {
+            return new Location[size];
         }
     };
 
-    public void initLocation(){
-
-    }
-
-    public String getLocationName(){
-        return locationName;
+    public void init(){
+        objFileName = getLatitude()+getLongitude()+".sjb";
+        imgFileName = getLatitude()+getLongitude()+".png";
+        indentificationNumber = getLatitude()+getLongitude();
+        objFilePath = "/data/data/com.jb.smartsetting/files/";
     }
 
     public void setEnabled(boolean value){
@@ -101,6 +90,10 @@ public class LocationObject extends Location implements Parcelable{
         this.notification = notification;
         this.touchfeedback = touchfeedback;
         this.media = media;
+    }
+
+    public String getLocationName(){
+        return locationName;
     }
 
 }

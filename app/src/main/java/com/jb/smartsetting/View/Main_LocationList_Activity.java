@@ -20,7 +20,7 @@ import com.jb.smartsetting.Common_Utility.LocationListViewHolder;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.Common_Utility.PermissionManager;
 import com.jb.smartsetting.GPS_Utility.ProximityLocationService;
-import com.jb.smartsetting.GPS_Utility.LocationObject;
+import android.location.Location;
 import com.jb.smartsetting.R;
 
 import java.util.ArrayList;
@@ -42,9 +42,8 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private DividerItemDecoration dividerItemDecoration;
 
     private PermissionManager permissionManager;
-
-    private ArrayList<LocationObject> items;
-    private ArrayList<LocationObject> arrLocationList;
+    private ArrayList<Location> arrLocationList;
+    private ArrayList<Location> items;
     private ObjectReaderWriter objectReaderWriter;
     private Bundle bundle;
 
@@ -137,7 +136,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         private int RECYCLER_MODE = -1;
 
         public LocationItemAdapter(){
-            items = new ArrayList<LocationObject>();
+            items = new ArrayList<Location>();
         }
 
         public void setRECYCLER_VIEW_MODE(int i){
@@ -161,25 +160,25 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             }
 
             // StubObject의 isEnabled값을 가져와 ToggleSwitch의 상태를 변경
-            if(arrLocationList.get(position).isEnabled){
+            if(arrLocationList.get(position).getExtras().getBoolean("isEnabled")){
                 holder.toggleButton.setChecked(true);
             }else{
                 holder.toggleButton.setChecked(false);
             }
 
-            holder.indentification.setText(arrLocationList.get(position).indentificationNumber+"");
-            holder.locationName.setText(arrLocationList.get(position).getLocationName());
+            holder.indentification.setText(arrLocationList.get(position).getExtras().getDouble("indentificationNumber")+"");
+            holder.locationName.setText(arrLocationList.get(position).getExtras().getDouble("locationName")+"");
             holder.toggleButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // 활성화 -> 비활성화
-                    if(arrLocationList.get(position).isEnabled){
-                        arrLocationList.get(position).setEnabled(false);
+                    if(arrLocationList.get(position).getExtras().getBoolean("isEnabled")){
+                        arrLocationList.get(position).getExtras().putBoolean("isEnabled", false);
                         objectReaderWriter.saveObject(arrLocationList.get(position));
                         stopService(new Intent(getApplicationContext(), ProximityLocationService.class));
 
                     }else{
-                        arrLocationList.get(position).setEnabled(true);
+                        arrLocationList.get(position).getExtras().putBoolean("isEnabled", true);
                         objectReaderWriter.saveObject(arrLocationList.get(position));
                         startService(new Intent(getApplicationContext(), ProximityLocationService.class));
 
@@ -191,7 +190,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                 public void onClick(View v) {
                     bundle = new Bundle();
                     bundle.putString("DISPLAY_MODE", "MODIFY");
-                    bundle.putDouble("indentificationNumber", arrLocationList.get(position).indentificationNumber);
+                    bundle.putDouble("indentificationNumber", arrLocationList.get(position).getExtras().getDouble("indentificationNumber"));
                     Intent intent = new Intent(Main_LocationList_Activity.this, Sub_ItemSetting_Activity.class);
                     intent.putExtras(bundle);
                     startActivity(intent);

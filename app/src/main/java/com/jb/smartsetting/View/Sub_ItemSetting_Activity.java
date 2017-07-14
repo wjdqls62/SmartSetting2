@@ -16,7 +16,6 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
-import com.jb.smartsetting.GPS_Utility.LocationObject;
 import com.jb.smartsetting.R;
 
 import java.util.ArrayList;
@@ -26,9 +25,8 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
     private final int MODE_WRITE = 1;
     private final int MODE_MODIFY = 2;
 
-    private ArrayList<LocationObject> arrLocation;
-    private Location location;
-    private LocationObject takedLocation;
+    private ArrayList<Location> arrLocation;
+    private android.location.Location takedLocation;
     private double mRestoreIndentificationNumber;
 
     private Bundle bundle;
@@ -41,6 +39,10 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
     private SeekBar sbNotificationSound;
     private SeekBar sbTouch_feedbackSound;
     private SeekBar sbMediaSound;
+
+    private String TAG = this.getClass().getName();
+    private boolean isDebug = true;
+
 
     CollapsingToolbarLayout toolbarLayout;
     BitmapDrawable bitmapDrawable;
@@ -71,15 +73,18 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
 
         if(bundle != null){
             if(onDisplayTypeCheck(bundle) == MODE_WRITE){
-                //takedLocation = (LocationObject) bundle.getSerializable("Location");
-                takedLocation = (LocationObject) bundle.getParcelable("Location");
-                Log.d("@@@TEST@@@", "Lat, Long : " + location.getLatitude() +", "+location.getLongitude());
+                takedLocation = getIntent().getParcelableExtra("Location");
                 MODE_CURRENT = MODE_WRITE;
-                Toast.makeText(getApplicationContext(), "MODE_WRITE", Toast.LENGTH_SHORT).show();
+                if(isDebug){
+                    Log.d(TAG, "objFileName :" + takedLocation.getExtras().getString("objFileName"));
+                    Log.d(TAG, "imgFileName :" + takedLocation.getExtras().getString("imgFileName"));
+                    Log.d(TAG, "indentificationNumber :" + takedLocation.getExtras().getDouble("indentificationNumber")+"");
+                    Log.d(TAG, "objFilePath :" + takedLocation.getExtras().getString("objFilePath"));
+                }
             }else if(onDisplayTypeCheck(bundle) == MODE_MODIFY){
                 mRestoreIndentificationNumber = bundle.getDouble("indentificationNumber");
                 for(int i = 0; i< arrLocation.size(); i++){
-                    if(arrLocation.get(i).indentificationNumber == mRestoreIndentificationNumber){
+                    if(arrLocation.get(i).getExtras().getDouble("indentificationNumber") == mRestoreIndentificationNumber){
                         takedLocation = arrLocation.get(i);
                         fillRestoreData();
                         break;
@@ -87,13 +92,10 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
                 }
                 MODE_CURRENT = MODE_MODIFY;
                 Toast.makeText(getApplicationContext(), "MODE_MODIFY", Toast.LENGTH_SHORT).show();
-                Toast.makeText(getApplicationContext(), takedLocation.getLocationName(), Toast.LENGTH_SHORT).show();
             }
         }
 
     }
-
-
 
     private void move_LocationList_Activity(){
         Intent intent = new Intent(this, Main_LocationList_Activity.class);
@@ -105,43 +107,15 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.fab :
-                Toast.makeText(getApplicationContext(), "MODE_CURRENT : "+MODE_CURRENT, Toast.LENGTH_SHORT).show();
-                // 입력한 데이터를 stub객체에 삽입
-                if(MODE_CURRENT == MODE_MODIFY){
-                    takedLocation.locationName = etLocationName.getText().toString();
-                    takedLocation.setSoundVolume(
-                            sbRingtoneSound.getProgress(),
-                            sbNotificationSound.getProgress(),
-                            sbTouch_feedbackSound.getProgress(),
-                            sbMediaSound.getProgress());
-                    // stub객체 저장
-                    objectReaderWriter.saveObject(takedLocation);
-                    move_LocationList_Activity();
-                    break;
-                }else if(MODE_CURRENT == MODE_WRITE){
-                    // MODE_WRITE && 기존 저장된 데이터와 위도,경도가 겹칠경우
-                    if(isOverlap()){
-                        Toast.makeText(getApplicationContext(), "Overlap", Toast.LENGTH_SHORT).show();
-                        break;
-                    // MODE_WRITE && 기존 저장된 데이터와 중복이 없을경우
-                    }else{
-                        takedLocation.locationName = etLocationName.getText().toString();
-                        takedLocation.setSoundVolume(
-                                sbRingtoneSound.getProgress(),
-                                sbNotificationSound.getProgress(),
-                                sbTouch_feedbackSound.getProgress(),
-                                sbMediaSound.getProgress());
-                        // stub객체 저장
-                        objectReaderWriter.saveObject(takedLocation);
-                        move_LocationList_Activity();
-                    }
-                }
+                takedLocation.getExtras().putString("locationName", etLocationName.getText().toString());
+                objectReaderWriter.saveObject(takedLocation);
+                move_LocationList_Activity();
+                break;
         }
     }
 
     public int onDisplayTypeCheck(Bundle bundle){
         if(bundle.getString("DISPLAY_MODE").equals("MODIFY")){
-
             return MODE_MODIFY;
         }else{
             return MODE_WRITE;
@@ -149,20 +123,10 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
     }
 
     private void fillRestoreData(){
-        Log.d("TEST","fillRestoreData()");
-        // 수정모드(MODE_MODIFY)의 경우 객체의 정보를 뷰에 채워준다.
-        etLocationName.setText(takedLocation.getLocationName());
+
     }
 
-    private boolean isOverlap(){
-        if(MODE_CURRENT == MODE_WRITE){
-            for(int i = 0; i< arrLocation.size(); i++){
-                if(arrLocation.get(i).indentificationNumber == takedLocation.indentificationNumber){
-                    return true;
-                }
-            }
-        }
-        return false;
+    private void isOverlap(){
     }
 
 }

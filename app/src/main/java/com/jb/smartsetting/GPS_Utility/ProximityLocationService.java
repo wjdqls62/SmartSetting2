@@ -23,7 +23,7 @@ import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationServices;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.R;
-
+import android.location.Location;
 import java.util.ArrayList;
 
 /**
@@ -34,7 +34,7 @@ public class ProximityLocationService extends Service {
     private LocationManager locationManager;
     private GPS_Receiver gpsReceiver;
     private ObjectReaderWriter objectReaderWriter;
-    private ArrayList<LocationObject> mEnabledTargetLocation;
+    private ArrayList<Location> mEnabledTargetLocation;
 
     private FusedLocationProviderApi fusedLocationProviderApi;
     private GoogleApiClient.Builder builder;
@@ -60,7 +60,7 @@ public class ProximityLocationService extends Service {
         context = getApplicationContext();
         setGoogleServiceBuilder();
 
-        mEnabledTargetLocation = new ArrayList<LocationObject>();
+        mEnabledTargetLocation = new ArrayList<Location>();
         enabledPendingIntent = new ArrayList<PendingIntent>();
 
 
@@ -89,12 +89,12 @@ public class ProximityLocationService extends Service {
 
         try {
             for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
-                if (mEnabledTargetLocation.get(i).isEnabled) {
-                    this.intent = new Intent(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
+                if (mEnabledTargetLocation.get(i).getExtras().getBoolean("isEnabled")) {
+                    this.intent = new Intent(String.valueOf(mEnabledTargetLocation.get(i).getExtras().getDouble("indentificationNumber")));
                     pIntent = PendingIntent.getBroadcast(context, i, this.intent, 0);
 
                     enabledPendingIntent.add(pIntent);
-                    intentFilter.addAction(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
+                    intentFilter.addAction(String.valueOf(mEnabledTargetLocation.get(i).getExtras().getDouble("indentificationNumber")));
 
                     locationManager.addProximityAlert(
                             mEnabledTargetLocation.get(i).getLatitude(),
@@ -105,10 +105,10 @@ public class ProximityLocationService extends Service {
 
                     if (isDebug) {
                         Log.d(TAG, "========================== addProximityAlert =============================");
-                        Log.d(TAG, "Enable Location Name : " + mEnabledTargetLocation.get(i).locationName);
+                        Log.d(TAG, "Enable Location Name : " + mEnabledTargetLocation.get(i).getExtras().getString("locationName"));
                         Log.d(TAG, "Lat : " + mEnabledTargetLocation.get(i).getLatitude());
                         Log.d(TAG, "Long : " + mEnabledTargetLocation.get(i).getLongitude());
-                        Log.d(TAG, "Pending Intent Action : " + String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
+                        Log.d(TAG, "Pending Intent Action : " + String.valueOf(mEnabledTargetLocation.get(i).getExtras().getDouble("indentificationNumber")));
                         Log.d(TAG, "==========================================================================");
                     }
                 }
@@ -163,9 +163,9 @@ public class ProximityLocationService extends Service {
             boolean isEntering = intent.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false);
             if(isEntering){
                 for(int i=0; i<mEnabledTargetLocation.size(); i++){
-                    if(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber).equals(intent.getAction())){
+                    if(String.valueOf(mEnabledTargetLocation.get(i).getExtras().getDouble("indentificationNumber")).equals(intent.getAction())){
                         //Toast.makeText(getApplicationContext(), mEnabledTargetLocation.get(i).getLocationName()+"에 접근", Toast.LENGTH_SHORT).show();
-                        Current_Location = mEnabledTargetLocation.get(i).getLocationName();
+                        Current_Location = mEnabledTargetLocation.get(i).getExtras().getString("locationName");
 
 
                         bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);

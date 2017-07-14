@@ -1,10 +1,10 @@
 package com.jb.smartsetting.Common_Utility;
 
 import android.content.Context;
+import android.location.Location;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.jb.smartsetting.GPS_Utility.LocationObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,19 +21,19 @@ import java.util.ArrayList;
 public class ObjectReaderWriter {
 
     private Context context;
-    private ArrayList<LocationObject> arrLoccationList;
+    private ArrayList<Location> arrLoccationList;
 
     private String TAG = getClass().getName();
     private boolean isDebug = true;
 
     public ObjectReaderWriter(Context context){
         this.context = context;
-        arrLoccationList = new ArrayList<LocationObject>();
+        arrLoccationList = new ArrayList<Location>();
     }
 
-    public void saveObject(LocationObject location) {
+    public void saveObject(Location location) {
         try {
-            FileOutputStream fos = new FileOutputStream(location.objFilePath + location.objFileName, false);
+            FileOutputStream fos = new FileOutputStream(location.getExtras().getString("objFilePath") + location.getExtras().getString("objFileName"));
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(location);
             fos.close();
@@ -43,13 +43,13 @@ public class ObjectReaderWriter {
         }
     }
 
-    public ArrayList<LocationObject> readObject() {
+    public ArrayList<Location> readObject() {
         try {
             File[] searchFileList = new File("/data/data/com.jb.smartsetting/files/").listFiles();
             for (int i = 0; i < searchFileList.length; i++) {
                 if (searchFileList[i].getName().contains(".sjb")) {
                     ObjectInputStream ois = new ObjectInputStream(new FileInputStream("/data/data/com.jb.smartsetting/files/"+searchFileList[i].getName()));
-                    LocationObject readLoaction = (LocationObject) ois.readObject();
+                    Location readLoaction = (Location) ois.readObject();
                     arrLoccationList.add(readLoaction);
                     ois.close();
                 }

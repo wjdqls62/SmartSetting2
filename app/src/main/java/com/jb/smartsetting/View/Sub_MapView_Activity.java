@@ -4,9 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -30,7 +27,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jb.smartsetting.GPS_Utility.GPS_Manager;
-import com.jb.smartsetting.GPS_Utility.LocationObject;
 import com.jb.smartsetting.R;
 
 import java.io.FileNotFoundException;
@@ -49,20 +45,14 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         GoogleMap.OnMapLoadedCallback,
         LocationListener {
 
-    private Bundle bundle;
-
     private GoogleMap map;
-    private Bitmap bitmap;
-    private ImageView imageView;
     private GoogleMap.SnapshotReadyCallback SnapshotCallback;
 
     private MarkerOptions options;
     private LatLng latLng;
     private GoogleApiClient googleApiClient;
-    private Location lastLocation;
-    private LocationObject mLocation;
-
-    LocationObject sendLocation;
+    private Location currentLocation;
+    private Bundle bundle;
 
     private Button btn_ok, btn_cancel;
 
@@ -89,12 +79,11 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             @Override
             public void onSnapshotReady(Bitmap bitmap) {
                 try {
-                    if(isDebug){
-                        Log.d(TAG, "Create to "+mLocation.objFilePath + mLocation.imgFileName);
-                    }
-                    FileOutputStream out = new FileOutputStream(mLocation.objFilePath + mLocation.imgFileName);
-                    //FileOutputStream out = new FileOutputStream("/sdcard/"+imgFileName+".png");
+                    FileOutputStream out = new FileOutputStream(currentLocation.getExtras().getString("objFilePath") + currentLocation.getExtras().getString("objFileName"));
                     bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+                    if(isDebug){
+                        Log.d(TAG, "Create to "+currentLocation.getExtras().getString("objFilePath") + currentLocation.getExtras().getString("objFileName"));
+                    }
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -112,16 +101,18 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     }
 
     private void refreshMapView(){
-        Toast.makeText(this,"Location"+String.valueOf("LastLocation"+lastLocation.getLatitude()+
-                "::"+lastLocation.getLongitude()),Toast.LENGTH_SHORT).show();
-
         options = new MarkerOptions();
-        latLng = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
+        latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         options.position(latLng);
         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         Marker marker = map.addMarker(options);
         marker.showInfoWindow();
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,14));
+
+        if(isDebug){
+            Toast.makeText(this,"Location"+String.valueOf("LastLocation"+ currentLocation.getLatitude()+
+                    "::"+ currentLocation.getLongitude()),Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -142,8 +133,8 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_mapview_refresh) {
             try{
-                lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-                if(lastLocation != null){
+                currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                if(currentLocation != null){
                     refreshMapView();
                 }
             }catch (SecurityException e){
@@ -156,21 +147,28 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     }
 
     public void move_ItemSetting_Activity() {
-        Intent intent = new Intent(this, Sub_ItemSetting_Activity.class);
-
-        if(lastLocation != null){
-            mLocation = new LocationObject(lastLocation.getProvider());
-            mLocation.initLocation();
+        if(currentLocation != null){
+            currentLocation.setExtras(getLocationBundle(currentLocation));
             map.snapshot(SnapshotCallback);
+            Log.d(TAG, "Last Location Lat, Long :" + currentLocation.getLatitude()+ "," + currentLocation.getLongitude());
         }
+        Intent intent = new Intent(this, Sub_ItemSetting_Activity.class);
         bundle = new Bundle();
-        //bundle.putParcelable("Location", mLocation);
         bundle.putString("DISPLAY_MODE", "WRITE");
-        intent.putExtra("Location", mLocation);
+        intent.putExtra("Location", currentLocation);
         intent.putExtras(bundle);
 
         startActivity(intent);
         finish();
+    }
+
+    private Bundle getLocationBundle(Location currentLocation){
+        Bundle bundle = new Bundle();
+        bundle.putString("objFileName", currentLocation.getLatitude()+currentLocation.getLongitude()+".sjb");
+        bundle.putString("imgFileName",currentLocation.getLatitude()+currentLocation.getLongitude()+".png" );
+        bundle.putDouble("indentificationNumber", currentLocation.getLatitude()+currentLocation.getLongitude());
+        bundle.putString("objFilePath", "/data/data/com.jb.smartsetting/files/");
+        return bundle;
     }
 
     // View.OnClickListeexner Interface
@@ -211,8 +209,8 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         try{
-            lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-            if(lastLocation != null){
+            currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+            if(currentLocation != null){
                 refreshMapView();
             }
         }catch (SecurityException e){
