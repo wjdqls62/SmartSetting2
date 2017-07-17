@@ -38,9 +38,9 @@ import java.util.ArrayList;
 
 public class ProximityLocationService extends Service implements OnConnectionFailedListener, ConnectionCallbacks {
     // Thread 반복 Delay 주기(초 단위)
-    private int SEARCH_LOCATION_DELAY_TIME = 5000;
+    private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
     // 근접알림 반경 설정(미터 단위)
-    private double PROXIMITY_ALERT_DISTANCE = 300;
+    private double PROXIMITY_ALERT_DISTANCE = 200;
 
     private LocationManager locationManager;
     private GPS_Receiver gpsReceiver;
