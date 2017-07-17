@@ -35,6 +35,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private LinearLayout ItemLayout;
+    private Intent intent;
 
     private LocationItemAdapter locationItemAdapter;
     private Toolbar toolbar;
@@ -110,6 +111,8 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            intent = new Intent(Main_LocationList_Activity.this, Sub_Setting_Activity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -127,7 +130,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         switch(v.getId()){
             // FloatingActionButton
             case R.id.fab_add_location :
-                Intent intent = new Intent(Main_LocationList_Activity.this, Sub_MapView_Activity.class);
+                intent = new Intent(Main_LocationList_Activity.this, Sub_MapView_Activity.class);
                 startActivity(intent);
                 break;
         }

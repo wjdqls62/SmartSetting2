@@ -34,6 +34,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity android:name=".View.Sub_PermissionActivity" />
+        <activity android:name=".View.Sub_Setting_Activity" />
 
         <service android:name=".GPS_Utility.ProximityLocationService"
             android:enabled="true"
