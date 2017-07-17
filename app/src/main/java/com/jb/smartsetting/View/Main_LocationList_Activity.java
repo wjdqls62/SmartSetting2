@@ -1,10 +1,8 @@
 package com.jb.smartsetting.View;
 
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,20 +15,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.jb.smartsetting.Common_Utility.IRequestPermissionCallback;
 import com.jb.smartsetting.Common_Utility.LocationListViewHolder;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.Common_Utility.PermissionManager;
 import com.jb.smartsetting.GPS_Utility.ProximityLocationService;
-import com.jb.smartsetting.GPS_Utility.Stub_Location_Object;
+import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
 import com.jb.smartsetting.R;
 
 import java.util.ArrayList;
 
-public class Main_LocationList_Activity extends AppCompatActivity implements View.OnClickListener, IRequestPermissionCallback{
+public class Main_LocationList_Activity extends AppCompatActivity implements View.OnClickListener{
     private final int RECYCLER_VIEW_NORMAL_MODE = 1;
     private final int RECYCLER_VIEW_DELETE_MODE = 2;
 
@@ -48,8 +43,8 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
     private PermissionManager permissionManager;
 
-    private ArrayList<Stub_Location_Object> items;
-    private ArrayList<Stub_Location_Object> arrLocationList;
+    private ArrayList<SavedCustomLocation> items;
+    private ArrayList<SavedCustomLocation> arrLocationList;
     private ObjectReaderWriter objectReaderWriter;
     private Bundle bundle;
 
@@ -138,20 +133,15 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         }
     }
 
-    @Override
-    public void onRequestPermission() {
-
-    }
-
     private class LocationItemAdapter extends Adapter<LocationListViewHolder> {
         private int RECYCLER_MODE = -1;
 
         public LocationItemAdapter(){
-            items = new ArrayList<Stub_Location_Object>();
+            items = new ArrayList<SavedCustomLocation>();
         }
 
         public void testAdd(String locationName){
-            Stub_Location_Object test = new Stub_Location_Object();
+            SavedCustomLocation test = new SavedCustomLocation();
             test.locationName = locationName;
             items.add(test);
         }

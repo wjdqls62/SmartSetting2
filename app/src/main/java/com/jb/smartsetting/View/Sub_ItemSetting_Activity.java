@@ -12,11 +12,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
-import com.jb.smartsetting.GPS_Utility.Stub_Location_Object;
+import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
 import com.jb.smartsetting.R;
 
 import java.util.ArrayList;
@@ -26,8 +25,8 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
     private final int MODE_WRITE = 1;
     private final int MODE_MODIFY = 2;
 
-    private ArrayList<Stub_Location_Object> arrStubLocation;
-    private Stub_Location_Object stubLocation;
+    private ArrayList<SavedCustomLocation> arrStubLocation;
+    private SavedCustomLocation stubLocation;
     private double mRestoreIndentificationNumber;
 
     private Bundle bundle;
@@ -70,7 +69,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
 
         if(bundle != null){
             if(onDisplayTypeCheck(bundle) == MODE_WRITE){
-                stubLocation = (Stub_Location_Object) bundle.getSerializable("Location");
+                stubLocation = (SavedCustomLocation) bundle.getSerializable("Location");
                 MODE_CURRENT = MODE_WRITE;
                 Toast.makeText(getApplicationContext(), "MODE_WRITE", Toast.LENGTH_SHORT).show();
             }else if(onDisplayTypeCheck(bundle) == MODE_MODIFY){
@@ -87,10 +86,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
                 Toast.makeText(getApplicationContext(), stubLocation.getLocationName(), Toast.LENGTH_SHORT).show();
             }
         }
-
     }
-
-
 
     private void move_LocationList_Activity(){
         Intent intent = new Intent(this, Main_LocationList_Activity.class);

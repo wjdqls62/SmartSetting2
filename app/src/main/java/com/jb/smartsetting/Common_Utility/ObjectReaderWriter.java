@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.jb.smartsetting.GPS_Utility.Stub_Location_Object;
+import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,17 +21,17 @@ import java.util.ArrayList;
 public class ObjectReaderWriter {
 
     private Context context;
-    private ArrayList<Stub_Location_Object> arrLoccationList;
+    private ArrayList<SavedCustomLocation> arrLoccationList;
 
     private String TAG = getClass().getName();
     private boolean isDebug = true;
 
     public ObjectReaderWriter(Context context){
         this.context = context;
-        arrLoccationList = new ArrayList<Stub_Location_Object>();
+        arrLoccationList = new ArrayList<SavedCustomLocation>();
     }
 
-    public void saveObject(Stub_Location_Object location) {
+    public void saveObject(SavedCustomLocation location) {
         try {
             FileOutputStream fos = new FileOutputStream(location.objFilePath + location.objFileName, false);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -43,13 +43,13 @@ public class ObjectReaderWriter {
         }
     }
 
-    public ArrayList<Stub_Location_Object> readObject() {
+    public ArrayList<SavedCustomLocation> readObject() {
         try {
             File[] searchFileList = new File("/data/data/com.jb.smartsetting/files/").listFiles();
             for (int i = 0; i < searchFileList.length; i++) {
                 if (searchFileList[i].getName().contains(".sjb")) {
                     ObjectInputStream ois = new ObjectInputStream(new FileInputStream("/data/data/com.jb.smartsetting/files/"+searchFileList[i].getName()));
-                    Stub_Location_Object readLoaction = (Stub_Location_Object) ois.readObject();
+                    SavedCustomLocation readLoaction = (SavedCustomLocation) ois.readObject();
                     arrLoccationList.add(readLoaction);
                     ois.close();
                 }

@@ -28,7 +28,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jb.smartsetting.GPS_Utility.GPS_Manager;
-import com.jb.smartsetting.GPS_Utility.Stub_Location_Object;
+import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
 import com.jb.smartsetting.R;
 
 import java.io.FileNotFoundException;
@@ -59,7 +59,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
 
-    Stub_Location_Object stubLocation;
+    SavedCustomLocation stubLocation;
 
     private Button btn_ok, btn_cancel;
 
@@ -100,7 +100,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     }
 
     private void init_GoogleApiClientBuilder(){
-        googleApiClient = new GoogleApiClient.Builder(this)
+        googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
                 .enableAutoManage(this, this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -137,6 +137,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+
         if (id == R.id.action_mapview_refresh) {
             try{
                 lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
@@ -155,7 +156,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     public void move_ItemSetting_Activity() {
         Intent intent = new Intent(this, Sub_ItemSetting_Activity.class);
 
-        stubLocation = new Stub_Location_Object();
+        stubLocation = new SavedCustomLocation();
         if(lastLocation != null){
             stubLocation.parseLocation(lastLocation);
             map.snapshot(SnapshotCallback);
