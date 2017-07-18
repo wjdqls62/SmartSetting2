@@ -1,6 +1,10 @@
 package com.jb.smartsetting.View;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.jb.smartsetting.Common_Utility.LocationListViewHolder;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
@@ -30,7 +35,8 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private final int RECYCLER_VIEW_DELETE_MODE = 2;
 
     private final String TAG = getClass().getName();
-    private boolean isDebug = true;
+    private SharedPreferences pref;
+    private boolean isDebug = false;
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
@@ -49,16 +55,14 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private ObjectReaderWriter objectReaderWriter;
     private Bundle bundle;
 
-
-
-
+    private void getPreference(){
+        SharedPreferences pref = getSharedPreferences("settings", MODE_PRIVATE);
+        isDebug = pref.getBoolean("setting_dev_mode", false);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
 
         setContentView(R.layout.activity_main__location_list_);
 
@@ -74,6 +78,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(locationItemAdapter);
+        getPreference();
 
     }
 
@@ -111,7 +116,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            intent = new Intent(Main_LocationList_Activity.this, Sub_Setting_Activity.class);
+            Intent intent = new Intent(Main_LocationList_Activity.this, Sub_Setting_Fragment.class);
             startActivity(intent);
             return true;
         }
@@ -175,8 +180,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             }else{
                 holder.toggleButton.setChecked(false);
             }
-
-
 
             holder.indentification.setText(arrLocationList.get(position).indentificationNumber+"");
             holder.locationName.setText(arrLocationList.get(position).getLocationName());

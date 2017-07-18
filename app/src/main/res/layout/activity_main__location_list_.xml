@@ -20,7 +20,8 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main__location_list_" />
+    <include
+        layout="@layout/content_main__location_list_" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_add_location"

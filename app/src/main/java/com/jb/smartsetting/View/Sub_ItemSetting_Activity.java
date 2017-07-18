@@ -1,6 +1,8 @@
 package com.jb.smartsetting.View;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -40,9 +42,19 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
     private SeekBar sbTouch_feedbackSound;
     private SeekBar sbMediaSound;
 
-    CollapsingToolbarLayout toolbarLayout;
-    BitmapDrawable bitmapDrawable;
-    Drawable drawable;
+    private CollapsingToolbarLayout toolbarLayout;
+    private Bitmap thumnailBitmap;
+    private BitmapDrawable bitmapDrawable;
+    private Drawable drawable;
+
+    private SharedPreferences pref;
+    private boolean isDebug = false;
+    private String TAG = getClass().getName();
+
+    private void getPreference(){
+        SharedPreferences pref = getSharedPreferences("settings", MODE_PRIVATE);
+        isDebug = pref.getBoolean("setting_dev_mode", false);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

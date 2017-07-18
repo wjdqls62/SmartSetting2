@@ -34,7 +34,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity android:name=".View.Sub_PermissionActivity" />
-        <activity android:name=".View.Sub_Setting_Activity" />
+        <activity android:name=".View.Sub_Setting_Fragment" />
 
         <service android:name=".GPS_Utility.ProximityLocationService"
             android:enabled="true"
@@ -49,5 +49,15 @@
             android:value="AIzaSyDmrrzrlDIjW-LT5E8fZasHQt_rKFNdmAM" />
 
     </application>
+
+    <provider
+        android:name="android.support.v4.content.FileProvider"
+        android:authorities="com.jb.smartsetting.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/provider_paths"/>
+    </provider>
 
 </manifest>

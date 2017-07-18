@@ -1,6 +1,7 @@
 package com.jb.smartsetting.View;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,6 +27,15 @@ public class Sub_PermissionActivity extends AppCompatActivity implements View.On
     private ListView permission_list;
 
     private PermissionManager permissionManager;
+
+    private SharedPreferences pref;
+    private boolean isDebug = false;
+    private String TAG = getClass().getName();
+
+    private void getPreference(){
+        SharedPreferences pref = getSharedPreferences("settings", MODE_PRIVATE);
+        isDebug = pref.getBoolean("setting_dev_mode", false);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
