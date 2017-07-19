@@ -1,10 +1,10 @@
 package com.jb.smartsetting.Common_Utility;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -17,9 +17,10 @@ import com.jb.smartsetting.R;
 public class LocationListViewHolder extends RecyclerView.ViewHolder {
 
     public TextView locationName;
+    public ImageView locationThumbnail;
     public Switch toggleButton;
     public CheckBox checkBox;
-    public LinearLayout itemLayout;
+    public CardView cardView;
     public TextView indentification;
 
     public LocationListViewHolder(View itemView) {
@@ -27,7 +28,8 @@ public class LocationListViewHolder extends RecyclerView.ViewHolder {
         locationName = (TextView) itemView.findViewById(R.id.location_name);
         toggleButton = (Switch) itemView.findViewById(R.id.toggle);
         checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
-        itemLayout = (LinearLayout) itemView.findViewById(R.id.item_layout);
+        cardView = (CardView) itemView.findViewById(R.id.card_layout);
         indentification = (TextView) itemView.findViewById(R.id.indentification);
+        locationThumbnail = (ImageView) itemView.findViewById(R.id.location_thumnail);
         }
 }

@@ -45,15 +45,14 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        GPS_Manager.GPS_Network_Callback,
         GoogleMap.OnMapLoadedCallback,
+        GoogleMap.SnapshotReadyCallback,
         LocationListener {
 
     private Bundle bundle;
 
     private GoogleMap map;
-    private Bitmap bitmap;
-    private ImageView imageView;
+    BitmapCropManager bitmapCropManager;
     private GoogleMap.SnapshotReadyCallback SnapshotCallback;
 
     private MarkerOptions options;
@@ -61,14 +60,12 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
 
-    SavedCustomLocation stubLocation;
+    SavedCustomLocation savedCustomLocation;
 
     private Button btn_ok, btn_cancel;
 
     private boolean isDebug = true;
     private String TAG = getClass().getName();
-
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,21 +81,8 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         btn_ok.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
 
-        SnapshotCallback = new GoogleMap.SnapshotReadyCallback() {
-            @Override
-            public void onSnapshotReady(Bitmap bitmap) {
-                try {
-                    if(isDebug){
-                        Log.d(TAG, "Create to "+stubLocation.objFilePath + stubLocation.imgFileName);
-                    }
-                    FileOutputStream out = new FileOutputStream(stubLocation.objFilePath + stubLocation.imgFileName);
-                    //FileOutputStream out = new FileOutputStream("/sdcard/"+imgFileName+".png");
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
+        savedCustomLocation = new SavedCustomLocation();
+        bitmapCropManager = new BitmapCropManager(getApplicationContext());
     }
 
     private void init_GoogleApiClientBuilder(){
@@ -147,7 +131,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
                     refreshMapView();
                 }
             }catch (SecurityException e){
-                onRequestPermission();
+
             }
             return true;
         }
@@ -156,29 +140,27 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     }
 
     public void move_ItemSetting_Activity() {
-        Intent intent = new Intent(this, Sub_ItemSetting_Activity.class);
-
-        stubLocation = new SavedCustomLocation();
-        if(lastLocation != null){
-            stubLocation.parseLocation(lastLocation);
-            map.snapshot(SnapshotCallback);
-            BitmapCropManager bitmapCropManager = new BitmapCropManager(getApplicationContext());
-            try {
-                bitmapCropManager.cropBitmap(stubLocation);
-            } catch (IOException e) {
-                e.printStackTrace();
+        try{
+            Intent intent = new Intent(this, Sub_ItemSetting_Activity.class);
+            if(lastLocation != null){
+                savedCustomLocation.parseLocation(lastLocation);
             }
-        }
-        bundle = new Bundle();
-        bundle.putSerializable("Location", stubLocation);
-        bundle.putString("DISPLAY_MODE", "WRITE");
-        intent.putExtras(bundle);
+            map.snapshot(this);
+            bitmapCropManager.cropBitmap(savedCustomLocation);
+            bundle = new Bundle();
+            bundle.putSerializable("Location", savedCustomLocation);
+            bundle.putString("DISPLAY_MODE", "WRITE");
+            intent.putExtras(bundle);
 
-        startActivity(intent);
-        finish();
+            startActivity(intent);
+            finish();
+        }catch (Exception e){
+
+        }
+
     }
 
-    // View.OnClickListeexner Interface
+    // getMapAsync of Callback
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -194,23 +176,10 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     // OnMapReadyCallback Interface
     @Override
     public void onMapReady(GoogleMap map) {
+        if(isDebug){
+            Log.d(TAG, "onMapReady");
+        }
         this.map = map;
-    }
-
-    // GPS_Manager.GPS_Network_Callback Interface
-    @Override
-    public void onLocationChaged(Location location) {
-
-    }
-
-    @Override
-    public void onRequestPermission() {
-
-    }
-
-    @Override
-    public void onPanic() {
-
     }
 
     @Override
@@ -220,8 +189,11 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             if(lastLocation != null){
                 refreshMapView();
             }
+            if(isDebug){
+                Log.d(TAG, "onConnected");
+            }
         }catch (SecurityException e){
-            onRequestPermission();
+
         }
     }
 
@@ -257,7 +229,25 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onMapLoaded() {
-        map.snapshot(SnapshotCallback);
-        Log.d("TEST", "Take Snapshot");
+        Log.d(TAG, "onMapLoaded");
+    }
+
+    @Override
+    public void onSnapshotReady(Bitmap bitmap) {
+        if(isDebug){
+            Log.d(TAG, "Create to "+ savedCustomLocation.objFilePath + savedCustomLocation.imgFileName);
+        }
+        try {
+            FileOutputStream out = new FileOutputStream(savedCustomLocation.objFilePath + savedCustomLocation.imgFileName);
+            //FileOutputStream out = new FileOutputStream("/sdcard/"+imgFileName+".png");
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "FileNotFoundException");
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.d(TAG, "IOException");
+            e.printStackTrace();
+        }
     }
 }

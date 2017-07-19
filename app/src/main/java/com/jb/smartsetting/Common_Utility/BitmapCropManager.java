@@ -47,38 +47,39 @@ public class BitmapCropManager {
         isDebug = pref.getBoolean("setting_dev_mode", false);
     }
 
-    public Bitmap cropBitmap(SavedCustomLocation location) throws IOException {
-        beforeBitmap = BitmapFactory.decodeFile(location.objFilePath+location.imgFileName);
-        if(isDebug){
-            Log.d(TAG, "SnapshotImage Width, Height : " + beforeBitmap.getWidth()+", "+ beforeBitmap.getHeight());
-        }
-
-        // Width가 Height보다 긴경우 --> 태블릿
-        if(beforeBitmap.getWidth() >= beforeBitmap.getHeight()){
-            afterBitmap = Bitmap.createBitmap(
-                    beforeBitmap,
-                    beforeBitmap.getWidth()/4 - beforeBitmap.getHeight()/4,
-                    0,
-                    beforeBitmap.getHeight(),
-                    beforeBitmap.getHeight());
-        }else{
-            afterBitmap = Bitmap.createBitmap(
-                    beforeBitmap,
-                    0,
-                    beforeBitmap.getHeight()/4 - beforeBitmap.getWidth()/4,
-                    beforeBitmap.getWidth(),
-                    beforeBitmap.getWidth()
-            );
-        }
-
+    public Bitmap cropBitmap(SavedCustomLocation location) {
         try {
+            beforeBitmap = BitmapFactory.decodeFile(location.objFilePath+location.imgFileName);
+            if(isDebug){
+                Log.d(TAG, "SnapshotImage Width, Height : " + beforeBitmap.getWidth()+", "+ beforeBitmap.getHeight());
+            }
+
+            // Width가 Height보다 긴경우 --> 태블릿
+            if(beforeBitmap.getWidth() >= beforeBitmap.getHeight()){
+                afterBitmap = Bitmap.createBitmap(
+                        beforeBitmap,
+                        beforeBitmap.getWidth()/4 - beforeBitmap.getHeight()/4,
+                        0,
+                        beforeBitmap.getHeight(),
+                        beforeBitmap.getHeight());
+            }else{
+                afterBitmap = Bitmap.createBitmap(
+                        beforeBitmap,
+                        0,
+                        beforeBitmap.getHeight()/4 - beforeBitmap.getWidth()/4,
+                        beforeBitmap.getWidth(),
+                        beforeBitmap.getWidth()
+                );
+            }
             fos = new FileOutputStream(new File(location.objFilePath+"crop_"+location.imgFileName));
             afterBitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
-
+            fos.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }finally {
-            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+
         }
 
 
