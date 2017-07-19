@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <android.support.v7.widget.CardView
-        android:id="@+id/card_layout"
         android:layout_height="match_parent"
         android:layout_width="match_parent">
         <LinearLayout
+            android:id="@+id/card_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -17,13 +17,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1">
-
                 <ImageView
-                    android:id="@+id/location_thumnail"
+                    android:id="@+id/location_image"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:cropToPadding="false"
-                    android:src="@null" />
+                    android:layout_height="wrap_content"
+                    android:cropToPadding="false" />
             </LinearLayout>
 
             <LinearLayout

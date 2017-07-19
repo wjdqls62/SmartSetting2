@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -96,7 +97,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         recyclerView = (RecyclerView) findViewById(R.id.location_listview);
         fab_newLocation = (FloatingActionButton) findViewById(R.id.fab_add_location);
-        ItemLayout = new LinearLayout(getApplicationContext());
         setSupportActionBar(toolbar);
 
     }
@@ -204,7 +204,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                     }
                 }
             });
-            holder.itemLayout.setOnClickListener(new View.OnClickListener() {
+            holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     bundle = new Bundle();
@@ -215,7 +215,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                     startActivity(intent);
                 }
             });
-            holder.itemLayout.setBackground(new BitmapDrawable(BitmapFactory.decodeFile(arrLocationList.get(position).objFileName+arrLocationList.get(position).objFileName)));
+            holder.locationThumbnail.setImageBitmap(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath+"crop_"+arrLocationList.get(position).imgFileName));
         }
 
         @Override
