@@ -27,12 +27,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.jb.smartsetting.Common_Utility.BitmapCropManager;
 import com.jb.smartsetting.GPS_Utility.GPS_Manager;
 import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
 import com.jb.smartsetting.R;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 
 /**
@@ -160,6 +162,12 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         if(lastLocation != null){
             stubLocation.parseLocation(lastLocation);
             map.snapshot(SnapshotCallback);
+            BitmapCropManager bitmapCropManager = new BitmapCropManager(getApplicationContext());
+            try {
+                bitmapCropManager.cropBitmap(stubLocation);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         bundle = new Bundle();
         bundle.putSerializable("Location", stubLocation);
