@@ -3,6 +3,7 @@ package com.jb.smartsetting.View;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -10,9 +11,12 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -22,7 +26,8 @@ import com.jb.smartsetting.R;
 
 import java.util.ArrayList;
 
-public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.OnClickListener{
+public class Sub_ItemSetting_Activity extends AppCompatActivity implements
+        View.OnClickListener, TextWatcher{
     private int MODE_CURRENT = 0;
     private final int MODE_WRITE = 1;
     private final int MODE_MODIFY = 2;
@@ -43,9 +48,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
     private SeekBar sbMediaSound;
 
     private CollapsingToolbarLayout toolbarLayout;
-    private Bitmap thumnailBitmap;
-    private BitmapDrawable bitmapDrawable;
-    private Drawable drawable;
+    private ImageView locationThumnail;
 
     private SharedPreferences pref;
     private boolean isDebug = false;
@@ -64,6 +67,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         btn_save = (FloatingActionButton) findViewById(R.id.fab);
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        locationThumnail = (ImageView) findViewById(R.id.collapsing_thumnail);
         etLocationName = (EditText) findViewById(R.id.location_name);
         sbRingtoneSound = (SeekBar) findViewById(R.id.sb_ringtone);
         sbNotificationSound = (SeekBar) findViewById(R.id.sb_notification);
@@ -72,7 +76,10 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
 
 
         setSupportActionBar(toolbar);
+        toolbar.setTitle("");
         btn_save.setOnClickListener(this);
+        etLocationName.addTextChangedListener(this);
+
 
         objectReaderWriter = new ObjectReaderWriter(getApplicationContext());
         arrStubLocation = new ArrayList<>();
@@ -98,6 +105,9 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
                 Toast.makeText(getApplicationContext(), stubLocation.getLocationName(), Toast.LENGTH_SHORT).show();
             }
         }
+
+        locationThumnail.setImageBitmap(BitmapFactory.decodeFile(stubLocation.objFilePath+stubLocation.imgFileName));
+        locationThumnail.setAlpha(70);
     }
 
     private void move_LocationList_Activity(){
@@ -170,4 +180,18 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements View.
         return false;
     }
 
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        toolbarLayout.setTitle(s.toString());
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
 }

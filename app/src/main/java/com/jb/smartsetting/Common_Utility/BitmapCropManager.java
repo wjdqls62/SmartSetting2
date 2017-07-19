@@ -57,7 +57,7 @@ public class BitmapCropManager {
         if(beforeBitmap.getWidth() >= beforeBitmap.getHeight()){
             afterBitmap = Bitmap.createBitmap(
                     beforeBitmap,
-                    beforeBitmap.getWidth()/2 - beforeBitmap.getHeight()/2,
+                    beforeBitmap.getWidth()/4 - beforeBitmap.getHeight()/4,
                     0,
                     beforeBitmap.getHeight(),
                     beforeBitmap.getHeight());
@@ -65,7 +65,7 @@ public class BitmapCropManager {
             afterBitmap = Bitmap.createBitmap(
                     beforeBitmap,
                     0,
-                    beforeBitmap.getHeight()/2 - beforeBitmap.getWidth()/2,
+                    beforeBitmap.getHeight()/4 - beforeBitmap.getWidth()/4,
                     beforeBitmap.getWidth(),
                     beforeBitmap.getWidth()
             );
