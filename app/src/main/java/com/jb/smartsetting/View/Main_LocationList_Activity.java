@@ -222,9 +222,14 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             });
 
             //holder.locationThumbnail.setImageBitmap(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath+"crop_"+arrLocationList.get(position).imgFileName));
-            //Glide.with(getApplicationContext())
-            //        .load(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath + "crop_" + arrLocationList.get(position).imgFileName))
-            //        .into(holder.locationThumbnail);
+            if(holder.locationThumbnail != null){
+                Glide.with(getApplicationContext())
+                        .load(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath + "crop_" + arrLocationList.get(position).imgFileName))
+                        .into(holder.locationThumbnail);
+            }else{
+                Toast.makeText(getApplicationContext(), "Thumbnail is null..", Toast.LENGTH_SHORT).show();
+            }
+
 
 
         }
