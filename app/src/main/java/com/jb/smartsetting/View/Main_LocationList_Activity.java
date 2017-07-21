@@ -16,16 +16,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jb.smartsetting.Common_Utility.LocationListViewHolder;
+import com.bumptech.glide.Glide;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.Common_Utility.PermissionManager;
 import com.jb.smartsetting.GPS_Utility.ProximityLocationService;
@@ -34,7 +38,7 @@ import com.jb.smartsetting.R;
 
 import java.util.ArrayList;
 
-public class Main_LocationList_Activity extends AppCompatActivity implements View.OnClickListener{
+public class Main_LocationList_Activity extends AppCompatActivity implements View.OnClickListener {
     private final int RECYCLER_VIEW_NORMAL_MODE = 1;
     private final int RECYCLER_VIEW_DELETE_MODE = 2;
 
@@ -59,7 +63,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private ObjectReaderWriter objectReaderWriter;
     private Bundle bundle;
 
-    private void getPreference(){
+    private void getPreference() {
         SharedPreferences pref = getSharedPreferences("settings", MODE_PRIVATE);
         isDebug = pref.getBoolean("setting_dev_mode", false);
     }
@@ -93,14 +97,15 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         permissionManager.isPermissionCheck();
     }
 
-    private void init_View(){
+    private void init_View() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         recyclerView = (RecyclerView) findViewById(R.id.location_listview);
         fab_newLocation = (FloatingActionButton) findViewById(R.id.fab_add_location);
         setSupportActionBar(toolbar);
 
     }
-    private void init_Listener(){
+
+    private void init_Listener() {
         fab_newLocation.setOnClickListener(this);
     }
 
@@ -128,7 +133,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         return super.onOptionsItemSelected(item);
     }
 
-    private void action_Add_Location(){
+    private void action_Add_Location() {
         Intent intent = new Intent(Main_LocationList_Activity.this, Sub_MapView_Activity.class);
         startActivity(intent);
     }
@@ -136,9 +141,9 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()){
+        switch (v.getId()) {
             // FloatingActionButton
-            case R.id.fab_add_location :
+            case R.id.fab_add_location:
                 intent = new Intent(Main_LocationList_Activity.this, Sub_MapView_Activity.class);
                 startActivity(intent);
                 break;
@@ -148,17 +153,17 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private class LocationItemAdapter extends Adapter<LocationListViewHolder> {
         private int RECYCLER_MODE = -1;
 
-        public LocationItemAdapter(){
+        public LocationItemAdapter() {
             items = new ArrayList<SavedCustomLocation>();
         }
 
-        public void testAdd(String locationName){
+        public void testAdd(String locationName) {
             SavedCustomLocation test = new SavedCustomLocation();
             test.locationName = locationName;
             items.add(test);
         }
 
-        public void setRECYCLER_VIEW_MODE(int i){
+        public void setRECYCLER_VIEW_MODE(int i) {
             RECYCLER_MODE = i;
         }
 
@@ -171,32 +176,32 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         @Override
         public void onBindViewHolder(LocationListViewHolder holder, final int position) {
             // Item 삭제 및 일반 선택모드의 구분
-            if(RECYCLER_MODE == RECYCLER_VIEW_NORMAL_MODE){
+            if (RECYCLER_MODE == RECYCLER_VIEW_NORMAL_MODE) {
                 holder.checkBox.setVisibility(View.GONE);
-            }else if(RECYCLER_MODE == RECYCLER_VIEW_DELETE_MODE){
+            } else if (RECYCLER_MODE == RECYCLER_VIEW_DELETE_MODE) {
                 holder.toggleButton.setVisibility(View.GONE);
                 holder.checkBox.setVisibility(View.VISIBLE);
             }
 
             // StubObject의 isEnabled값을 가져와 ToggleSwitch의 상태를 변경
-            if(arrLocationList.get(position).isEnabled){
+            if (arrLocationList.get(position).isEnabled) {
                 holder.toggleButton.setChecked(true);
-            }else{
+            } else {
                 holder.toggleButton.setChecked(false);
             }
 
-            holder.indentification.setText(arrLocationList.get(position).indentificationNumber+"");
+            holder.indentification.setText(arrLocationList.get(position).indentificationNumber + "");
             holder.locationName.setText(arrLocationList.get(position).getLocationName());
             holder.toggleButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // 활성화 -> 비활성화
-                    if(arrLocationList.get(position).isEnabled){
+                    if (arrLocationList.get(position).isEnabled) {
                         arrLocationList.get(position).setEnabled(false);
                         objectReaderWriter.saveObject(arrLocationList.get(position));
                         stopService(new Intent(getApplicationContext(), ProximityLocationService.class));
 
-                    }else{
+                    } else {
                         arrLocationList.get(position).setEnabled(true);
                         objectReaderWriter.saveObject(arrLocationList.get(position));
                         startService(new Intent(getApplicationContext(), ProximityLocationService.class));
@@ -215,7 +220,13 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                     startActivity(intent);
                 }
             });
-            holder.locationThumbnail.setImageBitmap(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath+"crop_"+arrLocationList.get(position).imgFileName));
+
+            //holder.locationThumbnail.setImageBitmap(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath+"crop_"+arrLocationList.get(position).imgFileName));
+            //Glide.with(getApplicationContext())
+            //        .load(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath + "crop_" + arrLocationList.get(position).imgFileName))
+            //        .into(holder.locationThumbnail);
+
+
         }
 
         @Override
@@ -223,5 +234,34 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             return arrLocationList.size();
         }
 
+    }
+
+    public class LocationListViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView locationName;
+        public ImageView locationThumbnail;
+        public Switch toggleButton;
+        public CheckBox checkBox;
+        public LinearLayout cardView;
+        public TextView indentification;
+
+        public LocationListViewHolder(View itemView) {
+            super(itemView);
+            Log.d(TAG, "locationName : "+itemView.findViewById(R.id.location_name));
+            Log.d(TAG, "toggleButton : "+itemView.findViewById(R.id.toggle));
+            Log.d(TAG, "checkBox : "+itemView.findViewById(R.id.checkBox));
+            Log.d(TAG, "cardView : "+itemView.findViewById(R.id.card_layout));
+            Log.d(TAG, "indentification : "+itemView.findViewById(R.id.indentification));
+            Log.d(TAG, "locationThumbnail : "+itemView.findViewById(R.id.location_image));
+
+            locationName = (TextView) itemView.findViewById(R.id.location_name);
+            toggleButton = (Switch) itemView.findViewById(R.id.toggle);
+            checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
+            cardView = (LinearLayout) itemView.findViewById(R.id.card_layout);
+            indentification = (TextView) itemView.findViewById(R.id.indentification);
+            locationThumbnail = (ImageView) itemView.findViewById(R.id.location_image);
+
+
+        }
     }
 }

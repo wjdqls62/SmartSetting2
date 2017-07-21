@@ -17,6 +17,7 @@ public class SavedCustomLocation implements Serializable {
     public int notification = 0;
     public int touchfeedback = 0;
     public int media = 0;
+    public int mode_sound = -1;
 
     public double Latitude, Longitude, Altitude;
     public float Accuracy;
@@ -49,11 +50,12 @@ public class SavedCustomLocation implements Serializable {
         isEnabled = value;
     }
 
-    public void setSoundVolume(int ringtone, int notification, int touchfeedback, int media){
+    public void setSoundVolume(int ringtone, int notification, int touchfeedback, int media, int mode_sound){
         this.ringtone = ringtone;
         this.notification = notification;
         this.touchfeedback = touchfeedback;
         this.media = media;
+        this.mode_sound = mode_sound;
     }
 
     public double toDistance(double lat2, double lon2){

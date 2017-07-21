@@ -29,11 +29,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Ringtone"/>
-            <SeekBar
-                android:id="@+id/sb_ringtone"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="15"/>
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/ib_ringtone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_lock_silent_mode_off"/>
+
+                <SeekBar
+                    android:id="@+id/sb_ringtone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:max="15"/>
+
+            </LinearLayout>
+
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,11 +57,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Notification Sound"/>
-            <SeekBar
-                android:id="@+id/sb_notification"
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="15"/>
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/ib_notification_sound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_lock_silent_mode_off"/>
+
+                <SeekBar
+                    android:id="@+id/sb_notification_sound"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:max="15"/>
+
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,11 +85,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Touch feedback system"/>
-            <SeekBar
-                android:id="@+id/sb_touchfeedback"
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="15"/>
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/ib_touch_feedback_sound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_lock_silent_mode_off"/>
+
+                <SeekBar
+                    android:id="@+id/sb_touch_feedback_sound"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:max="15"/>
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -74,11 +113,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Music, Video, Games, other media"/>
-            <SeekBar
-                android:id="@+id/sb_media"
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="15"/>
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/ib_media"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_lock_silent_mode_off"/>
+
+                <SeekBar
+                    android:id="@+id/sb_media"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:max="15"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
