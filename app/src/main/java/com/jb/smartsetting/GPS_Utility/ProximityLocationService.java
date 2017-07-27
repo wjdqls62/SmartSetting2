@@ -28,6 +28,7 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
+import com.jb.smartsetting.Common_Utility.SettingsChangeManager;
 import com.jb.smartsetting.R;
 
 import java.util.ArrayList;
@@ -39,11 +40,12 @@ import java.util.ArrayList;
 public class ProximityLocationService extends Service implements OnConnectionFailedListener, ConnectionCallbacks {
     // Thread 반복 Delay 주기(초 단위)
     private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
+    //private int SEARCH_LOCATION_DELAY_TIME = 5000;
     // 근접알림 반경 설정(미터 단위)
     private double PROXIMITY_ALERT_DISTANCE = 200;
 
     private LocationManager locationManager;
-    private GPS_Receiver gpsReceiver;
+    //private GPS_Receiver gpsReceiver;
     private ObjectReaderWriter objectReaderWriter;
     private LocationObserver locationObserver;
     private Location currentLocation, prevLocation;
@@ -59,7 +61,9 @@ public class ProximityLocationService extends Service implements OnConnectionFai
     private Bitmap bitmap;
     private Uri soundUri;
     private PendingIntent nIntent;
-    GoogleApiClient googleApiClient;
+    private GoogleApiClient googleApiClient;
+
+    private SettingsChangeManager settingsChangeManager;
 
     private String TAG = getClass().getName();
     private boolean isDebug = true;
@@ -80,7 +84,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
         enabledPendingIntent = new ArrayList<PendingIntent>();
 
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        gpsReceiver = new GPS_Receiver();
+        //gpsReceiver = new GPS_Receiver();
 
         objectReaderWriter = new ObjectReaderWriter(getApplicationContext());
 
@@ -100,6 +104,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
         googleApiClient.connect();
         mEnabledTargetLocation = objectReaderWriter.readObject();
         intentFilter = new IntentFilter();
+        settingsChangeManager = new SettingsChangeManager(getApplicationContext());
 
         try {
             for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
@@ -107,7 +112,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                     isRunning = true;
                     locationObserver = new LocationObserver();
                     locationObserver.execute();
-                    if(isDebug){
+                    if (isDebug) {
                         Log.d(TAG, "Start LocationObserver Thread");
                     }
                     break;
@@ -134,8 +139,6 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
         } catch (SecurityException e) {
 
-        } finally {
-            registerReceiver(gpsReceiver, intentFilter);
         }
 
         return START_STICKY;
@@ -161,7 +164,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
     public void onDestroy() {
         if (isDebug) Log.d(TAG, "onDestroy");
         isRunning = false;
-        unregisterReceiver(gpsReceiver);
+        //unregisterReceiver(gpsReceiver);
         super.onDestroy();
     }
 
@@ -187,61 +190,51 @@ public class ProximityLocationService extends Service implements OnConnectionFai
             int refreshCount = 0;
             float distance = 0f;
 
-            while(isRunning){
-                try{
+            while (isRunning) {
+                try {
                     prevLocation = currentLocation;
                     currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
-                    if(prevLocation != null){
+                    if (prevLocation != null) {
                         distance = currentLocation.distanceTo(prevLocation);
                         // currentLocation 와 prevLocation의 거리를 계산해 반경300m이상 떨어질 경우 || 서비스 시작 후 Refresh 2회 이하의 경우
-                        if(distance >= PROXIMITY_ALERT_DISTANCE || refreshCount <= 2){
-                            if(isDebug){
-                                for(int i=0; i<mEnabledTargetLocation.size(); i++){
+                        if (distance >= PROXIMITY_ALERT_DISTANCE || refreshCount <= 2) {
+                                for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
                                     // 사용자 등록지점과 근접할 경우
-                                    if(mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE){
+                                    if (mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
 
-                                        bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-                                        soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
-                                                .setSmallIcon(android.R.drawable.ic_menu_myplaces)
-                                                .setLargeIcon(bitmap)
-                                                .setContentTitle("SmartSetting")
-                                                .setContentText(mEnabledTargetLocation.get(i).getLocationName() + "지점에 근접합니다.")
-                                                .setAutoCancel(true)
-                                                .setSound(soundUri);
+                                        settingsChangeManager.setSavedTargetLocation(mEnabledTargetLocation.get(i));
+                                        settingsChangeManager.SettingChangeTrigger();
 
-                                        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                                        notificationManager.notify(0, notificationBuilder.build());
+                                        showNotification(mEnabledTargetLocation.get(i).getLocationName());
 
-                                        Log.d(TAG, mEnabledTargetLocation.get(i).getLocationName()+"지점과 근접합니다! : "+
-                                                mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude())+"m");
+                                        if(isDebug){
+                                            Log.d(TAG, mEnabledTargetLocation.get(i).getLocationName() + "지점과 근접합니다! : " +
+                                                    mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) + "m");
+                                        }
                                     }
                                 }
                             }
-
-
-                        }else{
-                            if(isDebug) Log.d(TAG, "마지막 측정위치와 동일합니다. ");
+                        } else {
+                            if (isDebug) Log.d(TAG, "마지막 측정위치와 동일합니다. ");
                         }
-                    }
 
                     refreshCount++;
                     Thread.sleep(SEARCH_LOCATION_DELAY_TIME);
 
-                }catch (SecurityException e){
+                } catch (SecurityException e) {
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }finally {
-                    if(isDebug){
-                        if(currentLocation != null){
+                } finally {
+                    if (isDebug) {
+                        if (currentLocation != null) {
                             Log.d(TAG, "========================== LocationObserver Thread is Runnig =============================");
                             Log.d(TAG, "Lat : " + currentLocation.getLatitude());
                             Log.d(TAG, "Long : " + currentLocation.getLongitude());
                             Log.d(TAG, "Refresh Count : " + refreshCount);
                             Log.d(TAG, "==========================================================================================");
-                        }else{
+                        } else {
                             Log.d(TAG, "Fail the current location to get!");
                         }
                     }
@@ -249,50 +242,65 @@ public class ProximityLocationService extends Service implements OnConnectionFai
             }
             return null;
         }
-    }
 
-    public class GPS_Receiver extends BroadcastReceiver {
-        private String Current_Location = null;
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean isEntering = intent.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false);
-            if(isEntering){
-                for(int i=0; i<mEnabledTargetLocation.size(); i++){
-                    if(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber).equals(intent.getAction())){
-                        //Toast.makeText(getApplicationContext(), mEnabledTargetLocation.get(i).getLocationName()+"에 접근", Toast.LENGTH_SHORT).show();
-                        Current_Location = mEnabledTargetLocation.get(i).getLocationName();
-
-
-                        bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-                        soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
-                                .setSmallIcon(android.R.drawable.ic_menu_myplaces)
-                                .setLargeIcon(bitmap)
-                                .setContentTitle("SmartSetting")
-                                .setContentText(Current_Location + "지점에 근접합니다.")
-                                .setAutoCancel(true)
-                                .setSound(soundUri);
-
-                        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                        notificationManager.notify(0, notificationBuilder.build());
-
-                        break;
-                    }
-                }
-            }else{
-                Toast.makeText(getApplicationContext(), Current_Location +"에 멀어짐", Toast.LENGTH_SHORT).show();
-                Current_Location = null;
-            }
-
-            if(isDebug){
-            Log.d(TAG, "========================== GPS_Receiver.onReceive =============================");
-            Log.d(TAG, "isEntering : " + isEntering);
-            Log.d(TAG, "Intent.getAction : " + intent.getAction());
-            Log.d(TAG, "==============================================================================");
-        }
+        public void showNotification(String targetLocationName){
+            bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+            soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
+                    .setSmallIcon(android.R.drawable.ic_menu_myplaces)
+                    .setLargeIcon(bitmap)
+                    .setContentTitle("SmartSetting")
+                    .setContentText(targetLocationName + "지점에 근접합니다.")
+                    .setAutoCancel(true)
+                    .setSound(soundUri);
+            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(0, notificationBuilder.build());
         }
     }
+
+//
+    //public class GPS_Receiver extends BroadcastReceiver {
+    //    private String Current_Location = null;
+//
+    //    @Override
+    //    public void onReceive(Context context, Intent intent) {
+    //        boolean isEntering = intent.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false);
+    //        if (isEntering) {
+    //            for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
+    //                if (String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber).equals(intent.getAction())) {
+    //                    //Toast.makeText(getApplicationContext(), mEnabledTargetLocation.get(i).getLocationName()+"에 접근", Toast.LENGTH_SHORT).show();
+    //                    Current_Location = mEnabledTargetLocation.get(i).getLocationName();
+//
+//
+    //                    bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+    //                    soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    //                    NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
+    //                            .setSmallIcon(android.R.drawable.ic_menu_myplaces)
+    //                            .setLargeIcon(bitmap)
+    //                            .setContentTitle("SmartSetting")
+    //                            .setContentText(Current_Location + "지점에 근접합니다.")
+    //                            .setAutoCancel(true)
+    //                            .setSound(soundUri);
+//
+    //                    NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+    //                    notificationManager.notify(0, notificationBuilder.build());
+//
+    //                    break;
+    //                }
+    //            }
+    //        } else {
+    //            Toast.makeText(getApplicationContext(), Current_Location + "에 멀어짐", Toast.LENGTH_SHORT).show();
+    //            Current_Location = null;
+    //        }
+//
+    //        if (isDebug) {
+    //            Log.d(TAG, "========================== GPS_Receiver.onReceive =============================");
+    //            Log.d(TAG, "isEntering : " + isEntering);
+    //            Log.d(TAG, "Intent.getAction : " + intent.getAction());
+    //            Log.d(TAG, "==============================================================================");
+    //        }
+    //    }
+    //}
 
 
 }

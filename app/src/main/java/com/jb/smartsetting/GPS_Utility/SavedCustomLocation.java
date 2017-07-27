@@ -13,7 +13,7 @@ public class SavedCustomLocation implements Serializable {
     public double indentificationNumber = 0;
 
     public String locationName;
-    public String SoundType = "";
+    public String SoundType = "None";
 
     public double Latitude, Longitude, Altitude;
     public float Accuracy;

@@ -22,10 +22,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.jb.smartsetting.Common_Utility.CustomDialog;
+import com.jb.smartsetting.Common_Utility.IDialogCallback;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
 import com.jb.smartsetting.R;
@@ -50,16 +52,14 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
 
     private Toolbar toolbar;
     private EditText etLocationName;
+    private TextView txSoundMode;
 
     private CollapsingToolbarLayout toolbarLayout;
     private ImageView locationThumnail;
     private LinearLayout item_setting_sound;
 
-    private final static int MODE_SOUND = 1;
-    private final static int MODE_VIBRATE = 2;
-    private final static int MODE_SILENT = 3;
-    private int CURRENT_SOUND_MODE = -1;
-    private int sbRingtoneValue, sbNotificationValue, sbTouchFeedbackValue, sbMediaValue = 0;
+    private CustomDialog customDialog;
+    private IDialogCallback callback;
 
     private SharedPreferences pref;
     private boolean isDebug = false;
@@ -102,7 +102,6 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                         break;
                     }
                 }
-
             }
         }
 
@@ -120,6 +119,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         locationThumnail = (ImageView) findViewById(R.id.collapsing_thumnail);
         etLocationName = (EditText) findViewById(R.id.location_name);
         item_setting_sound = (LinearLayout) findViewById(R.id.item_set_sound);
+        txSoundMode = (TextView) findViewById(R.id.sound_mode);
     }
 
     private void move_LocationList_Activity() {
@@ -140,7 +140,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
 
     private void onReadyToModify() {
         stubLocation.locationName = etLocationName.getText().toString();
-
+        stubLocation.SoundType = txSoundMode.getText().toString();
         // stub객체 저장
         objectReaderWriter.saveObject(stubLocation);
         move_LocationList_Activity();
@@ -149,8 +149,14 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.item_set_sound :
-                CustomDialog customDialog = new CustomDialog(this);
+            case R.id.item_set_sound:
+                callback = new IDialogCallback() {
+                    @Override
+                    public void onDialogEventCallback(String SelectedItem) {
+                        txSoundMode.setText(SelectedItem);
+                    }
+                };
+                customDialog = new CustomDialog(this, "SETTING_SOUND", callback);
                 customDialog.show();
 
                 break;
@@ -176,16 +182,11 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                         move_LocationList_Activity();
                     }
                 }
-
-
-
         }
-
     }
 
     public int onDisplayTypeCheck(Bundle bundle) {
         if (bundle.getString("DISPLAY_MODE").equals("MODIFY")) {
-
             return MODE_MODIFY;
         } else {
             return MODE_WRITE;
@@ -196,6 +197,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         Log.d("TEST", "fillRestoreData()");
         // 수정모드(MODE_MODIFY)의 경우 객체의 정보를 뷰에 채워준다.
         etLocationName.setText(stubLocation.getLocationName());
+        txSoundMode.setText(stubLocation.SoundType);
     }
 
     private boolean isOverlap() {
