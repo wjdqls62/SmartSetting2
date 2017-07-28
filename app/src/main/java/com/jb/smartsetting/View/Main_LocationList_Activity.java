@@ -1,13 +1,7 @@
 package com.jb.smartsetting.View;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +30,7 @@ import com.jb.smartsetting.GPS_Utility.ProximityLocationService;
 import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
 import com.jb.smartsetting.R;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Main_LocationList_Activity extends AppCompatActivity implements View.OnClickListener {
@@ -221,11 +216,11 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                 }
             });
 
-            //holder.locationThumbnail.setImageBitmap(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath+"crop_"+arrLocationList.get(position).imgFileName));
-            if(holder.locationThumbnail != null){
+            //holder.locationImage.setImageBitmap(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath+"crop_"+arrLocationList.get(position).imgFileName));
+            if(holder.locationImage != null){
                 Glide.with(getApplicationContext())
-                        .load(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath + "crop_" + arrLocationList.get(position).imgFileName))
-                        .into(holder.locationThumbnail);
+                        .load(new File(arrLocationList.get(position).objFilePath + "crop_" + arrLocationList.get(position).imgFileName))
+                        .into(holder.locationImage);
             }else{
                 Toast.makeText(getApplicationContext(), "Thumbnail is null..", Toast.LENGTH_SHORT).show();
             }
@@ -244,7 +239,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     public class LocationListViewHolder extends RecyclerView.ViewHolder {
 
         public TextView locationName;
-        public ImageView locationThumbnail;
+        public ImageView locationImage;
         public Switch toggleButton;
         public CheckBox checkBox;
         public LinearLayout cardView;
@@ -257,14 +252,15 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             Log.d(TAG, "checkBox : "+itemView.findViewById(R.id.checkBox));
             Log.d(TAG, "cardView : "+itemView.findViewById(R.id.card_layout));
             Log.d(TAG, "indentification : "+itemView.findViewById(R.id.indentification));
-            Log.d(TAG, "locationThumbnail : "+itemView.findViewById(R.id.location_image));
+            Log.d(TAG, "locationImage : "+itemView.findViewById(R.id.location_image));
 
+
+            locationImage = (ImageView) itemView.findViewById(R.id.location_image);
             locationName = (TextView) itemView.findViewById(R.id.location_name);
             toggleButton = (Switch) itemView.findViewById(R.id.toggle);
             checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
             cardView = (LinearLayout) itemView.findViewById(R.id.card_layout);
             indentification = (TextView) itemView.findViewById(R.id.indentification);
-            locationThumbnail = (ImageView) itemView.findViewById(R.id.location_image);
 
 
         }

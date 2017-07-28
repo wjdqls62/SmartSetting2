@@ -26,12 +26,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.engine.cache.DiskCache;
+import com.bumptech.glide.load.engine.cache.DiskLruCacheFactory;
 import com.jb.smartsetting.Common_Utility.CustomDialog;
 import com.jb.smartsetting.Common_Utility.IDialogCallback;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
 import com.jb.smartsetting.R;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Sub_ItemSetting_Activity extends AppCompatActivity implements
@@ -104,12 +108,12 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                 }
             }
         }
-
-        //Glide.with(getApplicationContext())
-        //        .load(BitmapFactory.decodeFile(stubLocation.objFilePath+"crop_"+stubLocation.imgFileName))
-        //        .into(locationThumnail);
         locationThumnail.setAlpha(70);
-        locationThumnail.setImageBitmap(BitmapFactory.decodeFile(stubLocation.objFilePath + stubLocation.imgFileName));
+        //Glide.with(this)
+        //        .load(new File(stubLocation.objFilePath+"crop_"+stubLocation.imgFileName))
+        //        .into(locationThumnail);
+
+        locationThumnail.setImageBitmap(BitmapFactory.decodeFile(stubLocation.objFilePath+"crop_"+stubLocation.imgFileName));
     }
 
     private void initView() {

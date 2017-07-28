@@ -47,13 +47,9 @@ public class BitmapCropManager {
         isDebug = pref.getBoolean("setting_dev_mode", false);
     }
 
-    public Bitmap cropBitmap(SavedCustomLocation location) {
+    public Bitmap cropBitmap(Bitmap bitmap, SavedCustomLocation location) {
         try {
-            beforeBitmap = BitmapFactory.decodeFile(location.objFilePath+location.imgFileName);
-            if(isDebug){
-                Log.d(TAG, "SnapshotImage Width, Height : " + beforeBitmap.getWidth()+", "+ beforeBitmap.getHeight());
-            }
-
+            beforeBitmap = Bitmap.createBitmap(bitmap);
             // Width가 Height보다 긴경우 --> 태블릿
             if(beforeBitmap.getWidth() >= beforeBitmap.getHeight()){
                 afterBitmap = Bitmap.createBitmap(
@@ -81,8 +77,6 @@ public class BitmapCropManager {
         } finally {
 
         }
-
-
         return afterBitmap;
     }
 }

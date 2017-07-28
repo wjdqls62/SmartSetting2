@@ -18,8 +18,7 @@
                 android:id="@+id/location_image"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:cropToPadding="false"
-                android:src="@mipmap/ic_launcher" />
+                android:background="@mipmap/ic_launcher" />
 
             <LinearLayout
                 android:id="@+id/contents"

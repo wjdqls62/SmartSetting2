@@ -1,9 +1,11 @@
 package com.jb.smartsetting.View;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -28,13 +29,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jb.smartsetting.Common_Utility.BitmapCropManager;
-import com.jb.smartsetting.GPS_Utility.GPS_Manager;
 import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
 import com.jb.smartsetting.R;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 
 /**
@@ -60,7 +56,9 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
 
-    SavedCustomLocation savedCustomLocation;
+    private Intent intent;
+    private Bitmap bitmap;
+    private SavedCustomLocation savedCustomLocation;
 
     private Button btn_ok, btn_cancel;
 
@@ -85,7 +83,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         bitmapCropManager = new BitmapCropManager(getApplicationContext());
     }
 
-    private void init_GoogleApiClientBuilder(){
+    private void init_GoogleApiClientBuilder() {
         googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
                 .enableAutoManage(this, this)
                 .addConnectionCallbacks(this)
@@ -94,17 +92,14 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
                 .build();
     }
 
-    private void refreshMapView(){
-        Toast.makeText(this,"Location"+String.valueOf("LastLocation"+lastLocation.getLatitude()+
-                "::"+lastLocation.getLongitude()),Toast.LENGTH_SHORT).show();
-
+    private void onRefreshMapView() {
         options = new MarkerOptions();
-        latLng = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
+        latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
         options.position(latLng);
         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         Marker marker = map.addMarker(options);
         marker.showInfoWindow();
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,14));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
     }
 
 
@@ -125,12 +120,12 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         //noinspection SimplifiableIfStatement
 
         if (id == R.id.action_mapview_refresh) {
-            try{
+            try {
                 lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-                if(lastLocation != null){
-                    refreshMapView();
+                if (lastLocation != null) {
+                    onRefreshMapView();
                 }
-            }catch (SecurityException e){
+            } catch (SecurityException e) {
 
             }
             return true;
@@ -139,25 +134,20 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         return super.onOptionsItemSelected(item);
     }
 
-    public void move_ItemSetting_Activity() {
-        try{
-            Intent intent = new Intent(this, Sub_ItemSetting_Activity.class);
-            if(lastLocation != null){
+    public void moveItemSettingActivity() {
+
+        try {
+            intent = new Intent(this, Sub_ItemSetting_Activity.class);
+            bundle = new Bundle();
+            if (lastLocation != null) {
                 savedCustomLocation.parseLocation(lastLocation);
             }
-            map.snapshot(this);
-            bitmapCropManager.cropBitmap(savedCustomLocation);
-            bundle = new Bundle();
             bundle.putSerializable("Location", savedCustomLocation);
             bundle.putString("DISPLAY_MODE", "WRITE");
             intent.putExtras(bundle);
-
-            startActivity(intent);
-            finish();
-        }catch (Exception e){
-
+            map.snapshot(this);
+        } catch (Exception e) {
         }
-
     }
 
     // getMapAsync of Callback
@@ -165,7 +155,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_ok:
-                move_ItemSetting_Activity();
+                moveItemSettingActivity();
                 break;
             case R.id.btn_cancel:
                 finish();
@@ -176,7 +166,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     // OnMapReadyCallback Interface
     @Override
     public void onMapReady(GoogleMap map) {
-        if(isDebug){
+        if (isDebug) {
             Log.d(TAG, "onMapReady");
         }
         this.map = map;
@@ -184,15 +174,15 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        try{
+        try {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-            if(lastLocation != null){
-                refreshMapView();
+            if (lastLocation != null) {
+                onRefreshMapView();
             }
-            if(isDebug){
+            if (isDebug) {
                 Log.d(TAG, "onConnected");
             }
-        }catch (SecurityException e){
+        } catch (SecurityException e) {
 
         }
     }
@@ -234,20 +224,43 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onSnapshotReady(Bitmap bitmap) {
-        if(isDebug){
-            Log.d(TAG, "Create to "+ savedCustomLocation.objFilePath + savedCustomLocation.imgFileName);
+        this.bitmap = Bitmap.createBitmap(bitmap);
+        if (bitmap != null) {
+            LoadingDialog loadingDialog = new LoadingDialog();
+            loadingDialog.execute();
+        } else {
+            Toast.makeText(getApplicationContext(), "SnapshotReady of Bitmap is Null", Toast.LENGTH_SHORT).show();
         }
-        try {
-            FileOutputStream out = new FileOutputStream(savedCustomLocation.objFilePath + savedCustomLocation.imgFileName);
-            //FileOutputStream out = new FileOutputStream("/sdcard/"+imgFileName+".png");
-            bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-            out.close();
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, "FileNotFoundException");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.d(TAG, "IOException");
-            e.printStackTrace();
+    }
+
+    private class LoadingDialog extends AsyncTask<Bitmap, Void, Void> {
+        private ProgressDialog progressDialog;
+        private GoogleMap.SnapshotReadyCallback snapshotReadyCallback;
+        private BitmapCropManager bitmapCropManager;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            bitmapCropManager = new BitmapCropManager(getApplicationContext());
+            progressDialog = new ProgressDialog(Sub_MapView_Activity.this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("잠시만 기다려주세요...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Bitmap... params) {
+            bitmapCropManager.cropBitmap(bitmap, savedCustomLocation);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            progressDialog.dismiss();
+            startActivity(intent);
+            finish();
         }
     }
 }
