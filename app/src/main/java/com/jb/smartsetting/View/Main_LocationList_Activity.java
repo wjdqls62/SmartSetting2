@@ -200,7 +200,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                         arrLocationList.get(position).setEnabled(true);
                         objectReaderWriter.saveObject(arrLocationList.get(position));
                         startService(new Intent(getApplicationContext(), ProximityLocationService.class));
-
                     }
                 }
             });
@@ -218,6 +217,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
             //holder.locationImage.setImageBitmap(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath+"crop_"+arrLocationList.get(position).imgFileName));
             if(holder.locationImage != null){
+                holder.locationImage.setScaleType(ImageView.ScaleType.CENTER);
                 Glide.with(getApplicationContext())
                         .load(new File(arrLocationList.get(position).objFilePath + "crop_" + arrLocationList.get(position).imgFileName))
                         .into(holder.locationImage);
@@ -247,22 +247,12 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
         public LocationListViewHolder(View itemView) {
             super(itemView);
-            Log.d(TAG, "locationName : "+itemView.findViewById(R.id.location_name));
-            Log.d(TAG, "toggleButton : "+itemView.findViewById(R.id.toggle));
-            Log.d(TAG, "checkBox : "+itemView.findViewById(R.id.checkBox));
-            Log.d(TAG, "cardView : "+itemView.findViewById(R.id.card_layout));
-            Log.d(TAG, "indentification : "+itemView.findViewById(R.id.indentification));
-            Log.d(TAG, "locationImage : "+itemView.findViewById(R.id.location_image));
-
-
             locationImage = (ImageView) itemView.findViewById(R.id.location_image);
             locationName = (TextView) itemView.findViewById(R.id.location_name);
             toggleButton = (Switch) itemView.findViewById(R.id.toggle);
             checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
             cardView = (LinearLayout) itemView.findViewById(R.id.card_layout);
             indentification = (TextView) itemView.findViewById(R.id.indentification);
-
-
         }
     }
 }

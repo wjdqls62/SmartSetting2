@@ -100,6 +100,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         Marker marker = map.addMarker(options);
         marker.showInfoWindow();
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+        Log.d(TAG, "애니메이션 완료");
     }
 
 

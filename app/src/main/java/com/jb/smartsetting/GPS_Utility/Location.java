@@ -25,7 +25,6 @@ public class Location extends android.location.Location implements Parcelable {
 
     public Location(String provider){
         super(provider);
-
     }
 
     protected Location(Parcel in) {
