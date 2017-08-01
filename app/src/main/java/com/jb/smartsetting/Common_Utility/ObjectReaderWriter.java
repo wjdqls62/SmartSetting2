@@ -31,6 +31,22 @@ public class ObjectReaderWriter {
         arrLoccationList = new ArrayList<SavedCustomLocation>();
     }
 
+    public void deleteObject(SavedCustomLocation location){
+        File objFile = new File(location.objFilePath + location.objFileName);
+        File imgFile = new File(location.objFilePath + location.imgFileName);
+
+        if(objFile.exists()){
+            objFile.delete();
+            Toast.makeText(context, "Obj파일이 삭제되었습니다", Toast.LENGTH_SHORT).show();
+        }
+        if(imgFile.exists()){
+            imgFile.delete();
+            Toast.makeText(context, "img파일이 삭제되었습니다", Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
     public void saveObject(SavedCustomLocation location) {
         try {
             FileOutputStream fos = new FileOutputStream(location.objFilePath + location.objFileName, false);
@@ -63,5 +79,4 @@ public class ObjectReaderWriter {
         }
         return arrLoccationList;
     }
-
 }

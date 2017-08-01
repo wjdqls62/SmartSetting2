@@ -45,6 +45,4 @@ public class SettingsChangeManager {
     public void setSavedTargetLocation(SavedCustomLocation targetLocationItem){
         this.targetLocationItem = targetLocationItem;
     }
-
-
 }

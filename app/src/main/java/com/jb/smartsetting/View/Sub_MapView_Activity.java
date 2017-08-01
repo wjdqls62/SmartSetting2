@@ -43,7 +43,9 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         GoogleApiClient.OnConnectionFailedListener,
         GoogleMap.OnMapLoadedCallback,
         GoogleMap.SnapshotReadyCallback,
-        LocationListener {
+        LocationListener,
+        GoogleMap.CancelableCallback
+{
 
     private Bundle bundle;
 
@@ -55,6 +57,8 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     private LatLng latLng;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
+    private LoadingDialog loadingDialog;
+    private ProgressDialog progressDialog;
 
     private Intent intent;
     private Bitmap bitmap;
@@ -79,6 +83,8 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         btn_ok.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
 
+
+
         savedCustomLocation = new SavedCustomLocation();
         bitmapCropManager = new BitmapCropManager(getApplicationContext());
     }
@@ -93,14 +99,22 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     }
 
     private void onRefreshMapView() {
+        if(progressDialog == null){
+            progressDialog = new ProgressDialog(Sub_MapView_Activity.this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("잠시만 기다려주세요...");
+            progressDialog.setCancelable(false);
+        }
+        if(!progressDialog.isShowing()){
+            progressDialog.show();
+        }
         options = new MarkerOptions();
         latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
         options.position(latLng);
         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         Marker marker = map.addMarker(options);
         marker.showInfoWindow();
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
-        Log.d(TAG, "애니메이션 완료");
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16), this);
     }
 
 
@@ -146,6 +160,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             bundle.putSerializable("Location", savedCustomLocation);
             bundle.putString("DISPLAY_MODE", "WRITE");
             intent.putExtras(bundle);
+            map.clear();
             map.snapshot(this);
         } catch (Exception e) {
         }
@@ -227,11 +242,25 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     public void onSnapshotReady(Bitmap bitmap) {
         this.bitmap = Bitmap.createBitmap(bitmap);
         if (bitmap != null) {
-            LoadingDialog loadingDialog = new LoadingDialog();
+            loadingDialog = new LoadingDialog();
             loadingDialog.execute();
         } else {
             Toast.makeText(getApplicationContext(), "SnapshotReady of Bitmap is Null", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onFinish() {
+        // CameraMove Animation 종료
+        if(progressDialog.isShowing()){
+            progressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void onCancel() {
+        Log.d(TAG, "onCancel");
+
     }
 
     private class LoadingDialog extends AsyncTask<Bitmap, Void, Void> {

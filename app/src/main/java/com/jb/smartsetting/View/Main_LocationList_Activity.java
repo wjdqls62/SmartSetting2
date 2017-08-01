@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +42,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private SharedPreferences pref;
     private boolean isDebug = false;
 
+    private RelativeLayout delete_layout;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private LinearLayout ItemLayout;
@@ -81,8 +83,14 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(locationItemAdapter);
-        getPreference();
 
+        getPreference();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        locationItemAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -95,6 +103,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private void init_View() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         recyclerView = (RecyclerView) findViewById(R.id.location_listview);
+        delete_layout = (RelativeLayout) findViewById(R.id.main_delete_layout);
         fab_newLocation = (FloatingActionButton) findViewById(R.id.fab_add_location);
         setSupportActionBar(toolbar);
 
@@ -123,6 +132,13 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             Intent intent = new Intent(Main_LocationList_Activity.this, Sub_Setting_Fragment.class);
             startActivity(intent);
             return true;
+        }else if(id == R.id.action_delete){
+            if(locationItemAdapter.getRECYCLER_VIEW_MODE() != RECYCLER_VIEW_DELETE_MODE){
+                locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_DELETE_MODE);
+                locationItemAdapter.notifyDataSetChanged();
+                delete_layout.setVisibility(View.VISIBLE);
+            }
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -133,6 +149,16 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         startActivity(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(locationItemAdapter.getRECYCLER_VIEW_MODE() == RECYCLER_VIEW_DELETE_MODE){
+            locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_NORMAL_MODE);
+            locationItemAdapter.notifyDataSetChanged();
+            delete_layout.setVisibility(View.GONE);
+        }else{
+            super.onBackPressed();
+        }
+    }
 
     @Override
     public void onClick(View v) {
@@ -162,6 +188,10 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             RECYCLER_MODE = i;
         }
 
+        public int getRECYCLER_VIEW_MODE(){
+            return RECYCLER_MODE;
+        }
+
         @Override
         public LocationListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.main_location_list_item, parent, false);
@@ -169,11 +199,15 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         }
 
         @Override
-        public void onBindViewHolder(LocationListViewHolder holder, final int position) {
+        public void onBindViewHolder(final LocationListViewHolder holder, final int position) {
             // Item 삭제 및 일반 선택모드의 구분
             if (RECYCLER_MODE == RECYCLER_VIEW_NORMAL_MODE) {
                 holder.checkBox.setVisibility(View.GONE);
+                holder.toggleButton.setVisibility(View.VISIBLE);
+                fab_newLocation.setVisibility(View.VISIBLE);
+
             } else if (RECYCLER_MODE == RECYCLER_VIEW_DELETE_MODE) {
+                fab_newLocation.setVisibility(View.GONE);
                 holder.toggleButton.setVisibility(View.GONE);
                 holder.checkBox.setVisibility(View.VISIBLE);
             }
@@ -206,12 +240,23 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    bundle = new Bundle();
-                    bundle.putString("DISPLAY_MODE", "MODIFY");
-                    bundle.putDouble("indentificationNumber", arrLocationList.get(position).indentificationNumber);
-                    Intent intent = new Intent(Main_LocationList_Activity.this, Sub_ItemSetting_Activity.class);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
+                    if(RECYCLER_MODE == RECYCLER_VIEW_NORMAL_MODE){
+                        bundle = new Bundle();
+                        bundle.putString("DISPLAY_MODE", "MODIFY");
+                        bundle.putDouble("indentificationNumber", arrLocationList.get(position).indentificationNumber);
+                        Intent intent = new Intent(Main_LocationList_Activity.this, Sub_ItemSetting_Activity.class);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }else if(RECYCLER_MODE == RECYCLER_VIEW_DELETE_MODE){
+                           // 삭제모드 아이템 선택시 구현부
+                        if(!holder.checkBox.isChecked()){
+
+                            holder.checkBox.setChecked(true);
+                        }else{
+
+                            holder.checkBox.setChecked(false);
+                        }
+                    }
                 }
             });
 

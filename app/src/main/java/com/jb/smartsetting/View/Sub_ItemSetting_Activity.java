@@ -81,7 +81,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         initView();
 
         setSupportActionBar(toolbar);
-        toolbar.setTitle("");
+        toolbarLayout.setTitle("Location Name");
         btn_save.setOnClickListener(this);
         item_setting_sound.setOnClickListener(this);
         etLocationName.addTextChangedListener(this);
@@ -109,10 +109,6 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
             }
         }
         locationThumnail.setAlpha(70);
-        //Glide.with(this)
-        //        .load(new File(stubLocation.objFilePath+"crop_"+stubLocation.imgFileName))
-        //        .into(locationThumnail);
-
         locationThumnail.setImageBitmap(BitmapFactory.decodeFile(stubLocation.objFilePath+"crop_"+stubLocation.imgFileName));
     }
 
@@ -151,6 +147,24 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(MODE_CURRENT == MODE_WRITE){
+            boolean isTempFile = true;
+            for(int i=0; i<arrStubLocation.size(); i++){
+                if(arrStubLocation.get(i).indentificationNumber == stubLocation.indentificationNumber){
+                    isTempFile = false;
+                    break;
+                }
+            }
+            if(isTempFile){
+                objectReaderWriter.deleteObject(stubLocation);
+            }
+            finish();
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.item_set_sound:
@@ -184,8 +198,12 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                         // stub객체 저장
                         objectReaderWriter.saveObject(stubLocation);
                         move_LocationList_Activity();
+                        break;
                     }
                 }
+            case R.id.btn_cancel :
+                onBackPressed();
+                break;
         }
     }
 
@@ -222,7 +240,11 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        toolbarLayout.setTitle(s.toString());
+        if(s.toString().isEmpty()){
+            toolbarLayout.setTitle("Location Name");
+        }else{
+            toolbarLayout.setTitle(s.toString());
+        }
     }
 
     @Override
