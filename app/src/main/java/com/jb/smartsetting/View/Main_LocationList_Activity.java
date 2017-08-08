@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,6 +37,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class Main_LocationList_Activity extends AppCompatActivity implements View.OnClickListener {
+
     private final int RECYCLER_VIEW_NORMAL_MODE = 1;
     private final int RECYCLER_VIEW_DELETE_MODE = 2;
 
@@ -46,6 +49,9 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private LinearLayout ItemLayout;
+    private TextView selectedCount;
+    private Button btn_delete_ok, btn_delete_cancel;
+
     private Intent intent;
 
     private LocationItemAdapter locationItemAdapter;
@@ -55,6 +61,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
     private PermissionManager permissionManager;
 
+    private ArrayList<SavedCustomLocation> selectedItems;
     private ArrayList<SavedCustomLocation> items;
     private ArrayList<SavedCustomLocation> arrLocationList;
     private ObjectReaderWriter objectReaderWriter;
@@ -105,12 +112,17 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         recyclerView = (RecyclerView) findViewById(R.id.location_listview);
         delete_layout = (RelativeLayout) findViewById(R.id.main_delete_layout);
         fab_newLocation = (FloatingActionButton) findViewById(R.id.fab_add_location);
+        btn_delete_ok = (Button) findViewById(R.id.btn_delte_ok);
+        btn_delete_cancel = (Button) findViewById(R.id.btn_delte_cancel);
+        selectedCount = (TextView) findViewById(R.id.selected_delete_count);
         setSupportActionBar(toolbar);
 
     }
 
     private void init_Listener() {
         fab_newLocation.setOnClickListener(this);
+        btn_delete_ok.setOnClickListener(this);
+        btn_delete_cancel.setOnClickListener(this);
     }
 
     @Override
@@ -133,14 +145,16 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             startActivity(intent);
             return true;
         }else if(id == R.id.action_delete){
-            if(locationItemAdapter.getRECYCLER_VIEW_MODE() != RECYCLER_VIEW_DELETE_MODE){
-                locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_DELETE_MODE);
-                locationItemAdapter.notifyDataSetChanged();
-                delete_layout.setVisibility(View.VISIBLE);
+            if(arrLocationList.size() != 0){
+                if(locationItemAdapter.getRECYCLER_VIEW_MODE() != RECYCLER_VIEW_DELETE_MODE){
+                    locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_DELETE_MODE);
+                    locationItemAdapter.notifyDataSetChanged();
+                    delete_layout.setVisibility(View.VISIBLE);
+                }
+            }else{
+                Toast.makeText(getApplicationContext(), "저장된 위치정보가 없습니다", Toast.LENGTH_SHORT).show();
             }
-
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -153,6 +167,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     public void onBackPressed() {
         if(locationItemAdapter.getRECYCLER_VIEW_MODE() == RECYCLER_VIEW_DELETE_MODE){
             locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_NORMAL_MODE);
+            selectedItems.clear();
             locationItemAdapter.notifyDataSetChanged();
             delete_layout.setVisibility(View.GONE);
         }else{
@@ -168,6 +183,19 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                 intent = new Intent(Main_LocationList_Activity.this, Sub_MapView_Activity.class);
                 startActivity(intent);
                 break;
+
+            case R.id.btn_delte_ok :
+                for(int i=0; i < selectedItems.size(); i++){
+                    objectReaderWriter.deleteObject(selectedItems.get(i));
+                }
+                Toast.makeText(getApplicationContext(), "삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                locationItemAdapter.notifyDataSetChanged();
+                finish();
+                break;
+
+            case R.id.btn_delte_cancel :
+                onBackPressed();
+                break;
         }
     }
 
@@ -176,12 +204,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
         public LocationItemAdapter() {
             items = new ArrayList<SavedCustomLocation>();
-        }
-
-        public void testAdd(String locationName) {
-            SavedCustomLocation test = new SavedCustomLocation();
-            test.locationName = locationName;
-            items.add(test);
+            selectedItems = new ArrayList<SavedCustomLocation>();
         }
 
         public void setRECYCLER_VIEW_MODE(int i) {
@@ -195,7 +218,14 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         @Override
         public LocationListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.main_location_list_item, parent, false);
+            selectedCount.setText("0");
             return new LocationListViewHolder(v);
+        }
+
+        @Override
+        public void onViewRecycled(LocationListViewHolder holder) {
+            super.onViewRecycled(holder);
+            selectedCount.setText("0");
         }
 
         @Override
@@ -203,6 +233,8 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             // Item 삭제 및 일반 선택모드의 구분
             if (RECYCLER_MODE == RECYCLER_VIEW_NORMAL_MODE) {
                 holder.checkBox.setVisibility(View.GONE);
+                holder.checkBox.setChecked(false);
+
                 holder.toggleButton.setVisibility(View.VISIBLE);
                 fab_newLocation.setVisibility(View.VISIBLE);
 
@@ -211,6 +243,8 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                 holder.toggleButton.setVisibility(View.GONE);
                 holder.checkBox.setVisibility(View.VISIBLE);
             }
+
+
 
             // StubObject의 isEnabled값을 가져와 ToggleSwitch의 상태를 변경
             if (arrLocationList.get(position).isEnabled) {
@@ -250,17 +284,23 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                     }else if(RECYCLER_MODE == RECYCLER_VIEW_DELETE_MODE){
                            // 삭제모드 아이템 선택시 구현부
                         if(!holder.checkBox.isChecked()){
-
+                            selectedItems.add(arrLocationList.get(position));
+                            selectedCount.setText(String.valueOf(selectedItems.size()));
                             holder.checkBox.setChecked(true);
                         }else{
-
+                            for(int i=0; i<selectedItems.size(); i++){
+                                if(selectedItems.get(i).indentificationNumber == arrLocationList.get(position).indentificationNumber){
+                                    selectedItems.remove(i);
+                                    break;
+                                }
+                            }
+                            selectedCount.setText(String.valueOf(selectedItems.size()));
                             holder.checkBox.setChecked(false);
                         }
                     }
                 }
             });
 
-            //holder.locationImage.setImageBitmap(BitmapFactory.decodeFile(arrLocationList.get(position).objFilePath+"crop_"+arrLocationList.get(position).imgFileName));
             if(holder.locationImage != null){
                 holder.locationImage.setScaleType(ImageView.ScaleType.CENTER);
                 Glide.with(getApplicationContext())
@@ -269,7 +309,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             }else{
                 Toast.makeText(getApplicationContext(), "Thumbnail is null..", Toast.LENGTH_SHORT).show();
             }
-
 
 
         }

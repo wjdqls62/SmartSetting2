@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_mapview_refresh"
-        android:icon="@android:drawable/stat_notify_sync"
-        app:showAsAction="always"
-        android:title="Refresh" />
+        android:icon="@mipmap/ic_refresh_white_48dp"
+        android:title="Refresh"
+        app:showAsAction="always" />
 </menu>

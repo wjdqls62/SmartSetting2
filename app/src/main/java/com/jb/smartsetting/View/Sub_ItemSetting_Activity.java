@@ -174,10 +174,10 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                         txSoundMode.setText(SelectedItem);
                     }
                 };
-                customDialog = new CustomDialog(this, "SETTING_SOUND", callback);
+                customDialog = new CustomDialog(this, "SETTING_SOUND", callback, txSoundMode.getText().toString());
                 customDialog.show();
-
                 break;
+
             case R.id.fab:
                 Toast.makeText(getApplicationContext(), "MODE_CURRENT : " + MODE_CURRENT, Toast.LENGTH_SHORT).show();
                 // 입력한 데이터를 stub객체에 삽입

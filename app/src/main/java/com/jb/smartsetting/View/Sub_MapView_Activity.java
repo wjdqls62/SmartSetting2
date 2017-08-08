@@ -104,9 +104,15 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setMessage("잠시만 기다려주세요...");
             progressDialog.setCancelable(false);
+            Log.d(TAG, "Init ProgressDialog");
+        }else{
+            Log.d(TAG, "Already initialized ProgressDialog");
         }
         if(!progressDialog.isShowing()){
+            Log.d(TAG, "Not showing progress dialog");
             progressDialog.show();
+        }else{
+            Log.d(TAG, "progress dialog is showing");
         }
         options = new MarkerOptions();
         latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());

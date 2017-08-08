@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.jb.smartsetting.R;
 
@@ -28,10 +29,11 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
 
     private IDialogCallback callback;
 
-    public CustomDialog(@NonNull Context context, String DIALOG_MODE, IDialogCallback callback) {
+    public CustomDialog(@NonNull Context context, String DIALOG_MODE, IDialogCallback callback, String USER_SELECTED_ITEM) {
         super(context);
         this.DIALOG_MODE = DIALOG_MODE;
         this.callback = callback;
+        this.USER_SELECTED_ITEM = USER_SELECTED_ITEM;
     }
 
     @Override
@@ -53,6 +55,16 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         radio_sound_vibrate = (RadioButton) findViewById(R.id.set_sound_vibrate);
         radio_sound_sound = (RadioButton) findViewById(R.id.set_sound_sound);
 
+
+
+        if(USER_SELECTED_ITEM.equals("None")){
+            radio_sound_none.setChecked(true);
+        }else if(USER_SELECTED_ITEM.equals("Vibrate")){
+            radio_sound_vibrate.setChecked(true);
+        }else if(USER_SELECTED_ITEM.equals("Sound")){
+            radio_sound_sound.setChecked(true);
+        }
+
         radio_sound_none.setOnClickListener(this);
         radio_sound_vibrate.setOnClickListener(this);
         radio_sound_sound.setOnClickListener(this);
@@ -63,12 +75,15 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         switch (v.getId()){
             case R.id.set_sound_none :
                 USER_SELECTED_ITEM = "None";
+                radio_sound_none.setChecked(true);
                 break;
             case R.id.set_sound_vibrate :
                 USER_SELECTED_ITEM = "Vibrate";
+                radio_sound_vibrate.setChecked(true);
                 break;
             case R.id.set_sound_sound :
                 USER_SELECTED_ITEM = "Sound";
+                radio_sound_sound.setChecked(true);
                 break;
         }
         callback.onDialogEventCallback(USER_SELECTED_ITEM);

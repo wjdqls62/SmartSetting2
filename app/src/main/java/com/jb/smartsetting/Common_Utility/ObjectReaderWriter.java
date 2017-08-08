@@ -37,11 +37,9 @@ public class ObjectReaderWriter {
 
         if(objFile.exists()){
             objFile.delete();
-            Toast.makeText(context, "Obj파일이 삭제되었습니다", Toast.LENGTH_SHORT).show();
         }
         if(imgFile.exists()){
             imgFile.delete();
-            Toast.makeText(context, "img파일이 삭제되었습니다", Toast.LENGTH_SHORT).show();
         }
 
 
