@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Smart Setting</string>
+    <string name="app_name">SmartSetting</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_sub__item_setting_">Sub_ItemSetting_Activity</string>
     <string name="large_text">

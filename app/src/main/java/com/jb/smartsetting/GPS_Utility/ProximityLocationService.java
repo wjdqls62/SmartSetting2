@@ -20,7 +20,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -49,7 +48,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
     private ObjectReaderWriter objectReaderWriter;
     private LocationObserver locationObserver;
     private Location currentLocation, prevLocation;
-    private ArrayList<SavedCustomLocation> mEnabledTargetLocation;
+    private ArrayList<CustomLocation> mEnabledTargetLocation;
 
     private Context context;
 
@@ -80,7 +79,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                 .build();
 
 
-        mEnabledTargetLocation = new ArrayList<SavedCustomLocation>();
+        mEnabledTargetLocation = new ArrayList<CustomLocation>();
         enabledPendingIntent = new ArrayList<PendingIntent>();
 
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -199,25 +198,25 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                         distance = currentLocation.distanceTo(prevLocation);
                         // currentLocation 와 prevLocation의 거리를 계산해 반경300m이상 떨어질 경우 || 서비스 시작 후 Refresh 2회 이하의 경우
                         if (distance >= PROXIMITY_ALERT_DISTANCE || refreshCount <= 2) {
-                                for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
-                                    // 사용자 등록지점과 근접할 경우
-                                    if (mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
+                            for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
+                                // 사용자 등록지점과 근접할 경우
+                                if (mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
 
-                                        settingsChangeManager.setSavedTargetLocation(mEnabledTargetLocation.get(i));
-                                        settingsChangeManager.SettingChangeTrigger();
+                                    settingsChangeManager.setSavedTargetLocation(mEnabledTargetLocation.get(i));
+                                    settingsChangeManager.SettingChangeTrigger();
 
-                                        showNotification(mEnabledTargetLocation.get(i).getLocationName());
+                                    showNotification(mEnabledTargetLocation.get(i).getLocationName());
 
-                                        if(isDebug){
-                                            Log.d(TAG, mEnabledTargetLocation.get(i).getLocationName() + "지점과 근접합니다! : " +
-                                                    mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) + "m");
-                                        }
+                                    if (isDebug) {
+                                        Log.d(TAG, mEnabledTargetLocation.get(i).getLocationName() + "지점과 근접합니다! : " +
+                                                mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) + "m");
                                     }
                                 }
                             }
-                        } else {
-                            if (isDebug) Log.d(TAG, "마지막 측정위치와 동일합니다. ");
                         }
+                    } else {
+                        if (isDebug) Log.d(TAG, "마지막 측정위치와 동일합니다. ");
+                    }
 
                     refreshCount++;
                     Thread.sleep(SEARCH_LOCATION_DELAY_TIME);
@@ -243,7 +242,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
             return null;
         }
 
-        public void showNotification(String targetLocationName){
+        public void showNotification(String targetLocationName) {
             bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
             soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
@@ -257,50 +256,4 @@ public class ProximityLocationService extends Service implements OnConnectionFai
             notificationManager.notify(0, notificationBuilder.build());
         }
     }
-
-//
-    //public class GPS_Receiver extends BroadcastReceiver {
-    //    private String Current_Location = null;
-//
-    //    @Override
-    //    public void onReceive(Context context, Intent intent) {
-    //        boolean isEntering = intent.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false);
-    //        if (isEntering) {
-    //            for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
-    //                if (String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber).equals(intent.getAction())) {
-    //                    //Toast.makeText(getApplicationContext(), mEnabledTargetLocation.get(i).getLocationName()+"에 접근", Toast.LENGTH_SHORT).show();
-    //                    Current_Location = mEnabledTargetLocation.get(i).getLocationName();
-//
-//
-    //                    bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-    //                    soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    //                    NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
-    //                            .setSmallIcon(android.R.drawable.ic_menu_myplaces)
-    //                            .setLargeIcon(bitmap)
-    //                            .setContentTitle("SmartSetting")
-    //                            .setContentText(Current_Location + "지점에 근접합니다.")
-    //                            .setAutoCancel(true)
-    //                            .setSound(soundUri);
-//
-    //                    NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-    //                    notificationManager.notify(0, notificationBuilder.build());
-//
-    //                    break;
-    //                }
-    //            }
-    //        } else {
-    //            Toast.makeText(getApplicationContext(), Current_Location + "에 멀어짐", Toast.LENGTH_SHORT).show();
-    //            Current_Location = null;
-    //        }
-//
-    //        if (isDebug) {
-    //            Log.d(TAG, "========================== GPS_Receiver.onReceive =============================");
-    //            Log.d(TAG, "isEntering : " + isEntering);
-    //            Log.d(TAG, "Intent.getAction : " + intent.getAction());
-    //            Log.d(TAG, "==============================================================================");
-    //        }
-    //    }
-    //}
-
-
 }

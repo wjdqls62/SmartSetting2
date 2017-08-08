@@ -1,16 +1,11 @@
 package com.jb.smartsetting.View;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -18,24 +13,17 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.load.engine.cache.DiskCache;
-import com.bumptech.glide.load.engine.cache.DiskLruCacheFactory;
 import com.jb.smartsetting.Common_Utility.CustomDialog;
 import com.jb.smartsetting.Common_Utility.IDialogCallback;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
-import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
+import com.jb.smartsetting.GPS_Utility.CustomLocation;
 import com.jb.smartsetting.R;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class Sub_ItemSetting_Activity extends AppCompatActivity implements
@@ -46,8 +34,8 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
     private final int MODE_WRITE = 1;
     private final int MODE_MODIFY = 2;
 
-    private ArrayList<SavedCustomLocation> arrStubLocation;
-    private SavedCustomLocation stubLocation;
+    private ArrayList<CustomLocation> arrStubLocation;
+    private CustomLocation stubLocation;
     private double mRestoreIndentificationNumber;
 
     private Bundle bundle;
@@ -93,7 +81,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         bundle = getIntent().getExtras();
         if (bundle != null) {
             if (onDisplayTypeCheck(bundle) == MODE_WRITE) {
-                stubLocation = (SavedCustomLocation) bundle.getSerializable("Location");
+                stubLocation = (CustomLocation) bundle.getSerializable("Location");
                 MODE_CURRENT = MODE_WRITE;
                 Toast.makeText(getApplicationContext(), "MODE_WRITE", Toast.LENGTH_SHORT).show();
             } else if (onDisplayTypeCheck(bundle) == MODE_MODIFY) {
@@ -124,6 +112,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
 
     private void move_LocationList_Activity() {
         Intent intent = new Intent(this, Main_LocationList_Activity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }

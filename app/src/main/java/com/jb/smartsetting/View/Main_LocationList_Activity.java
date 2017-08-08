@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
@@ -30,7 +28,7 @@ import com.bumptech.glide.Glide;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.Common_Utility.PermissionManager;
 import com.jb.smartsetting.GPS_Utility.ProximityLocationService;
-import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
+import com.jb.smartsetting.GPS_Utility.CustomLocation;
 import com.jb.smartsetting.R;
 
 import java.io.File;
@@ -61,9 +59,9 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
     private PermissionManager permissionManager;
 
-    private ArrayList<SavedCustomLocation> selectedItems;
-    private ArrayList<SavedCustomLocation> items;
-    private ArrayList<SavedCustomLocation> arrLocationList;
+    private ArrayList<CustomLocation> selectedItems;
+    private ArrayList<CustomLocation> items;
+    private ArrayList<CustomLocation> arrLocationList;
     private ObjectReaderWriter objectReaderWriter;
     private Bundle bundle;
 
@@ -82,13 +80,14 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         init_Listener();
 
         objectReaderWriter = new ObjectReaderWriter(getApplicationContext());
-        arrLocationList = objectReaderWriter.readObject();
+
 
         locationItemAdapter = new LocationItemAdapter();
         locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_NORMAL_MODE);
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+        onRefreshAdapter();
         recyclerView.setAdapter(locationItemAdapter);
 
         getPreference();
@@ -144,14 +143,14 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             Intent intent = new Intent(Main_LocationList_Activity.this, Sub_Setting_Fragment.class);
             startActivity(intent);
             return true;
-        }else if(id == R.id.action_delete){
-            if(arrLocationList.size() != 0){
-                if(locationItemAdapter.getRECYCLER_VIEW_MODE() != RECYCLER_VIEW_DELETE_MODE){
+        } else if (id == R.id.action_delete) {
+            if (arrLocationList.size() != 0) {
+                if (locationItemAdapter.getRECYCLER_VIEW_MODE() != RECYCLER_VIEW_DELETE_MODE) {
                     locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_DELETE_MODE);
                     locationItemAdapter.notifyDataSetChanged();
                     delete_layout.setVisibility(View.VISIBLE);
                 }
-            }else{
+            } else {
                 Toast.makeText(getApplicationContext(), "저장된 위치정보가 없습니다", Toast.LENGTH_SHORT).show();
             }
         }
@@ -165,12 +164,12 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
     @Override
     public void onBackPressed() {
-        if(locationItemAdapter.getRECYCLER_VIEW_MODE() == RECYCLER_VIEW_DELETE_MODE){
+        if (locationItemAdapter.getRECYCLER_VIEW_MODE() == RECYCLER_VIEW_DELETE_MODE) {
             locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_NORMAL_MODE);
             selectedItems.clear();
             locationItemAdapter.notifyDataSetChanged();
             delete_layout.setVisibility(View.GONE);
-        }else{
+        } else {
             super.onBackPressed();
         }
     }
@@ -184,34 +183,53 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                 startActivity(intent);
                 break;
 
-            case R.id.btn_delte_ok :
-                for(int i=0; i < selectedItems.size(); i++){
-                    objectReaderWriter.deleteObject(selectedItems.get(i));
+            case R.id.btn_delte_ok:
+                if(selectedItems.size() >= 1){
+                    for (int i = 0; i < selectedItems.size(); i++) {
+                        objectReaderWriter.deleteObject(selectedItems.get(i));
+                    }
+                    Toast.makeText(getApplicationContext(), "삭제가 완료되었습니다", Toast.LENGTH_SHORT).show();
+                    locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_NORMAL_MODE);
+                    onRefreshAdapter();
+                }else{
+                    Toast.makeText(getApplicationContext(), "1개이상 선택하세요", Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(getApplicationContext(), "삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();
-                locationItemAdapter.notifyDataSetChanged();
-                finish();
                 break;
 
-            case R.id.btn_delte_cancel :
+            case R.id.btn_delte_cancel:
                 onBackPressed();
                 break;
         }
+    }
+
+    public void onRefreshAdapter(){
+        if(arrLocationList != null){
+            arrLocationList.clear();
+        }
+        arrLocationList = objectReaderWriter.readObject();
+        locationItemAdapter.notifyDataSetChanged();
     }
 
     private class LocationItemAdapter extends Adapter<LocationListViewHolder> {
         private int RECYCLER_MODE = -1;
 
         public LocationItemAdapter() {
-            items = new ArrayList<SavedCustomLocation>();
-            selectedItems = new ArrayList<SavedCustomLocation>();
+            items = new ArrayList<CustomLocation>();
+            selectedItems = new ArrayList<CustomLocation>();
         }
 
         public void setRECYCLER_VIEW_MODE(int i) {
             RECYCLER_MODE = i;
+            if (RECYCLER_MODE == RECYCLER_VIEW_NORMAL_MODE) {
+                delete_layout.setVisibility(View.GONE);
+                fab_newLocation.setVisibility(View.VISIBLE);
+            }else if (RECYCLER_MODE == RECYCLER_VIEW_DELETE_MODE) {
+                delete_layout.setVisibility(View.VISIBLE);
+                fab_newLocation.setVisibility(View.GONE);
+            }
         }
 
-        public int getRECYCLER_VIEW_MODE(){
+        public int getRECYCLER_VIEW_MODE() {
             return RECYCLER_MODE;
         }
 
@@ -230,20 +248,20 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
         @Override
         public void onBindViewHolder(final LocationListViewHolder holder, final int position) {
+
             // Item 삭제 및 일반 선택모드의 구분
             if (RECYCLER_MODE == RECYCLER_VIEW_NORMAL_MODE) {
                 holder.checkBox.setVisibility(View.GONE);
                 holder.checkBox.setChecked(false);
 
                 holder.toggleButton.setVisibility(View.VISIBLE);
-                fab_newLocation.setVisibility(View.VISIBLE);
+
 
             } else if (RECYCLER_MODE == RECYCLER_VIEW_DELETE_MODE) {
-                fab_newLocation.setVisibility(View.GONE);
+
                 holder.toggleButton.setVisibility(View.GONE);
                 holder.checkBox.setVisibility(View.VISIBLE);
             }
-
 
 
             // StubObject의 isEnabled값을 가져와 ToggleSwitch의 상태를 변경
@@ -274,22 +292,22 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(RECYCLER_MODE == RECYCLER_VIEW_NORMAL_MODE){
+                    if (RECYCLER_MODE == RECYCLER_VIEW_NORMAL_MODE) {
                         bundle = new Bundle();
                         bundle.putString("DISPLAY_MODE", "MODIFY");
                         bundle.putDouble("indentificationNumber", arrLocationList.get(position).indentificationNumber);
                         Intent intent = new Intent(Main_LocationList_Activity.this, Sub_ItemSetting_Activity.class);
                         intent.putExtras(bundle);
                         startActivity(intent);
-                    }else if(RECYCLER_MODE == RECYCLER_VIEW_DELETE_MODE){
-                           // 삭제모드 아이템 선택시 구현부
-                        if(!holder.checkBox.isChecked()){
+                    } else if (RECYCLER_MODE == RECYCLER_VIEW_DELETE_MODE) {
+                        // 삭제모드 아이템 선택시 구현부
+                        if (!holder.checkBox.isChecked()) {
                             selectedItems.add(arrLocationList.get(position));
                             selectedCount.setText(String.valueOf(selectedItems.size()));
                             holder.checkBox.setChecked(true);
-                        }else{
-                            for(int i=0; i<selectedItems.size(); i++){
-                                if(selectedItems.get(i).indentificationNumber == arrLocationList.get(position).indentificationNumber){
+                        } else {
+                            for (int i = 0; i < selectedItems.size(); i++) {
+                                if (selectedItems.get(i).indentificationNumber == arrLocationList.get(position).indentificationNumber) {
                                     selectedItems.remove(i);
                                     break;
                                 }
@@ -301,12 +319,12 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                 }
             });
 
-            if(holder.locationImage != null){
+            if (holder.locationImage != null) {
                 holder.locationImage.setScaleType(ImageView.ScaleType.CENTER);
                 Glide.with(getApplicationContext())
                         .load(new File(arrLocationList.get(position).objFilePath + "crop_" + arrLocationList.get(position).imgFileName))
                         .into(holder.locationImage);
-            }else{
+            } else {
                 Toast.makeText(getApplicationContext(), "Thumbnail is null..", Toast.LENGTH_SHORT).show();
             }
 

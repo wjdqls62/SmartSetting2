@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Created by wjdql on 2017-06-17.
  */
 
-public class SavedCustomLocation implements Serializable {
+public class CustomLocation implements Serializable {
     private static final long serialVersionUID = 8124905464753305656L;
     // 위치정보 변수 정의
     public double indentificationNumber = 0;

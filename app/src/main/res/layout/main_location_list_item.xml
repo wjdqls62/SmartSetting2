@@ -67,7 +67,7 @@
                         android:layout_toRightOf="@+id/checkBox"
                         android:paddingLeft="5dp"
                         android:text="Company"
-                        android:textSize="36sp"
+                        android:textSize="30sp"
                         android:textStyle="bold" />
 
                     <TextView

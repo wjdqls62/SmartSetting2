@@ -1,31 +1,23 @@
 package com.jb.smartsetting.Common_Utility;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
-import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
-import android.util.Log;
 
-import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
+import com.jb.smartsetting.GPS_Utility.CustomLocation;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by jeongbin.son on 2017-07-18.
+ * Location Item Thumbnail 생성을 위해 MapView에서 받아온 Bitmap을 File저장, 해상도별 SnapShot의 중앙부분을 Crop한다.
  */
 
 public class BitmapCropManager {
@@ -47,7 +39,7 @@ public class BitmapCropManager {
         isDebug = pref.getBoolean("setting_dev_mode", false);
     }
 
-    public Bitmap cropBitmap(Bitmap bitmap, SavedCustomLocation location) {
+    public Bitmap cropBitmap(Bitmap bitmap, CustomLocation location) {
         try {
             beforeBitmap = Bitmap.createBitmap(bitmap);
             // Width가 Height보다 긴경우 --> 태블릿

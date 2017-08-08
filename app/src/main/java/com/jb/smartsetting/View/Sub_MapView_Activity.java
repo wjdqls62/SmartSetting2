@@ -3,6 +3,7 @@ package com.jb.smartsetting.View;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
@@ -25,11 +26,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jb.smartsetting.Common_Utility.BitmapCropManager;
-import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
+import com.jb.smartsetting.GPS_Utility.CustomLocation;
 import com.jb.smartsetting.R;
 
 
@@ -44,8 +46,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         GoogleMap.OnMapLoadedCallback,
         GoogleMap.SnapshotReadyCallback,
         LocationListener,
-        GoogleMap.CancelableCallback
-{
+        GoogleMap.CancelableCallback {
 
     private Bundle bundle;
 
@@ -53,16 +54,17 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     BitmapCropManager bitmapCropManager;
     private GoogleMap.SnapshotReadyCallback SnapshotCallback;
 
-    private MarkerOptions options;
+    private MarkerOptions markerOptions;
+    private CircleOptions circleOptions;
     private LatLng latLng;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
-    private LoadingDialog loadingDialog;
+    private CreateSnapShotDialog loadingDialog;
     private ProgressDialog progressDialog;
 
     private Intent intent;
     private Bitmap bitmap;
-    private SavedCustomLocation savedCustomLocation;
+    private CustomLocation savedCustomLocation;
 
     private Button btn_ok, btn_cancel;
 
@@ -83,9 +85,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         btn_ok.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
 
-
-
-        savedCustomLocation = new SavedCustomLocation();
+        savedCustomLocation = new CustomLocation();
         bitmapCropManager = new BitmapCropManager(getApplicationContext());
     }
 
@@ -99,27 +99,27 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     }
 
     private void onRefreshMapView() {
-        if(progressDialog == null){
+        if (progressDialog == null) {
             progressDialog = new ProgressDialog(Sub_MapView_Activity.this);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setMessage("잠시만 기다려주세요...");
             progressDialog.setCancelable(false);
-            Log.d(TAG, "Init ProgressDialog");
-        }else{
-            Log.d(TAG, "Already initialized ProgressDialog");
         }
-        if(!progressDialog.isShowing()){
-            Log.d(TAG, "Not showing progress dialog");
+
+        if (!progressDialog.isShowing()) {
             progressDialog.show();
-        }else{
-            Log.d(TAG, "progress dialog is showing");
         }
-        options = new MarkerOptions();
+
+        markerOptions = new MarkerOptions();
+        circleOptions = new CircleOptions();
         latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-        options.position(latLng);
-        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        Marker marker = map.addMarker(options);
+        markerOptions.position(latLng);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        circleOptions.center(latLng).radius(300).strokeWidth(1f).fillColor(Color.parseColor("#40C6FFFF"));
+
+        Marker marker = map.addMarker(markerOptions);
         marker.showInfoWindow();
+        map.addCircle(circleOptions);
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16), this);
     }
 
@@ -156,7 +156,6 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     }
 
     public void moveItemSettingActivity() {
-
         try {
             intent = new Intent(this, Sub_ItemSetting_Activity.class);
             bundle = new Bundle();
@@ -201,6 +200,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             if (lastLocation != null) {
                 onRefreshMapView();
             }
+
             if (isDebug) {
                 Log.d(TAG, "onConnected");
             }
@@ -248,7 +248,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     public void onSnapshotReady(Bitmap bitmap) {
         this.bitmap = Bitmap.createBitmap(bitmap);
         if (bitmap != null) {
-            loadingDialog = new LoadingDialog();
+            loadingDialog = new CreateSnapShotDialog();
             loadingDialog.execute();
         } else {
             Toast.makeText(getApplicationContext(), "SnapshotReady of Bitmap is Null", Toast.LENGTH_SHORT).show();
@@ -258,7 +258,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     @Override
     public void onFinish() {
         // CameraMove Animation 종료
-        if(progressDialog.isShowing()){
+        if (progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
     }
@@ -266,10 +266,9 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     @Override
     public void onCancel() {
         Log.d(TAG, "onCancel");
-
     }
 
-    private class LoadingDialog extends AsyncTask<Bitmap, Void, Void> {
+    private class CreateSnapShotDialog extends AsyncTask<Bitmap, Void, Void> {
         private ProgressDialog progressDialog;
         private GoogleMap.SnapshotReadyCallback snapshotReadyCallback;
         private BitmapCropManager bitmapCropManager;

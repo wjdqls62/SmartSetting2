@@ -3,8 +3,7 @@ package com.jb.smartsetting.Common_Utility;
 import android.content.Context;
 import android.media.AudioManager;
 
-import com.jb.smartsetting.GPS_Utility.SavedCustomLocation;
-import com.jb.smartsetting.R;
+import com.jb.smartsetting.GPS_Utility.CustomLocation;
 
 /**
  * Created by jeongbin.son on 2017-07-18.
@@ -14,7 +13,7 @@ public class SettingsChangeManager {
     AudioManager audioManager;
     Context context;
 
-    SavedCustomLocation targetLocationItem;
+    CustomLocation targetLocationItem;
 
     public SettingsChangeManager(Context context){
         this.context = context;
@@ -42,7 +41,7 @@ public class SettingsChangeManager {
         }
     }
 
-    public void setSavedTargetLocation(SavedCustomLocation targetLocationItem){
+    public void setSavedTargetLocation(CustomLocation targetLocationItem){
         this.targetLocationItem = targetLocationItem;
     }
 }
