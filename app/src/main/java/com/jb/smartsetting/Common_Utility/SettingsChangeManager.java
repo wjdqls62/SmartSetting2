@@ -50,35 +50,33 @@ public class SettingsChangeManager {
     }
 
     private void onBluetoothChange(){
-        switch (targetCustomLocation.BluetoothType){
-            case "On" :
-                // 구현부
-                if(bluetoothAdapter.getState() == BluetoothAdapter.STATE_TURNING_OFF
-                        || bluetoothAdapter.getState() == BluetoothAdapter.STATE_OFF){
-                    bluetoothAdapter.enable();
-                }
-                break;
-            case "Off" :
-                // 구현부
-                if(bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON
-                        || bluetoothAdapter.getState() == BluetoothAdapter.STATE_TURNING_ON){
-                    bluetoothAdapter.disable();
-                }
-                break;
+        if(bluetoothAdapter != null){
+            switch (targetCustomLocation.BluetoothType){
+                case "On" :
+                    if(bluetoothAdapter.getState() == BluetoothAdapter.STATE_TURNING_OFF
+                            || bluetoothAdapter.getState() == BluetoothAdapter.STATE_OFF){
+                        bluetoothAdapter.enable();
+                    }
+                    break;
+                case "Off" :
+                    if(bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON
+                            || bluetoothAdapter.getState() == BluetoothAdapter.STATE_TURNING_ON){
+                        bluetoothAdapter.disable();
+                    }
+                    break;
+            }
         }
     }
 
     private void onWiFiChange(){
         switch (targetCustomLocation.WiFiType){
             case "On" :
-                // 구현부
                 if(wifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLED
                         || wifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLING){
                     wifiManager.setWifiEnabled(true);
                 }
                 break;
             case "Off" :
-                // 구현부
                 if(wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLING
                         || wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED){
                     wifiManager.setWifiEnabled(false);

@@ -34,6 +34,8 @@ import com.jb.smartsetting.Common_Utility.BitmapCropManager;
 import com.jb.smartsetting.GPS_Utility.CustomLocation;
 import com.jb.smartsetting.R;
 
+import java.util.concurrent.ExecutionException;
+
 
 /**
  * Created by jeongbin.son on 2017-06-19.
@@ -45,22 +47,18 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         GoogleApiClient.OnConnectionFailedListener,
         GoogleMap.OnMapLoadedCallback,
         GoogleMap.SnapshotReadyCallback,
-        LocationListener,
-        GoogleMap.CancelableCallback {
+        LocationListener {
 
     private Bundle bundle;
 
     private GoogleMap map;
-    private BitmapCropManager bitmapCropManager;
-    private GoogleMap.SnapshotReadyCallback SnapshotCallback;
 
     private MarkerOptions markerOptions;
     private CircleOptions circleOptions;
     private LatLng latLng;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
-    private CreateSnapShotDialog loadingDialog;
-    private ProgressDialog progressDialog;
+    private CreateSnapShot loadingDialog;
 
     private Intent intent;
     private Bitmap bitmap;
@@ -84,7 +82,6 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         init_View();
 
         savedCustomLocation = new CustomLocation();
-        bitmapCropManager = new BitmapCropManager(getApplicationContext());
     }
 
     private void init_View(){
@@ -109,17 +106,6 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             map.clear();
         }
 
-        if (progressDialog == null) {
-            progressDialog = new ProgressDialog(Sub_MapView_Activity.this);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setMessage("잠시만 기다려주세요...");
-            progressDialog.setCancelable(false);
-        }
-
-        if (!progressDialog.isShowing()) {
-            progressDialog.show();
-        }
-
         markerOptions = new MarkerOptions();
         circleOptions = new CircleOptions();
         latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
@@ -130,7 +116,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         Marker marker = map.addMarker(markerOptions);
         marker.showInfoWindow();
         map.addCircle(circleOptions);
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16), this);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
     }
 
 
@@ -256,31 +242,29 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onSnapshotReady(Bitmap bitmap) {
-        this.bitmap = Bitmap.createBitmap(bitmap);
-        if (bitmap != null) {
-            loadingDialog = new CreateSnapShotDialog();
-            loadingDialog.execute();
-        } else {
-            Toast.makeText(getApplicationContext(), "SnapshotReady of Bitmap is Null", Toast.LENGTH_SHORT).show();
+        try{
+            this.bitmap = Bitmap.createBitmap(bitmap);
+            if (bitmap != null) {
+                loadingDialog = new CreateSnapShot();
+                if(loadingDialog.execute().get()){
+                    startActivity(intent);
+                    finish();
+                }else{
+                    Toast.makeText(getApplicationContext(), "기등록된 위치가 있습니다\n"+"위치이동 후 재시도 하세요", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "SnapshotReady of Bitmap is Null", Toast.LENGTH_SHORT).show();
+            }
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
+
     }
 
-    @Override
-    public void onFinish() {
-        // CameraMove Animation 종료
-        if (progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-    }
-
-    @Override
-    public void onCancel() {
-        Log.d(TAG, "onCancel");
-    }
-
-    private class CreateSnapShotDialog extends AsyncTask<Bitmap, Void, Void> {
-        private ProgressDialog progressDialog;
-        private GoogleMap.SnapshotReadyCallback snapshotReadyCallback;
+    private class CreateSnapShot extends AsyncTask<Void, Void, Boolean> {
+        private ProgressDialog sProgressDialog;
         private BitmapCropManager bitmapCropManager;
         private Bitmap tempBitmap;
 
@@ -288,29 +272,35 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         protected void onPreExecute() {
             super.onPreExecute();
             bitmapCropManager = new BitmapCropManager(getApplicationContext());
-            progressDialog = new ProgressDialog(Sub_MapView_Activity.this);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setMessage("잠시만 기다려주세요...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Bitmap... params) {
-            tempBitmap = bitmapCropManager.cropBitmap(bitmap, savedCustomLocation);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            if(tempBitmap != null){
-                startActivity(intent);
-                finish();
-            }else{
-                Toast.makeText(getApplicationContext(), "기등록된 위치가 있습니다\n"+"위치이동 후 재시도 하세요", Toast.LENGTH_SHORT).show();
+            if(sProgressDialog == null){
+                sProgressDialog = new ProgressDialog(Sub_MapView_Activity.this);
+                sProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                sProgressDialog.setMessage("잠시만 기다려주세요...");
+                sProgressDialog.setCancelable(false);
+                sProgressDialog.show();
             }
-            progressDialog.dismiss();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            tempBitmap = bitmapCropManager.cropBitmap(bitmap, savedCustomLocation);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if(tempBitmap != null){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            sProgressDialog.dismiss();
         }
     }
 }
