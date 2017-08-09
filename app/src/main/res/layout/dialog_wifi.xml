@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="소리 및 진동 설정"
+            android:text="Wi-Fi"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -30,12 +30,12 @@
                 android:splitMotionEvents="false">
 
                 <RadioButton
-                    android:id="@+id/set_sound_none"
+                    android:id="@+id/set_wifi_none"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="?attr/selectableItemBackground"
                     android:scrollHorizontally="false"
-                    android:text="None"
+                    android:text="변경 안함"
                     android:textSize="14sp" />
 
                 <LinearLayout
@@ -44,11 +44,11 @@
                     android:background="@color/listitem_divider" />
 
                 <RadioButton
-                    android:id="@+id/set_sound_vibrate"
+                    android:id="@+id/set_wifi_on"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="?attr/selectableItemBackground"
-                    android:text="Vibrate"
+                    android:text="켜짐"
                     android:textSize="14sp" />
 
                 <LinearLayout
@@ -57,11 +57,11 @@
                     android:background="@color/listitem_divider" />
 
                 <RadioButton
-                    android:id="@+id/set_sound_sound"
+                    android:id="@+id/set_wifi_off"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="?attr/selectableItemBackground"
-                    android:text="Sound"
+                    android:text="꺼짐"
                     android:textSize="14sp" />
 
                 <LinearLayout

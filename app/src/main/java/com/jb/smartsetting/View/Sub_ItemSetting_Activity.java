@@ -44,11 +44,13 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
 
     private Toolbar toolbar;
     private EditText etLocationName;
-    private TextView txSoundMode;
+    private TextView txSoundMode, txBluetoothMode, txWiFiMode;
 
     private CollapsingToolbarLayout toolbarLayout;
     private ImageView locationThumnail;
     private LinearLayout item_setting_sound;
+    private LinearLayout item_setting_bluetooth;
+    private LinearLayout item_setting_wifi;
 
     private CustomDialog customDialog;
     private IDialogCallback callback;
@@ -72,6 +74,8 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         toolbarLayout.setTitle("Location Name");
         btn_save.setOnClickListener(this);
         item_setting_sound.setOnClickListener(this);
+        item_setting_bluetooth.setOnClickListener(this);
+        item_setting_wifi.setOnClickListener(this);
         etLocationName.addTextChangedListener(this);
 
 
@@ -83,7 +87,6 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
             if (onDisplayTypeCheck(bundle) == MODE_WRITE) {
                 stubLocation = (CustomLocation) bundle.getSerializable("Location");
                 MODE_CURRENT = MODE_WRITE;
-                Toast.makeText(getApplicationContext(), "MODE_WRITE", Toast.LENGTH_SHORT).show();
             } else if (onDisplayTypeCheck(bundle) == MODE_MODIFY) {
                 MODE_CURRENT = MODE_MODIFY;
                 mRestoreIndentificationNumber = bundle.getDouble("indentificationNumber");
@@ -107,7 +110,11 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         locationThumnail = (ImageView) findViewById(R.id.collapsing_thumnail);
         etLocationName = (EditText) findViewById(R.id.location_name);
         item_setting_sound = (LinearLayout) findViewById(R.id.item_set_sound);
+        item_setting_bluetooth = (LinearLayout) findViewById(R.id.item_set_bluetooth);
+        item_setting_wifi = (LinearLayout) findViewById(R.id.item_set_wifi);
         txSoundMode = (TextView) findViewById(R.id.sound_mode);
+        txBluetoothMode = (TextView) findViewById(R.id.bluetooth_mode);
+        txWiFiMode = (TextView) findViewById(R.id.wifi_mode);
     }
 
     private void move_LocationList_Activity() {
@@ -130,6 +137,9 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
     private void onReadyToModify() {
         stubLocation.locationName = etLocationName.getText().toString();
         stubLocation.SoundType = txSoundMode.getText().toString();
+        stubLocation.BluetoothType = txBluetoothMode.getText().toString();
+        stubLocation.WiFiType = txWiFiMode.getText().toString();
+
         // stub객체 저장
         objectReaderWriter.saveObject(stubLocation);
         move_LocationList_Activity();
@@ -167,8 +177,29 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                 customDialog.show();
                 break;
 
+            case R.id.item_set_bluetooth :
+                callback = new IDialogCallback() {
+                    @Override
+                    public void onDialogEventCallback(String SelectedItem) {
+                        txBluetoothMode.setText(SelectedItem);
+                    }
+                };
+                customDialog = new CustomDialog(this, "SETTING_BT", callback, txBluetoothMode.getText().toString());
+                customDialog.show();
+                break;
+
+            case R.id.item_set_wifi :
+                callback = new IDialogCallback() {
+                    @Override
+                    public void onDialogEventCallback(String SelectedItem) {
+                        txWiFiMode.setText(SelectedItem);
+                    }
+                };
+                customDialog = new CustomDialog(this, "SETTING_WIFI", callback, txWiFiMode.getText().toString());
+                customDialog.show();
+                break;
+
             case R.id.fab:
-                Toast.makeText(getApplicationContext(), "MODE_CURRENT : " + MODE_CURRENT, Toast.LENGTH_SHORT).show();
                 // 입력한 데이터를 stub객체에 삽입
                 if (MODE_CURRENT == MODE_MODIFY) {
                     onReadyToModify();
@@ -176,11 +207,9 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                 } else if (MODE_CURRENT == MODE_WRITE) {
                     // MODE_WRITE && 기존 저장된 데이터와 위도,경도가 겹칠경우
                     if (isOverlap()) {
-                        Toast.makeText(getApplicationContext(), "기존 등록된 위치와 중복됩니다", Toast.LENGTH_SHORT).show();
                         break;
                         // MODE_WRITE && 기존 저장된 데이터와 중복이 없을경우
                     } else if (!onValidateForm()) {
-                        Toast.makeText(getApplicationContext(), "1글자 이상을 입력하세요", Toast.LENGTH_SHORT).show();
                         break;
                     } else {
                         stubLocation.locationName = etLocationName.getText().toString();
@@ -209,12 +238,15 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         // 수정모드(MODE_MODIFY)의 경우 객체의 정보를 뷰에 채워준다.
         etLocationName.setText(stubLocation.getLocationName());
         txSoundMode.setText(stubLocation.SoundType);
+        txBluetoothMode.setText(stubLocation.BluetoothType);
+        txWiFiMode.setText(stubLocation.WiFiType);
     }
 
     private boolean isOverlap() {
         if (MODE_CURRENT == MODE_WRITE) {
             for (int i = 0; i < arrStubLocation.size(); i++) {
                 if (arrStubLocation.get(i).indentificationNumber == stubLocation.indentificationNumber) {
+                    Toast.makeText(getApplicationContext(), "기존 등록된 위치와 중복됩니다", Toast.LENGTH_SHORT).show();
                     return true;
                 }
             }

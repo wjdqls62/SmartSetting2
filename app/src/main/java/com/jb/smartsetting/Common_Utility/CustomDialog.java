@@ -27,6 +27,14 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
     private RadioButton radio_sound_vibrate;
     private RadioButton radio_sound_sound;
 
+    private RadioButton radio_bt_none;
+    private RadioButton radio_bt_on;
+    private RadioButton radio_bt_off;
+
+    private RadioButton radio_wifi_none;
+    private RadioButton radio_wifi_on;
+    private RadioButton radio_wifi_off;
+
     private IDialogCallback callback;
 
     public CustomDialog(@NonNull Context context, String DIALOG_MODE, IDialogCallback callback, String USER_SELECTED_ITEM) {
@@ -48,14 +56,20 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
             setContentView(R.layout.dialog_sound);
             init_SoundSetting_View();
         }
+        else if(DIALOG_MODE.equals("SETTING_BT")){
+            setContentView(R.layout.dialog_bluetooth);
+            initBluetoothSetting_View();
+        }
+        else if(DIALOG_MODE.equals("SETTING_WIFI")){
+            setContentView(R.layout.dialog_wifi);
+            initWiFiSetting_View();
+        }
     }
 
     private void init_SoundSetting_View() {
         radio_sound_none = (RadioButton) findViewById(R.id.set_sound_none);
         radio_sound_vibrate = (RadioButton) findViewById(R.id.set_sound_vibrate);
         radio_sound_sound = (RadioButton) findViewById(R.id.set_sound_sound);
-
-
 
         if(USER_SELECTED_ITEM.equals("None")){
             radio_sound_none.setChecked(true);
@@ -70,9 +84,46 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         radio_sound_sound.setOnClickListener(this);
     }
 
+    private void initBluetoothSetting_View(){
+        radio_bt_none = (RadioButton) findViewById(R.id.set_bt_none);
+        radio_bt_on = (RadioButton) findViewById(R.id.set_bt_on);
+        radio_bt_off = (RadioButton) findViewById(R.id.set_bt_off);
+
+        if(USER_SELECTED_ITEM.equals("None")){
+            radio_bt_none.setChecked(true);
+        }else if(USER_SELECTED_ITEM.equals("On")){
+            radio_bt_on.setChecked(true);
+        }else if(USER_SELECTED_ITEM.equals("Off")){
+            radio_bt_off.setChecked(true);
+        }
+
+        radio_bt_none.setOnClickListener(this);
+        radio_bt_on.setOnClickListener(this);
+        radio_bt_off.setOnClickListener(this);
+    }
+
+    private void initWiFiSetting_View(){
+        radio_wifi_none = (RadioButton) findViewById(R.id.set_wifi_none);
+        radio_wifi_on = (RadioButton) findViewById(R.id.set_wifi_on);
+        radio_wifi_off = (RadioButton) findViewById(R.id.set_wifi_off);
+
+        if(USER_SELECTED_ITEM.equals("None")){
+            radio_wifi_none.setChecked(true);
+        }else if(USER_SELECTED_ITEM.equals("On")){
+            radio_wifi_on.setChecked(true);
+        }else if(USER_SELECTED_ITEM.equals("Off")){
+            radio_wifi_off.setChecked(true);
+        }
+
+        radio_wifi_none.setOnClickListener(this);
+        radio_wifi_on.setOnClickListener(this);
+        radio_wifi_off.setOnClickListener(this);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            // Sound
             case R.id.set_sound_none :
                 USER_SELECTED_ITEM = "None";
                 radio_sound_none.setChecked(true);
@@ -85,6 +136,35 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
                 USER_SELECTED_ITEM = "Sound";
                 radio_sound_sound.setChecked(true);
                 break;
+
+            // Bluetooth
+            case R.id.set_bt_none :
+                USER_SELECTED_ITEM = "None";
+                radio_bt_none.setChecked(true);
+                break;
+            case R.id.set_bt_on :
+                USER_SELECTED_ITEM = "On";
+                radio_bt_on.setChecked(true);
+                break;
+            case R.id.set_bt_off :
+                USER_SELECTED_ITEM = "Off";
+                radio_bt_off.setChecked(true);
+                break;
+
+            // Wi-Fi
+            case R.id.set_wifi_none :
+                USER_SELECTED_ITEM = "None";
+                radio_wifi_none.setChecked(true);
+                break;
+            case R.id.set_wifi_on :
+                USER_SELECTED_ITEM = "On";
+                radio_wifi_on.setChecked(true);
+                break;
+            case R.id.set_wifi_off :
+                USER_SELECTED_ITEM = "Off";
+                radio_wifi_off.setChecked(true);
+                break;
+
         }
         callback.onDialogEventCallback(USER_SELECTED_ITEM);
         this.dismiss();

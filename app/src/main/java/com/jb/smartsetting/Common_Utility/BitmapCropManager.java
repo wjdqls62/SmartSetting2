@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.widget.Toast;
 
 import com.jb.smartsetting.GPS_Utility.CustomLocation;
 
@@ -25,6 +26,7 @@ public class BitmapCropManager {
     private Context context;
     private Intent cropIntent;
     private Uri uri;
+    private File isExistTempFile;
 
     private Bitmap beforeBitmap;
     private Bitmap afterBitmap;
@@ -41,33 +43,37 @@ public class BitmapCropManager {
 
     public Bitmap cropBitmap(Bitmap bitmap, CustomLocation location) {
         try {
-            beforeBitmap = Bitmap.createBitmap(bitmap);
-            // Width가 Height보다 긴경우 --> 태블릿
-            if(beforeBitmap.getWidth() >= beforeBitmap.getHeight()){
-                afterBitmap = Bitmap.createBitmap(
-                        beforeBitmap,
-                        beforeBitmap.getWidth()/4 - beforeBitmap.getHeight()/4,
-                        0,
-                        beforeBitmap.getHeight(),
-                        beforeBitmap.getHeight());
+            isExistTempFile = new File(location.objFilePath+"crop_"+location.imgFileName);
+            if(!isExistTempFile.exists()){
+                beforeBitmap = Bitmap.createBitmap(bitmap);
+                // Width가 Height보다 긴경우 --> 태블릿
+                if(beforeBitmap.getWidth() >= beforeBitmap.getHeight()){
+                    afterBitmap = Bitmap.createBitmap(
+                            beforeBitmap,
+                            beforeBitmap.getWidth()/4 - beforeBitmap.getHeight()/4,
+                            0,
+                            beforeBitmap.getHeight(),
+                            beforeBitmap.getHeight());
+                }else{
+                    afterBitmap = Bitmap.createBitmap(
+                            beforeBitmap,
+                            0,
+                            beforeBitmap.getHeight()/4 - beforeBitmap.getWidth()/4,
+                            beforeBitmap.getWidth(),
+                            beforeBitmap.getWidth()
+                    );
+                }
+                fos = new FileOutputStream(new File(location.objFilePath+"crop_"+location.imgFileName));
+                afterBitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
+                fos.close();
             }else{
-                afterBitmap = Bitmap.createBitmap(
-                        beforeBitmap,
-                        0,
-                        beforeBitmap.getHeight()/4 - beforeBitmap.getWidth()/4,
-                        beforeBitmap.getWidth(),
-                        beforeBitmap.getWidth()
-                );
+                afterBitmap = null;
             }
-            fos = new FileOutputStream(new File(location.objFilePath+"crop_"+location.imgFileName));
-            afterBitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
-            fos.close();
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-
         }
         return afterBitmap;
     }

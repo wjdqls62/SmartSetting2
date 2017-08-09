@@ -40,7 +40,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private final int RECYCLER_VIEW_DELETE_MODE = 2;
 
     private final String TAG = getClass().getName();
-    private SharedPreferences pref;
     private boolean isDebug = false;
 
     private RelativeLayout delete_layout;
@@ -49,7 +48,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private LinearLayout ItemLayout;
     private TextView selectedCount;
     private Button btn_delete_ok, btn_delete_cancel;
-
     private Intent intent;
 
     private LocationItemAdapter locationItemAdapter;
@@ -64,6 +62,8 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private ArrayList<CustomLocation> arrLocationList;
     private ObjectReaderWriter objectReaderWriter;
     private Bundle bundle;
+
+
 
     private void getPreference() {
         SharedPreferences pref = getSharedPreferences("settings", MODE_PRIVATE);
@@ -96,7 +96,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     @Override
     protected void onResume() {
         super.onResume();
-        locationItemAdapter.notifyDataSetChanged();
+        onRefreshAdapter();
     }
 
     @Override
@@ -140,7 +140,8 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(Main_LocationList_Activity.this, Sub_Setting_Fragment.class);
+            Intent intent = new Intent(Main_LocationList_Activity.this, Sub_Setting_Activity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_delete) {

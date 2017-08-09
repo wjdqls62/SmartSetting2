@@ -39,7 +39,6 @@ import java.util.ArrayList;
 public class ProximityLocationService extends Service implements OnConnectionFailedListener, ConnectionCallbacks {
     // Thread 반복 Delay 주기(초 단위)
     private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
-    //private int SEARCH_LOCATION_DELAY_TIME = 5000;
     // 근접알림 반경 설정(미터 단위)
     private double PROXIMITY_ALERT_DISTANCE = 200;
 
@@ -115,24 +114,6 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                         Log.d(TAG, "Start LocationObserver Thread");
                     }
                     break;
-                    //this.intent = new Intent(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
-                    //pIntent = PendingIntent.getBroadcast(context, i, this.intent, 0);
-                    //enabledPendingIntent.add(pIntent);
-                    //intentFilter.addAction(String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
-                    //locationManager.addProximityAlert(
-                    //        mEnabledTargetLocation.get(i).Latitude,
-                    //        mEnabledTargetLocation.get(i).Longitude,
-                    //        100,
-                    //        -1,
-                    //        pIntent);
-                    //if (isDebug) {
-                    //    Log.d(TAG, "========================== addProximityAlert =============================");
-                    //    Log.d(TAG, "Enable Location Name : " + mEnabledTargetLocation.get(i).locationName);
-                    //    Log.d(TAG, "Lat : " + mEnabledTargetLocation.get(i).Latitude);
-                    //    Log.d(TAG, "Long : " + mEnabledTargetLocation.get(i).Longitude);
-                    //    Log.d(TAG, "Pending Intent Action : " + String.valueOf(mEnabledTargetLocation.get(i).indentificationNumber));
-                    //    Log.d(TAG, "==========================================================================");
-                    //}
                 }
             }
 
@@ -161,9 +142,8 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
     @Override
     public void onDestroy() {
-        if (isDebug) Log.d(TAG, "onDestroy");
+        if (isDebug) Log.d(TAG, "End to SmartSetting service");
         isRunning = false;
-        //unregisterReceiver(gpsReceiver);
         super.onDestroy();
     }
 
@@ -198,6 +178,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                         distance = currentLocation.distanceTo(prevLocation);
                         // currentLocation 와 prevLocation의 거리를 계산해 반경300m이상 떨어질 경우 || 서비스 시작 후 Refresh 2회 이하의 경우
                         if (distance >= PROXIMITY_ALERT_DISTANCE || refreshCount <= 2) {
+                            mEnabledTargetLocation = objectReaderWriter.readObject();
                             for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
                                 // 사용자 등록지점과 근접할 경우
                                 if (mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
@@ -249,7 +230,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                     .setSmallIcon(android.R.drawable.ic_menu_myplaces)
                     .setLargeIcon(bitmap)
                     .setContentTitle("SmartSetting")
-                    .setContentText(targetLocationName + "지점에 근접합니다.")
+                    .setContentText(targetLocationName + " 지점에 근접합니다.")
                     .setAutoCancel(true)
                     .setSound(soundUri);
             NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);

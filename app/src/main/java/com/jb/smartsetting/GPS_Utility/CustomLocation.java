@@ -14,6 +14,8 @@ public class CustomLocation implements Serializable {
 
     public String locationName;
     public String SoundType = "None";
+    public String BluetoothType = "None";
+    public String WiFiType = "None";
 
     public double Latitude, Longitude, Altitude;
     public float Accuracy;

@@ -33,13 +33,15 @@ public class ObjectReaderWriter {
 
     public void deleteObject(CustomLocation location){
         File objFile = new File(location.objFilePath + location.objFileName);
-        File imgFile = new File(location.objFilePath + location.imgFileName);
+        File imgFile = new File(location.objFilePath +"crop_"+location.imgFileName);
 
         if(objFile.exists()){
             objFile.delete();
+            Log.d(TAG, "OBJ파일 삭제 완료");
         }
         if(imgFile.exists()){
             imgFile.delete();
+            Log.d(TAG, "IMG파일 삭제 완료");
         }
 
 

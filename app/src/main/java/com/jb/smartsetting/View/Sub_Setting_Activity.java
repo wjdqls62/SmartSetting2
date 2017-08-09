@@ -20,7 +20,7 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by wjdql on 2017-07-17.
  */
 
-public class Sub_Setting_Fragment extends PreferenceActivity {
+public class Sub_Setting_Activity extends PreferenceActivity {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private Preference.OnPreferenceChangeListener onPreferenceChangeListener;

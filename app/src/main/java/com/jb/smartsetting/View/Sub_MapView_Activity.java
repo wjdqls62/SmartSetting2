@@ -51,7 +51,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     private Bundle bundle;
 
     private GoogleMap map;
-    BitmapCropManager bitmapCropManager;
+    private BitmapCropManager bitmapCropManager;
     private GoogleMap.SnapshotReadyCallback SnapshotCallback;
 
     private MarkerOptions markerOptions;
@@ -68,6 +68,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
     private Button btn_ok, btn_cancel;
 
+
     private boolean isDebug = true;
     private String TAG = getClass().getName();
 
@@ -80,13 +81,18 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         mapFragment.getMapAsync(this);
         init_GoogleApiClientBuilder();
 
-        btn_cancel = (Button) findViewById(R.id.btn_cancel);
-        btn_ok = (Button) findViewById(R.id.btn_ok);
-        btn_ok.setOnClickListener(this);
-        btn_cancel.setOnClickListener(this);
+        init_View();
 
         savedCustomLocation = new CustomLocation();
         bitmapCropManager = new BitmapCropManager(getApplicationContext());
+    }
+
+    private void init_View(){
+        btn_cancel = (Button) findViewById(R.id.btn_cancel);
+        btn_ok = (Button) findViewById(R.id.btn_ok);
+
+        btn_ok.setOnClickListener(this);
+        btn_cancel.setOnClickListener(this);
     }
 
     private void init_GoogleApiClientBuilder() {
@@ -99,6 +105,10 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     }
 
     private void onRefreshMapView() {
+        if (map != null) {
+            map.clear();
+        }
+
         if (progressDialog == null) {
             progressDialog = new ProgressDialog(Sub_MapView_Activity.this);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -272,6 +282,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         private ProgressDialog progressDialog;
         private GoogleMap.SnapshotReadyCallback snapshotReadyCallback;
         private BitmapCropManager bitmapCropManager;
+        private Bitmap tempBitmap;
 
         @Override
         protected void onPreExecute() {
@@ -286,16 +297,20 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
         @Override
         protected Void doInBackground(Bitmap... params) {
-            bitmapCropManager.cropBitmap(bitmap, savedCustomLocation);
+            tempBitmap = bitmapCropManager.cropBitmap(bitmap, savedCustomLocation);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            if(tempBitmap != null){
+                startActivity(intent);
+                finish();
+            }else{
+                Toast.makeText(getApplicationContext(), "기등록된 위치가 있습니다\n"+"위치이동 후 재시도 하세요", Toast.LENGTH_SHORT).show();
+            }
             progressDialog.dismiss();
-            startActivity(intent);
-            finish();
         }
     }
 }

@@ -66,6 +66,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_toEndOf="@+id/checkBox"
                         android:layout_toRightOf="@+id/checkBox"
+                        android:maxLength="15"
                         android:paddingLeft="5dp"
                         android:text="Company"
                         android:textColor="@color/common_google_signin_btn_text_dark_focused"
