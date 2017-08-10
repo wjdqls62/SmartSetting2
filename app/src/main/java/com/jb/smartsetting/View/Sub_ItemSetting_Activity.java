@@ -159,7 +159,9 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
             if(isTempFile){
                 objectReaderWriter.deleteObject(stubLocation);
             }
-            finish();
+            Intent intent = new Intent(this, Main_LocationList_Activity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         }
     }
 

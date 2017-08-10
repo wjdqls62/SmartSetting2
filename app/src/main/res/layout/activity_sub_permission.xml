@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/textView7"
@@ -16,7 +17,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="170dp"
             android:text="아래와 같은 앱사용 권한이 필요합니다"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -110,7 +110,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:background="#00ff0000"
-            android:text="확인" />
+            android:text="동의" />
     </RelativeLayout>
 
 </RelativeLayout>

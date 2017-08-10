@@ -25,6 +25,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.Common_Utility.SettingsChangeManager;
@@ -36,30 +38,22 @@ import java.util.ArrayList;
  * Created by jeongbin.son on 2017-06-21.
  */
 
-public class ProximityLocationService extends Service implements OnConnectionFailedListener, ConnectionCallbacks {
+public class ProximityLocationService extends Service implements OnConnectionFailedListener, ConnectionCallbacks, LocationListener{
     // Thread 반복 Delay 주기(초 단위)
     private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
     // 근접알림 반경 설정(미터 단위)
     private double PROXIMITY_ALERT_DISTANCE = 200;
 
-    private LocationManager locationManager;
-    //private GPS_Receiver gpsReceiver;
     private ObjectReaderWriter objectReaderWriter;
     private LocationObserver locationObserver;
     private Location currentLocation, prevLocation;
     private ArrayList<CustomLocation> mEnabledTargetLocation;
-
     private Context context;
-
-    private Intent intent;
-    private IntentFilter intentFilter;
-    private PendingIntent pIntent;
-    private ArrayList<PendingIntent> enabledPendingIntent;
 
     private Bitmap bitmap;
     private Uri soundUri;
-    private PendingIntent nIntent;
     private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
 
     private SettingsChangeManager settingsChangeManager;
 
@@ -72,17 +66,9 @@ public class ProximityLocationService extends Service implements OnConnectionFai
     public void onCreate() {
 
         context = getApplicationContext();
-        googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
-                .addConnectionCallbacks(this)
-                .addApi(LocationServices.API)
-                .build();
-
+        initGoogleApiClient();
 
         mEnabledTargetLocation = new ArrayList<CustomLocation>();
-        enabledPendingIntent = new ArrayList<PendingIntent>();
-
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        //gpsReceiver = new GPS_Receiver();
 
         objectReaderWriter = new ObjectReaderWriter(getApplicationContext());
 
@@ -94,15 +80,16 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // 서비스가 시작되면 활성화되어 있는 Location을 찾는다
         if (isDebug) {
             Log.d(TAG, "onStartCommand");
         }
 
-        googleApiClient.connect();
         mEnabledTargetLocation = objectReaderWriter.readObject();
-        intentFilter = new IntentFilter();
         settingsChangeManager = new SettingsChangeManager(getApplicationContext());
+
+        if(googleApiClient == null){
+            initGoogleApiClient();
+        }
 
         try {
             for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
@@ -116,12 +103,24 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                     break;
                 }
             }
+        } catch (SecurityException e) {}
+        return START_STICKY;
+    }
 
-        } catch (SecurityException e) {
+    private void initGoogleApiClient(){
+        try{
+            googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
+                    .addConnectionCallbacks(this)
+                    .addApi(LocationServices.API)
+                    .build();
+            googleApiClient.connect();
+
+            locationRequest = new LocationRequest();
+            locationRequest.setFastestInterval(SEARCH_LOCATION_DELAY_TIME);
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        }catch(SecurityException e){
 
         }
-
-        return START_STICKY;
     }
 
     @Nullable
@@ -154,7 +153,10 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.d(TAG, "GoogleApi is Ready!");
+        if(isDebug){
+            Log.d(TAG, "onConnected");
+        }
+
     }
 
     @Override
@@ -162,7 +164,14 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        currentLocation = location;
+    }
+
     private class LocationObserver extends AsyncTask<Void, Void, Void> {
+
+
 
         @Override
         protected Void doInBackground(Void... params) {

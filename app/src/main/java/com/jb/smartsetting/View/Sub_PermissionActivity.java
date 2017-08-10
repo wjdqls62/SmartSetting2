@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ListViewCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
@@ -49,11 +50,21 @@ public class Sub_PermissionActivity extends AppCompatActivity implements View.On
         getSupportActionBar().setTitle("권한안내");
     }
 
+    @Override
+    public void onBackPressed() {
+        android.os.Process.killProcess(android.os.Process.myPid());
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if(permissionManager.onPermissionResultTransaction(requestCode, permissions, grantResults)){
+            Intent intent = new Intent(this, Main_LocationList_Activity.class);
+            startActivity(intent);
             finish();
+
+        }else{
+            Log.d("TEST", "App is Kill...");
+            android.os.Process.killProcess(android.os.Process.myPid());
         }
     }
 

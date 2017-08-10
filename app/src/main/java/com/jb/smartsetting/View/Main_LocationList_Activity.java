@@ -73,7 +73,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        permissionManager = new PermissionManager(this, getApplicationContext());
         setContentView(R.layout.activity_main__location_list_);
 
         init_View();
@@ -96,14 +96,15 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     @Override
     protected void onResume() {
         super.onResume();
+
+        permissionManager.isPermissionCheck();
         onRefreshAdapter();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        permissionManager = new PermissionManager(this, getApplicationContext());
-        permissionManager.isPermissionCheck();
+
     }
 
     private void init_View() {

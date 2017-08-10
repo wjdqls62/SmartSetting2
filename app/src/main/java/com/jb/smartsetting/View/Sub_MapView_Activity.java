@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,7 +48,8 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         GoogleApiClient.OnConnectionFailedListener,
         GoogleMap.OnMapLoadedCallback,
         GoogleMap.SnapshotReadyCallback,
-        LocationListener {
+        com.google.android.gms.location.LocationListener
+{
 
     private Bundle bundle;
 
@@ -57,6 +59,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     private CircleOptions circleOptions;
     private LatLng latLng;
     private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
     private Location lastLocation;
     private CreateSnapShot loadingDialog;
 
@@ -76,12 +79,14 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.sub_map_view);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapview);
-        mapFragment.getMapAsync(this);
-        init_GoogleApiClientBuilder();
 
+        init_GoogleApiClientBuilder();
+        mapFragment.getMapAsync(this);
         init_View();
 
         savedCustomLocation = new CustomLocation();
+
+
     }
 
     private void init_View(){
@@ -93,12 +98,24 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     }
 
     private void init_GoogleApiClientBuilder() {
-        googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
-                .enableAutoManage(this, this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
+        try{
+            googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
+                    .enableAutoManage(this, this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+
+            googleApiClient.connect();
+
+            locationRequest = new LocationRequest();
+            locationRequest.setFastestInterval(5000);
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+
+        }catch(SecurityException e){
+
+        }
     }
 
     private void onRefreshMapView() {
@@ -106,17 +123,19 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             map.clear();
         }
 
-        markerOptions = new MarkerOptions();
-        circleOptions = new CircleOptions();
-        latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-        markerOptions.position(latLng);
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        circleOptions.center(latLng).radius(300).strokeWidth(1f).fillColor(Color.parseColor("#40C6FFFF"));
+        if(lastLocation != null){
+            markerOptions = new MarkerOptions();
+            circleOptions = new CircleOptions();
+            latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+            markerOptions.position(latLng);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            circleOptions.center(latLng).radius(300).strokeWidth(1f).fillColor(Color.parseColor("#40C6FFFF"));
 
-        Marker marker = map.addMarker(markerOptions);
-        marker.showInfoWindow();
-        map.addCircle(circleOptions);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+            Marker marker = map.addMarker(markerOptions);
+            marker.showInfoWindow();
+            map.addCircle(circleOptions);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+        }
     }
 
 
@@ -191,15 +210,14 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        try {
-            lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-            if (lastLocation != null) {
-                onRefreshMapView();
-            }
 
-            if (isDebug) {
-                Log.d(TAG, "onConnected");
-            }
+        if (isDebug) {
+            Log.d(TAG, "onConnected");
+        }
+
+        try {
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+
         } catch (SecurityException e) {
 
         }
@@ -216,52 +234,28 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
-    @Override
     public void onMapLoaded() {
         Log.d(TAG, "onMapLoaded");
     }
 
     @Override
     public void onSnapshotReady(Bitmap bitmap) {
-        try{
-            this.bitmap = Bitmap.createBitmap(bitmap);
-            if (bitmap != null) {
-                loadingDialog = new CreateSnapShot();
-                if(loadingDialog.execute().get()){
-                    startActivity(intent);
-                    finish();
-                }else{
-                    Toast.makeText(getApplicationContext(), "기등록된 위치가 있습니다\n"+"위치이동 후 재시도 하세요", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(getApplicationContext(), "SnapshotReady of Bitmap is Null", Toast.LENGTH_SHORT).show();
-            }
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        this.bitmap = Bitmap.createBitmap(bitmap);
+        if (bitmap != null) {
+            loadingDialog = new CreateSnapShot();
+            loadingDialog.execute();
+        } else {
+            Toast.makeText(getApplicationContext(), "SnapshotReady of Bitmap is Null", Toast.LENGTH_SHORT).show();
         }
-
     }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d(TAG, "onLocationChanged");
+        lastLocation = location;
+        onRefreshMapView();
+    }
+
 
     private class CreateSnapShot extends AsyncTask<Void, Void, Boolean> {
         private ProgressDialog sProgressDialog;
@@ -284,12 +278,6 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         @Override
         protected Boolean doInBackground(Void... params) {
             tempBitmap = bitmapCropManager.cropBitmap(bitmap, savedCustomLocation);
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             if(tempBitmap != null){
                 return true;
             }else{
@@ -301,6 +289,13 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             sProgressDialog.dismiss();
+            if(aBoolean){
+                startActivity(intent);
+                finish();
+            }else{
+                Toast.makeText(getApplicationContext(), "기등록된 위치가 있습니다\n"+"위치이동 후 재시도 하세요", Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 }
