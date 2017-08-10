@@ -41,7 +41,9 @@ import java.util.ArrayList;
 public class ProximityLocationService extends Service implements OnConnectionFailedListener, ConnectionCallbacks, LocationListener{
     // Thread 반복 Delay 주기(초 단위)
     private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
-    // 근접알림 반경 설정(미터 단위)
+    // 세부탐색을 하기위한 위치변동 기준 (30m)
+    private double PREV_CURRENT_DISTANCE = 30;
+    // 세부탐색 중 사용자지정 위치와 현재위치간의 기준거리 (200m)
     private double PROXIMITY_ALERT_DISTANCE = 200;
 
     private ObjectReaderWriter objectReaderWriter;
@@ -185,11 +187,11 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
                     if (prevLocation != null) {
                         distance = currentLocation.distanceTo(prevLocation);
-                        // currentLocation 와 prevLocation의 거리를 계산해 반경300m이상 떨어질 경우 || 서비스 시작 후 Refresh 2회 이하의 경우
-                        if (distance >= PROXIMITY_ALERT_DISTANCE || refreshCount <= 2) {
+                        // currentLocation 와 prevLocation의 거리를 비교시 30m이상 위치변동이 있을경우 or 서비스 시작 후 Refresh 2회 이하의 경우
+                        if (distance >= PREV_CURRENT_DISTANCE || refreshCount <= 2) {
                             mEnabledTargetLocation = objectReaderWriter.readObject();
                             for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
-                                // 사용자 등록지점과 근접할 경우
+                                // 사용자 등록지점과 200m 이내로 근접할 경우
                                 if (mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
 
                                     settingsChangeManager.setSavedTargetLocation(mEnabledTargetLocation.get(i));

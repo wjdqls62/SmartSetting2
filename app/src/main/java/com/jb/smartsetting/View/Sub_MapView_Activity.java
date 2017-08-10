@@ -288,7 +288,10 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
-            sProgressDialog.dismiss();
+            if(sProgressDialog.isShowing()){
+                sProgressDialog.dismiss();
+            }
+
             if(aBoolean){
                 startActivity(intent);
                 finish();
