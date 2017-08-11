@@ -1,7 +1,6 @@
 package com.jb.smartsetting.GPS_Utility;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,7 +9,6 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.location.LocationManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -41,8 +39,8 @@ import java.util.ArrayList;
 public class ProximityLocationService extends Service implements OnConnectionFailedListener, ConnectionCallbacks, LocationListener{
     // Thread 반복 Delay 주기(초 단위)
     private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
-    // 세부탐색을 하기위한 위치변동 기준 (30m)
-    private double PREV_CURRENT_DISTANCE = 30;
+    // 세부탐색을 하기위한 PREV<->CURRENT 위치변동 기준 (150m)
+    private double PREV_CURRENT_DISTANCE = 150;
     // 세부탐색 중 사용자지정 위치와 현재위치간의 기준거리 (200m)
     private double PROXIMITY_ALERT_DISTANCE = 200;
 

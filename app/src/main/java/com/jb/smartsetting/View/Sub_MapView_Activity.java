@@ -109,7 +109,6 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             googleApiClient.connect();
 
             locationRequest = new LocationRequest();
-            locationRequest.setFastestInterval(5000);
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 
@@ -186,7 +185,6 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    // getMapAsync of Callback
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -240,10 +238,10 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onSnapshotReady(Bitmap bitmap) {
-        this.bitmap = Bitmap.createBitmap(bitmap);
+        this.bitmap = bitmap;
         if (bitmap != null) {
             loadingDialog = new CreateSnapShot();
-            loadingDialog.execute();
+            loadingDialog.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             Toast.makeText(getApplicationContext(), "SnapshotReady of Bitmap is Null", Toast.LENGTH_SHORT).show();
         }
@@ -264,15 +262,13 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
         @Override
         protected void onPreExecute() {
-            super.onPreExecute();
             bitmapCropManager = new BitmapCropManager(getApplicationContext());
-            if(sProgressDialog == null){
-                sProgressDialog = new ProgressDialog(Sub_MapView_Activity.this);
-                sProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                sProgressDialog.setMessage("잠시만 기다려주세요...");
-                sProgressDialog.setCancelable(false);
-                sProgressDialog.show();
-            }
+            sProgressDialog = new ProgressDialog(Sub_MapView_Activity.this);
+            sProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            sProgressDialog.setMessage("잠시만 기다려주세요...");
+            sProgressDialog.setCancelable(false);
+            sProgressDialog.show();
+
         }
 
         @Override
@@ -287,10 +283,8 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-            if(sProgressDialog.isShowing()){
-                sProgressDialog.dismiss();
-            }
+            sProgressDialog.dismiss();
+
 
             if(aBoolean){
                 startActivity(intent);
@@ -298,7 +292,6 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             }else{
                 Toast.makeText(getApplicationContext(), "기등록된 위치가 있습니다\n"+"위치이동 후 재시도 하세요", Toast.LENGTH_SHORT).show();
             }
-
         }
     }
 }

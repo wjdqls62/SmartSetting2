@@ -63,6 +63,7 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         else if(DIALOG_MODE.equals("SETTING_WIFI")){
             setContentView(R.layout.dialog_wifi);
             initWiFiSetting_View();
+
         }
     }
 

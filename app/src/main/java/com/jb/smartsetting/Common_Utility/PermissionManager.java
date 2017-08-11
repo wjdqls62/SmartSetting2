@@ -35,6 +35,7 @@ public class PermissionManager {
     public void movePermissionActivity(){
         intent = new Intent(activity, Sub_PermissionActivity.class);
         activity.startActivity(intent);
+        activity.finish();
 
     }
 
