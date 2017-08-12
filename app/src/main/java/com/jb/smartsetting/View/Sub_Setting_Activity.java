@@ -23,14 +23,14 @@ import static android.content.Context.MODE_PRIVATE;
 public class Sub_Setting_Activity extends PreferenceActivity {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
-    private Preference.OnPreferenceChangeListener onPreferenceChangeListener;
 
     SwitchPreference sw_setting_dev_mode;
+    SwitchPreference sw_setting_common_noti;
 
     private boolean isDebug = false;
     private String TAG = getClass().getName();
 
-    private void getPreference(){
+    private void getPreference() {
         SharedPreferences pref = getSharedPreferences("settings", MODE_PRIVATE);
         isDebug = pref.getBoolean("setting_dev_mode", false);
     }
@@ -44,20 +44,38 @@ public class Sub_Setting_Activity extends PreferenceActivity {
         pref = getSharedPreferences("settings", MODE_PRIVATE);
         editor = pref.edit();
 
+        // 개발자 모드
         sw_setting_dev_mode = (SwitchPreference) findPreference("setting_dev_mode");
         sw_setting_dev_mode.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if(((SwitchPreference)preference).isChecked()){
-                    editor.putBoolean(((SwitchPreference)preference).getKey(), false).commit();
+                if (((SwitchPreference) preference).isChecked()) {
+                    editor.putBoolean(((SwitchPreference) preference).getKey(), false).commit();
                     sw_setting_dev_mode.setChecked(false);
-                }else{
-                    editor.putBoolean(((SwitchPreference)preference).getKey(), true).commit();
+                } else {
+                    editor.putBoolean(((SwitchPreference) preference).getKey(), true).commit();
                     sw_setting_dev_mode.setChecked(true);
                 }
                 return false;
             }
         });
+
+        // 위치근접 알림
+        sw_setting_common_noti = (SwitchPreference) findPreference("setting_common_noti");
+        sw_setting_common_noti.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if (((SwitchPreference) preference).isChecked()) {
+                    editor.putBoolean(((SwitchPreference) preference).getKey(), false).commit();
+                    sw_setting_common_noti.setChecked(false);
+                } else {
+                    editor.putBoolean(((SwitchPreference) preference).getKey(), true).commit();
+                    sw_setting_common_noti.setChecked(true);
+                }
+                return false;
+            }
+        });
+
 
     }
 }

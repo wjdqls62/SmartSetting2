@@ -3,6 +3,13 @@
     <PreferenceCategory android:title="개발자 모드">
         <SwitchPreference
             android:defaultValue="true"
+            android:key="setting_common_noti"
+            android:summary="저장된 위치에 도착시 알림을 표시합니다"
+            android:title="알림 표시" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="개발자 모드">
+        <SwitchPreference
+            android:defaultValue="true"
             android:key="setting_dev_mode"
             android:title="디버깅 모드"
             android:summary="디버깅 로그 및 기타 정보를 화면에 표시합니다" />

@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -36,7 +37,7 @@ import java.util.ArrayList;
  * Created by jeongbin.son on 2017-06-21.
  */
 
-public class ProximityLocationService extends Service implements OnConnectionFailedListener, ConnectionCallbacks, LocationListener{
+public class ProximityLocationService extends Service implements OnConnectionFailedListener, ConnectionCallbacks, LocationListener {
     // Thread 반복 Delay 주기(초 단위)
     private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
     // 세부탐색을 하기위한 PREV<->CURRENT 위치변동 기준 (150m)
@@ -58,8 +59,15 @@ public class ProximityLocationService extends Service implements OnConnectionFai
     private SettingsChangeManager settingsChangeManager;
 
     private String TAG = getClass().getName();
-    private boolean isDebug = true;
-    private boolean isRunning = false;
+    private boolean isDebug;
+    private boolean isProximityAlertNoti;
+    private boolean isRunning;
+
+    private void getPreference() {
+        SharedPreferences pref = getSharedPreferences("settings", MODE_PRIVATE);
+        isDebug = pref.getBoolean("setting_dev_mode", false);
+        isProximityAlertNoti = pref.getBoolean("setting_common_noti", false);
+    }
 
 
     @Override
@@ -87,7 +95,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
         mEnabledTargetLocation = objectReaderWriter.readObject();
         settingsChangeManager = new SettingsChangeManager(getApplicationContext());
 
-        if(googleApiClient == null){
+        if (googleApiClient == null) {
             initGoogleApiClient();
         }
 
@@ -97,18 +105,16 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                     isRunning = true;
                     locationObserver = new LocationObserver();
                     locationObserver.execute();
-                    if (isDebug) {
-                        Log.d(TAG, "Start LocationObserver Thread");
-                    }
                     break;
                 }
             }
-        } catch (SecurityException e) {}
+        } catch (SecurityException e) {
+        }
         return START_STICKY;
     }
 
-    private void initGoogleApiClient(){
-        try{
+    private void initGoogleApiClient() {
+        try {
             googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
                     .addConnectionCallbacks(this)
                     .addApi(LocationServices.API)
@@ -118,7 +124,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
             locationRequest = new LocationRequest();
             locationRequest.setFastestInterval(SEARCH_LOCATION_DELAY_TIME);
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        }catch(SecurityException e){
+        } catch (SecurityException e) {
 
         }
     }
@@ -153,7 +159,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if(isDebug){
+        if (isDebug) {
             Log.d(TAG, "onConnected");
         }
 
@@ -170,7 +176,6 @@ public class ProximityLocationService extends Service implements OnConnectionFai
     }
 
     private class LocationObserver extends AsyncTask<Void, Void, Void> {
-
 
 
         @Override
@@ -233,17 +238,19 @@ public class ProximityLocationService extends Service implements OnConnectionFai
         }
 
         public void showNotification(String targetLocationName) {
-            bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-            soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
-                    .setSmallIcon(android.R.drawable.ic_menu_myplaces)
-                    .setLargeIcon(bitmap)
-                    .setContentTitle("SmartSetting")
-                    .setContentText(targetLocationName + " 지점에 근접합니다.")
-                    .setAutoCancel(true)
-                    .setSound(soundUri);
-            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(0, notificationBuilder.build());
+            if (isProximityAlertNoti) {
+                bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+                soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(android.R.drawable.ic_menu_myplaces)
+                        .setLargeIcon(bitmap)
+                        .setContentTitle("SmartSetting")
+                        .setContentText(targetLocationName + " 지점에 근접합니다.")
+                        .setAutoCancel(true)
+                        .setSound(soundUri);
+                NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.notify(0, notificationBuilder.build());
+            }
         }
     }
 }

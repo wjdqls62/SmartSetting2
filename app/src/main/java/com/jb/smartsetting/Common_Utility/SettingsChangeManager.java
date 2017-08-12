@@ -15,7 +15,7 @@ public class SettingsChangeManager {
    private AudioManager audioManager;
    private BluetoothAdapter bluetoothAdapter;
    private WifiManager wifiManager;
-    Context context;
+   private Context context;
 
     CustomLocation targetCustomLocation;
 
