@@ -48,8 +48,16 @@ public class CustomLocation implements Serializable {
         isEnabled = value;
     }
 
-    public void setSoundVolume(String SoundType){
+    public void setSoundType(String SoundType){
         this.SoundType = SoundType;
+    }
+
+    public void setBluetoothType(String BluetoothType){
+        this.BluetoothType = BluetoothType;
+    }
+
+    public void setWiFiType(String WiFiType){
+        this.WiFiType = WiFiType;
     }
 
     public double toDistance(double lat2, double lon2){

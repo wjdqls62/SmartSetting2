@@ -215,7 +215,9 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                         break;
                     } else {
                         stubLocation.locationName = etLocationName.getText().toString();
-                        // stub객체 저장
+                        stubLocation.setBluetoothType(txBluetoothMode.getText().toString());
+                        stubLocation.setSoundType(txSoundMode.getText().toString());
+                        stubLocation.setWiFiType(txWiFiMode.getText().toString());
                         objectReaderWriter.saveObject(stubLocation);
                         move_LocationList_Activity();
                         break;
