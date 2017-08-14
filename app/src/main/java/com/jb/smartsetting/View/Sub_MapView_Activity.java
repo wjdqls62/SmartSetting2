@@ -273,6 +273,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
         @Override
         protected Boolean doInBackground(Void... params) {
+            savedCustomLocation.setAddress(getApplication());
             tempBitmap = bitmapCropManager.cropBitmap(bitmap, savedCustomLocation);
             if(tempBitmap != null){
                 return true;

@@ -44,7 +44,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
 
     private Toolbar toolbar;
     private EditText etLocationName;
-    private TextView txSoundMode, txBluetoothMode, txWiFiMode;
+    private TextView txSoundMode, txBluetoothMode, txWiFiMode, txAddress;
 
     private CollapsingToolbarLayout toolbarLayout;
     private ImageView locationThumnail;
@@ -101,6 +101,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         }
         locationThumnail.setAlpha(70);
         locationThumnail.setImageBitmap(BitmapFactory.decodeFile(stubLocation.objFilePath+"crop_"+stubLocation.imgFileName));
+        txAddress.setText(stubLocation.address);
     }
 
     private void initView() {
@@ -115,6 +116,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         txSoundMode = (TextView) findViewById(R.id.sound_mode);
         txBluetoothMode = (TextView) findViewById(R.id.bluetooth_mode);
         txWiFiMode = (TextView) findViewById(R.id.wifi_mode);
+        txAddress = (TextView) findViewById(R.id.location_address);
     }
 
     private void move_LocationList_Activity() {
@@ -140,7 +142,6 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         stubLocation.BluetoothType = txBluetoothMode.getText().toString();
         stubLocation.WiFiType = txWiFiMode.getText().toString();
 
-        // stub객체 저장
         objectReaderWriter.saveObject(stubLocation);
         move_LocationList_Activity();
     }
