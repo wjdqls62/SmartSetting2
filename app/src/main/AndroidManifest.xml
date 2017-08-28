@@ -26,20 +26,28 @@
         <activity
             android:name=".View.Main_LocationList_Activity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".View.Sub_MapView_Activity" />
+        <activity
+            android:name=".View.Sub_MapView_Activity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".View.Sub_ItemSetting_Activity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_sub__item_setting_"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".View.Sub_PermissionActivity" />
-        <activity android:name=".View.Sub_Setting_Activity" />
+        <activity
+            android:name=".View.Sub_PermissionActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".View.Sub_Setting_Activity"
+            android:screenOrientation="portrait"/>
 
         <service android:name=".GPS_Utility.ProximityLocationService"
             android:enabled="true"
