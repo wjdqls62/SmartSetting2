@@ -42,7 +42,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
     private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
     // 세부탐색을 하기위한 PREV<->CURRENT 위치변동 기준 (150m)
     private double PREV_CURRENT_DISTANCE = 150;
-    // 세부탐색 중 사용자지정 위치와 현재위치간의 기준거리 (200m)
+    // 세부탐색 중 사용자 지정 위치와 현재위치간의 기준거리 (200m)
     private double PROXIMITY_ALERT_DISTANCE = 200;
 
     private ObjectReaderWriter objectReaderWriter;
@@ -190,18 +190,15 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
                     if (prevLocation != null) {
                         distance = currentLocation.distanceTo(prevLocation);
-                        // currentLocation 와 prevLocation의 거리를 비교시 30m이상 위치변동이 있을경우 or 서비스 시작 후 Refresh 2회 이하의 경우
+                        // currentLocation 와 prevLocation의 거리를 비교시 150m이상 위치변동이 있을경우 or 서비스 시작 후 Refresh 2회 이하의 경우
                         if (distance >= PREV_CURRENT_DISTANCE || refreshCount <= 2) {
                             mEnabledTargetLocation = objectReaderWriter.readObject();
                             for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
                                 // 사용자 등록지점과 200m 이내로 근접할 경우
                                 if (mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
-
                                     settingsChangeManager.setSavedTargetLocation(mEnabledTargetLocation.get(i));
                                     settingsChangeManager.SettingChangeTrigger();
-
                                     showNotification(mEnabledTargetLocation.get(i).getLocationName());
-
                                     if (isDebug) {
                                         Log.d(TAG, mEnabledTargetLocation.get(i).getLocationName() + "지점과 근접합니다! : " +
                                                 mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) + "m");

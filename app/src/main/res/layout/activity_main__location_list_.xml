@@ -20,7 +20,8 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main__location_list_" />
+    <include layout="@layout/content_main__location_list_"
+        android:id="@+id/include2" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_add_location"
@@ -72,6 +73,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_toLeftOf="@+id/btn_delte_ok"
                 android:layout_toStartOf="@+id/btn_delte_ok"
+                android:background="#00ff0000"
                 android:text="취소" />
 
             <Button
@@ -81,10 +83,22 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
+                android:background="#00ff0000"
                 android:text="삭제" />
 
         </RelativeLayout>
 
+    <TextView
+        android:id="@+id/no_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:text="저장된 위치가 없습니다\n 위치를 추가해 보세요"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_anchor="@+id/include2"
+        app:layout_anchorGravity="center_vertical|center_horizontal" />
 
 
 </android.support.design.widget.CoordinatorLayout>

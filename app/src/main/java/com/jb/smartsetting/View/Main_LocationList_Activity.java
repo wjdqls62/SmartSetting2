@@ -46,14 +46,13 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private LinearLayout ItemLayout;
-    private TextView selectedCount;
+    private TextView selectedCount, emptyLocationData;
     private Button btn_delete_ok, btn_delete_cancel;
     private Intent intent;
 
     private LocationItemAdapter locationItemAdapter;
     private Toolbar toolbar;
     private FloatingActionButton fab_newLocation;
-    private DividerItemDecoration dividerItemDecoration;
 
     private PermissionManager permissionManager;
 
@@ -104,7 +103,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     @Override
     protected void onStart() {
         super.onStart();
-
     }
 
     private void init_View() {
@@ -115,8 +113,8 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         btn_delete_ok = (Button) findViewById(R.id.btn_delte_ok);
         btn_delete_cancel = (Button) findViewById(R.id.btn_delte_cancel);
         selectedCount = (TextView) findViewById(R.id.selected_delete_count);
+        emptyLocationData = (TextView) findViewById(R.id.no_data);
         setSupportActionBar(toolbar);
-
     }
 
     private void init_Listener() {
@@ -209,7 +207,13 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             arrLocationList.clear();
         }
         arrLocationList = objectReaderWriter.readObject();
+        if(arrLocationList.size() == 0){
+            emptyLocationData.setVisibility(View.VISIBLE);
+        }else{
+            emptyLocationData.setVisibility(View.GONE);
+        }
         locationItemAdapter.notifyDataSetChanged();
+
     }
 
     private class LocationItemAdapter extends Adapter<LocationListViewHolder> {
@@ -250,21 +254,15 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
 
         @Override
         public void onBindViewHolder(final LocationListViewHolder holder, final int position) {
-
             // Item 삭제 및 일반 선택모드의 구분
             if (RECYCLER_MODE == RECYCLER_VIEW_NORMAL_MODE) {
                 holder.checkBox.setVisibility(View.GONE);
                 holder.checkBox.setChecked(false);
-
                 holder.toggleButton.setVisibility(View.VISIBLE);
-
-
             } else if (RECYCLER_MODE == RECYCLER_VIEW_DELETE_MODE) {
-
                 holder.toggleButton.setVisibility(View.GONE);
                 holder.checkBox.setVisibility(View.VISIBLE);
             }
-
 
             // StubObject의 isEnabled값을 가져와 ToggleSwitch의 상태를 변경
             if (arrLocationList.get(position).isEnabled) {

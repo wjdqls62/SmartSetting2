@@ -143,6 +143,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         stubLocation.WiFiType = txWiFiMode.getText().toString();
 
         objectReaderWriter.saveObject(stubLocation);
+        Toast.makeText(getApplicationContext(), "수정되었습니다", Toast.LENGTH_SHORT).show();
         move_LocationList_Activity();
     }
 
@@ -220,6 +221,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                         stubLocation.setSoundType(txSoundMode.getText().toString());
                         stubLocation.setWiFiType(txWiFiMode.getText().toString());
                         objectReaderWriter.saveObject(stubLocation);
+                        Toast.makeText(getApplicationContext(), "저장되었습니다", Toast.LENGTH_SHORT).show();
                         move_LocationList_Activity();
                         break;
                     }
