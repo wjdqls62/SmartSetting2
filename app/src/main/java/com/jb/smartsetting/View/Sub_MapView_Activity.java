@@ -208,14 +208,12 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
         if (isDebug) {
             Log.d(TAG, "onConnected");
         }
 
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-
         } catch (SecurityException e) {
 
         }
@@ -285,8 +283,6 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             sProgressDialog.dismiss();
-
-
             if(aBoolean){
                 startActivity(intent);
                 finish();

@@ -69,7 +69,6 @@ public class ProximityLocationService extends Service implements OnConnectionFai
         isProximityAlertNoti = pref.getBoolean("setting_common_noti", false);
     }
 
-
     @Override
     public void onCreate() {
 
@@ -79,10 +78,11 @@ public class ProximityLocationService extends Service implements OnConnectionFai
         mEnabledTargetLocation = new ArrayList<CustomLocation>();
 
         objectReaderWriter = new ObjectReaderWriter(getApplicationContext());
-
-        if (isDebug) {
+        getPreference();
+        if(isDebug){
             Log.d(TAG, "onCreate");
         }
+
         super.onCreate();
     }
 
