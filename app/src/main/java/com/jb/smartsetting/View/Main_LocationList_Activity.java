@@ -208,11 +208,11 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         arrLocationList = objectReaderWriter.readObject();
         if(arrLocationList.size() == 0){
             emptyLocationData.setVisibility(View.VISIBLE);
+            stopService(new Intent(getApplicationContext(), ProximityLocationService.class));
         }else{
             emptyLocationData.setVisibility(View.GONE);
         }
         locationItemAdapter.notifyDataSetChanged();
-
     }
 
     private class LocationItemAdapter extends Adapter<LocationListViewHolder> {
