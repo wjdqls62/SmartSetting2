@@ -39,7 +39,7 @@ import java.util.ArrayList;
 
 public class ProximityLocationService extends Service implements OnConnectionFailedListener, ConnectionCallbacks, LocationListener {
     // Thread 반복 Delay 주기(초 단위)
-    private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
+    private int SEARCH_LOCATION_DELAY_TIME = 10000;
     // 세부탐색을 하기위한 PREV<->CURRENT 위치변동 기준 (150m)
     private double PREV_CURRENT_DISTANCE = 150;
     // 세부탐색 중 사용자 지정 위치와 현재위치간의 기준거리 (200m)
@@ -147,9 +147,10 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
     @Override
     public void onDestroy() {
-        if (isDebug) Log.d(TAG, "End to SmartSetting service");
-        isRunning = false;
-        super.onDestroy();
+        Log.d(TAG, "onDestory");
+        locationObserver.onCancelled(false);
+
+
     }
 
     @Override
@@ -159,10 +160,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (isDebug) {
-            Log.d(TAG, "onConnected");
-        }
-
+        if (isDebug) Log.d(TAG, "onConnected");
     }
 
     @Override
@@ -175,11 +173,16 @@ public class ProximityLocationService extends Service implements OnConnectionFai
         currentLocation = location;
     }
 
-    private class LocationObserver extends AsyncTask<Void, Void, Void> {
-
+    private class LocationObserver extends AsyncTask<Void, Void, Boolean> {
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected void onCancelled(Boolean aBoolean) {
+            if (isDebug) Log.d(TAG, "onCancelled");
+            isRunning = false;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
             int refreshCount = 0;
             float distance = 0f;
 
@@ -207,7 +210,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                             }
                         }
                     } else {
-                        if (isDebug) Log.d(TAG, "마지막 측정위치와 동일합니다. ");
+                        if (isDebug) Log.d(TAG, "Fail getLastLocation... ");
                     }
 
                     refreshCount++;
