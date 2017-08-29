@@ -85,14 +85,15 @@ public class PermissionManager {
 
     public boolean onPermissionResultTransaction(int requestCode, String[] permissions, int[] grantResults){
         boolean result = true;
-        for(int i=0; i<permissions.length; i++){
-            Log.d("TEST", "======================================");
-            Log.d("TEST", "Permissions : "+permissions[i]);
-            Log.d("TEST", "grantResults : "+grantResults[i]);
-            Log.d("TEST", "======================================");
+        if (SettingValues.getInstance().IsDebug()){
+            for(int i=0; i<permissions.length; i++){
+                Log.d("TEST", "======================================");
+                Log.d("TEST", "Permissions : "+permissions[i]);
+                Log.d("TEST", "grantResults : "+grantResults[i]);
+                Log.d("TEST", "======================================");
+            }
         }
-
-
+        
         for(int i=0; i<permissions.length; i++){
             if(grantResults[i] == -1){
                 result = false;

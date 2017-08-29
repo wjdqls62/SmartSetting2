@@ -28,8 +28,10 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
+import com.jb.smartsetting.Common_Utility.SettingValues;
 import com.jb.smartsetting.Common_Utility.SettingsChangeManager;
 import com.jb.smartsetting.R;
+import com.jb.smartsetting.View.Sub_Setting_Activity;
 
 import java.util.ArrayList;
 
@@ -37,7 +39,10 @@ import java.util.ArrayList;
  * Created by jeongbin.son on 2017-06-21.
  */
 
-public class ProximityLocationService extends Service implements OnConnectionFailedListener, ConnectionCallbacks, LocationListener {
+public class ProximityLocationService extends Service implements
+        OnConnectionFailedListener,
+        ConnectionCallbacks,
+        LocationListener{
     // Thread 반복 Delay 주기(초 단위)
     private int SEARCH_LOCATION_DELAY_TIME = 10000;
     // 세부탐색을 하기위한 PREV<->CURRENT 위치변동 기준 (150m)
@@ -58,28 +63,27 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
     private SettingsChangeManager settingsChangeManager;
 
+    private boolean isDebug, isShowNotification;
     private String TAG = getClass().getName();
-    private boolean isDebug;
-    private boolean isProximityAlertNoti;
     private boolean isRunning;
 
     private void getPreference() {
         SharedPreferences pref = getSharedPreferences("settings", MODE_PRIVATE);
         isDebug = pref.getBoolean("setting_dev_mode", false);
-        isProximityAlertNoti = pref.getBoolean("setting_common_noti", false);
+        isShowNotification = pref.getBoolean("setting_common_noti", true);
+        SettingValues.getInstance().setIsDebug(isDebug);
+        SettingValues.getInstance().setIsShowNotification(isShowNotification);
     }
 
     @Override
     public void onCreate() {
-
         context = getApplicationContext();
         initGoogleApiClient();
-
+        SettingValues.getInstance();
         mEnabledTargetLocation = new ArrayList<CustomLocation>();
 
         objectReaderWriter = new ObjectReaderWriter(getApplicationContext());
-        getPreference();
-        if(isDebug){
+        if(SettingValues.getInstance().IsDebug()){
             Log.d(TAG, "onCreate");
         }
 
@@ -88,12 +92,13 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (isDebug) {
+        if (SettingValues.getInstance().IsDebug()) {
             Log.d(TAG, "onStartCommand");
         }
 
         mEnabledTargetLocation = objectReaderWriter.readObject();
         settingsChangeManager = new SettingsChangeManager(getApplicationContext());
+        getPreference();
 
         if (googleApiClient == null) {
             initGoogleApiClient();
@@ -147,7 +152,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestory");
+        if (SettingValues.getInstance().IsDebug()) Log.d(TAG, "onDestory");
         locationObserver.onCancelled(false);
 
 
@@ -160,7 +165,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (isDebug) Log.d(TAG, "onConnected");
+        if (SettingValues.getInstance().IsDebug()) Log.d(TAG, "onConnected");
     }
 
     @Override
@@ -177,7 +182,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
 
         @Override
         protected void onCancelled(Boolean aBoolean) {
-            if (isDebug) Log.d(TAG, "onCancelled");
+            if (SettingValues.getInstance().IsDebug()) Log.d(TAG, "onCancelled");
             isRunning = false;
         }
 
@@ -202,7 +207,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                                     settingsChangeManager.setSavedTargetLocation(mEnabledTargetLocation.get(i));
                                     settingsChangeManager.SettingChangeTrigger();
                                     showNotification(mEnabledTargetLocation.get(i).getLocationName());
-                                    if (isDebug) {
+                                    if (SettingValues.getInstance().IsDebug()) {
                                         Log.d(TAG, mEnabledTargetLocation.get(i).getLocationName() + "지점과 근접합니다! : " +
                                                 mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) + "m");
                                     }
@@ -210,7 +215,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                             }
                         }
                     } else {
-                        if (isDebug) Log.d(TAG, "Fail getLastLocation... ");
+                        if (SettingValues.getInstance().IsDebug()) Log.d(TAG, "Fail getLastLocation... ");
                     }
 
                     refreshCount++;
@@ -221,7 +226,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
-                    if (isDebug) {
+                    if (SettingValues.getInstance().IsDebug()) {
                         if (currentLocation != null) {
                             Log.d(TAG, "========================== LocationObserver Thread is Runnig =============================");
                             Log.d(TAG, "Lat : " + currentLocation.getLatitude());
@@ -238,7 +243,7 @@ public class ProximityLocationService extends Service implements OnConnectionFai
         }
 
         public void showNotification(String targetLocationName) {
-            if (isProximityAlertNoti) {
+            if (SettingValues.getInstance().isShowNotification()) {
                 bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
                 soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                 NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())

@@ -9,7 +9,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="개발자 모드">
         <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="setting_dev_mode"
             android:title="디버깅 모드"
             android:summary="디버깅 로그 및 기타 정보를 화면에 표시합니다" />

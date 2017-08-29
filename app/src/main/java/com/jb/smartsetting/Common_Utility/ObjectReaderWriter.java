@@ -37,14 +37,12 @@ public class ObjectReaderWriter {
 
         if(objFile.exists()){
             objFile.delete();
-            Log.d(TAG, "OBJ파일 삭제 완료");
+            if(SettingValues.getInstance().IsDebug()) {Log.d(TAG, "OBJ파일 삭제 완료");}
         }
         if(imgFile.exists()){
             imgFile.delete();
-            Log.d(TAG, "IMG파일 삭제 완료");
+            if(SettingValues.getInstance().IsDebug()) {Log.d(TAG, "IMG파일 삭제 완료");}
         }
-
-
     }
 
     public void saveObject(CustomLocation location) {
@@ -75,7 +73,7 @@ public class ObjectReaderWriter {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }catch (NullPointerException e){
-            Log.d(TAG, "Not yet created /data/data/com.jb.smartsetting/files/");
+            if(SettingValues.getInstance().IsDebug()) Log.d(TAG, "Not yet created /data/data/com.jb.smartsetting/files/");
         }
         return arrLoccationList;
     }

@@ -241,7 +241,6 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
     }
 
     private void fillRestoreData() {
-        Log.d("TEST", "fillRestoreData()");
         // 수정모드(MODE_MODIFY)의 경우 객체의 정보를 뷰에 채워준다.
         etLocationName.setText(stubLocation.getLocationName());
         txSoundMode.setText(stubLocation.SoundType);

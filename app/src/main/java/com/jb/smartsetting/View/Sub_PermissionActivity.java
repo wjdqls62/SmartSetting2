@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.jb.smartsetting.Common_Utility.PermissionManager;
+import com.jb.smartsetting.Common_Utility.SettingValues;
 import com.jb.smartsetting.R;
 
 /**
@@ -63,7 +64,7 @@ public class Sub_PermissionActivity extends AppCompatActivity implements View.On
             finish();
 
         }else{
-            Log.d("TEST", "App is Kill...");
+            if (SettingValues.getInstance().IsDebug()) {Log.d("TEST", "App is Kill...");}
             android.os.Process.killProcess(android.os.Process.myPid());
         }
     }

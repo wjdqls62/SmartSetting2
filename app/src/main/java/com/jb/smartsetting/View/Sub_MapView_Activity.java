@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jb.smartsetting.Common_Utility.BitmapCropManager;
+import com.jb.smartsetting.Common_Utility.SettingValues;
 import com.jb.smartsetting.GPS_Utility.CustomLocation;
 import com.jb.smartsetting.R;
 
@@ -200,17 +201,13 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
     // OnMapReadyCallback Interface
     @Override
     public void onMapReady(GoogleMap map) {
-        if (isDebug) {
-            Log.d(TAG, "onMapReady");
-        }
+        if (SettingValues.getInstance().IsDebug()) {Log.d(TAG, "onMapReady");}
         this.map = map;
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (isDebug) {
-            Log.d(TAG, "onConnected");
-        }
+        if (SettingValues.getInstance().IsDebug()) {Log.d(TAG, "onConnected");}
 
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
@@ -231,7 +228,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onMapLoaded() {
-        Log.d(TAG, "onMapLoaded");
+        if (SettingValues.getInstance().IsDebug()) Log.d(TAG, "onMapLoaded");
     }
 
     @Override
@@ -247,7 +244,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(TAG, "onLocationChanged");
+        if (SettingValues.getInstance().IsDebug()) {Log.d(TAG, "onLocationChanged");}
         lastLocation = location;
         onRefreshMapView();
     }

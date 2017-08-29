@@ -5,12 +5,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
@@ -291,7 +289,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                         if(arrLocationList.get(j).isEnabled){
                             break;
                         }else if(j == arrLocationList.size()-1 && !arrLocationList.get(j).isEnabled){
-                            Log.d(TAG, "활성화 되어있는 항목이 없어 서비스를 종료합니다");
                             stopService(new Intent(getApplicationContext(), ProximityLocationService.class));
                         }
                     }
