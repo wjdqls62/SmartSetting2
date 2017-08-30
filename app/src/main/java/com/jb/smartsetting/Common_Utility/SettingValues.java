@@ -15,6 +15,9 @@ public class SettingValues {
     private boolean isDebug;
     private boolean isShowNotification;
 
+    public int LOCATION_PROXIMITY_LEVEL = -1;
+    public int LOCATION_PROXIMITY_CLOSE = 1;
+
     public static synchronized SettingValues getInstance() {
         if(settingValues == null){
             settingValues = new SettingValues();

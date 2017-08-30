@@ -61,6 +61,7 @@ public class ProximityLocationService extends Service implements
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
 
+
     private SettingsChangeManager settingsChangeManager;
 
     private boolean isDebug, isShowNotification;
@@ -86,7 +87,7 @@ public class ProximityLocationService extends Service implements
         if(SettingValues.getInstance().IsDebug()){
             Log.d(TAG, "onCreate");
         }
-
+        
         super.onCreate();
     }
 

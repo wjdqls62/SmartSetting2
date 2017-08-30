@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -62,6 +61,14 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
     private void getPreference() {
         SharedPreferences pref = getSharedPreferences("settings", MODE_PRIVATE);
         isDebug = pref.getBoolean("setting_dev_mode", false);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(MODE_CURRENT == MODE_WRITE){
+            deleteTempCustomLocation();
+        }
     }
 
     @Override
@@ -147,9 +154,9 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         move_LocationList_Activity();
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    // ItemSettingActivity화면에서 벗어날경우 생성되었던 TempFile을 삭제
+    // RecentApp clear all 또는 onBackPressed시 동작
+    private void deleteTempCustomLocation(){
         if(MODE_CURRENT == MODE_WRITE){
             boolean isTempFile = true;
             for(int i=0; i<arrStubLocation.size(); i++){
@@ -161,11 +168,18 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
             if(isTempFile){
                 objectReaderWriter.deleteObject(stubLocation);
             }
-            Intent intent = new Intent(this, Main_LocationList_Activity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        deleteTempCustomLocation();
+        Intent intent = new Intent(this, Main_LocationList_Activity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onClick(View v) {

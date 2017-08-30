@@ -27,13 +27,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layoutDirection="rtl"
-                android:splitMotionEvents="false">
+                android:splitMotionEvents="false"
+                android:background="?attr/selectableItemBackground">
 
                 <RadioButton
                     android:id="@+id/set_bt_none"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackground"
+                    android:focusable="false"
                     android:scrollHorizontally="false"
                     android:text="변경 안함"
                     android:textSize="14sp" />
@@ -47,7 +48,7 @@
                     android:id="@+id/set_bt_on"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackground"
+                    android:focusable="false"
                     android:text="켜짐"
                     android:textSize="14sp" />
 
@@ -60,7 +61,7 @@
                     android:id="@+id/set_bt_off"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackground"
+                    android:focusable="false"
                     android:text="꺼짐"
                     android:textSize="14sp" />
 
