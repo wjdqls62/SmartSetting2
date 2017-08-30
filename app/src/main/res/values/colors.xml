@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#F15F5F</color>
 
+    <color name="button_default">#00ff0000</color>
     <color name="listitem_divider">#EBEBEB</color>
 </resources>
 

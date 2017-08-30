@@ -62,22 +62,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
-                android:background="#00ff0000"
                 android:text="취소"
                 android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:theme="@style/button"/>
 
             <Button
                 android:id="@+id/btn_ok"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:background="#00ff0000"
                 android:text="확인"
                 android:textSize="13sp"
                 android:textStyle="bold"
+                android:theme="@style/button" />
 
-                />
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>

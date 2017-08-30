@@ -8,16 +8,53 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="20dp">
+        android:layout_centerHorizontal="true">
+
+        <LinearLayout
+            android:id="@+id/permission_setting_system"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/permission_storage_layout"
+            android:background="?attr/selectableItemBackground"
+            android:padding="20dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/ic_settings_applications_black_24dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="시스템 설정"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="기기의 시스템 설정(블루투스,Wi-Fi,벨소리 타입)을 변경합니다"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/permission_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingLeft="20dp">
 
             <ImageView
                 android:id="@+id/imageView"
@@ -52,7 +89,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/permission_title"
-            android:layout_marginTop="20dp">
+            android:background="?attr/selectableItemBackground"
+            android:padding="20dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -88,7 +126,8 @@
             android:layout_alignLeft="@+id/permission_location_layout"
             android:layout_alignStart="@+id/permission_location_layout"
             android:layout_below="@+id/permission_location_layout"
-            android:layout_marginTop="20dp">
+            android:background="?attr/selectableItemBackground"
+            android:padding="20dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -119,45 +158,59 @@
             </LinearLayout>
         </LinearLayout>
 
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/permission_caution"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/permission_agree_layout">
+
         <LinearLayout
-            android:id="@+id/permission_setting_system"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/permission_storage_layout"
-            android:layout_marginTop="20dp" >
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="10dp"
-                android:src="@drawable/ic_settings_applications_black_24dp" />
+            android:paddingLeft="20dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_priority_high_black_24dp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="시스템 설정"
+                    android:text="주의사항"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="기기의 시스템 설정(블루투스,Wi-Fi,벨소리 타입)을 변경합니다"
+                    android:text="기기의 성능과 네트워크 환경에 따라 위치정보의 오차가 있을 수 있습니다"
                     android:textSize="13sp" />
+
             </LinearLayout>
+
         </LinearLayout>
 
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/permission_agree_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -166,13 +219,14 @@
 
         <Button
             android:id="@+id/btn_ok"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:background="#00ff0000"
+            android:theme="@style/button"
             android:text="동의" />
+
     </RelativeLayout>
 
 </RelativeLayout>

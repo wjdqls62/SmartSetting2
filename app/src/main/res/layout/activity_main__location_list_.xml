@@ -73,7 +73,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_toLeftOf="@+id/btn_delte_ok"
                 android:layout_toStartOf="@+id/btn_delte_ok"
-                android:background="#00ff0000"
+                android:theme="@style/button"
                 android:text="취소" />
 
             <Button
@@ -83,7 +83,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:background="#00ff0000"
+                android:theme="@style/button"
                 android:text="삭제" />
 
         </RelativeLayout>
