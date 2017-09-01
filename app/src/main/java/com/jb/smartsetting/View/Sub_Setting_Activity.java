@@ -3,6 +3,8 @@ package com.jb.smartsetting.View;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -16,6 +18,12 @@ import com.jb.smartsetting.Common_Utility.SettingValues;
 import com.jb.smartsetting.Common_Utility.SettingsChangeManager;
 import com.jb.smartsetting.R;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -28,6 +36,7 @@ public class Sub_Setting_Activity extends PreferenceActivity {
 
     private SwitchPreference sw_setting_dev_mode;
     private SwitchPreference sw_setting_common_noti;
+    private Preference setting_build_date;
 
     private boolean isDebug = false;
     private boolean isShowNotification = false;
@@ -88,7 +97,28 @@ public class Sub_Setting_Activity extends PreferenceActivity {
             }
         });
 
-
+        setting_build_date = findPreference("setting_build_date");
+        setting_build_date.setSummary(getBuildDate() + "");
     }
+
+    private String getBuildDate() {
+        String buildDate = null;
+        try {
+            ApplicationInfo applicationInfo = getApplicationContext().getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), 0);
+            ZipFile zipFile = new ZipFile(applicationInfo.sourceDir);
+            ZipEntry zipEntry = zipFile.getEntry("classes.dex");
+            long time = zipEntry.getTime();
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+            buildDate = simpleDateFormat.format(new java.util.Date(time));
+            zipFile.close();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return buildDate;
+    }
+
 }
 

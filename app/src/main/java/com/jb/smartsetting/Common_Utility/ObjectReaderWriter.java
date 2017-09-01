@@ -57,6 +57,19 @@ public class ObjectReaderWriter {
         }
     }
 
+    public CustomLocation findObject(String locationName){
+        ArrayList<CustomLocation> searchFileList = new ArrayList<CustomLocation>();
+        int discoverIndex = 0 ;
+        searchFileList = readObject();
+        for(int i=0; i<searchFileList.size(); i++){
+            if(searchFileList.get(i).getLocationName().equals(locationName)){
+                discoverIndex = i;
+                break;
+            }
+        }
+        return searchFileList.get(discoverIndex);
+    }
+
     public ArrayList<CustomLocation> readObject() {
         try {
             File[] searchFileList = new File("/data/data/com.jb.smartsetting/files/").listFiles();

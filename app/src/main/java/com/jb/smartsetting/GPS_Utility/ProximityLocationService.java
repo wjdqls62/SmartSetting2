@@ -31,7 +31,6 @@ import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.Common_Utility.SettingValues;
 import com.jb.smartsetting.Common_Utility.SettingsChangeManager;
 import com.jb.smartsetting.R;
-import com.jb.smartsetting.View.Sub_Setting_Activity;
 
 import java.util.ArrayList;
 
@@ -42,7 +41,7 @@ import java.util.ArrayList;
 public class ProximityLocationService extends Service implements
         OnConnectionFailedListener,
         ConnectionCallbacks,
-        LocationListener{
+        LocationListener {
     // Thread 반복 Delay 주기(초 단위)
     private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
     // 세부탐색을 하기위한 PREV<->CURRENT 위치변동 기준 (150m)
@@ -52,7 +51,7 @@ public class ProximityLocationService extends Service implements
 
     private ObjectReaderWriter objectReaderWriter;
     private LocationObserver locationObserver;
-    private Location currentLocation, prevLocation;
+    private Location currentSearchedLocation, prevSearchedLocation;
     private ArrayList<CustomLocation> mEnabledTargetLocation;
     private Context context;
 
@@ -67,6 +66,7 @@ public class ProximityLocationService extends Service implements
     private boolean isDebug, isShowNotification;
     private String TAG = getClass().getName();
     private boolean isRunning;
+    private String isLastProximityLocation = null;
 
     private void getPreference() {
         SharedPreferences pref = getSharedPreferences("settings", MODE_PRIVATE);
@@ -84,10 +84,10 @@ public class ProximityLocationService extends Service implements
         mEnabledTargetLocation = new ArrayList<CustomLocation>();
 
         objectReaderWriter = new ObjectReaderWriter(getApplicationContext());
-        if(SettingValues.getInstance().IsDebug()){
+        if (SettingValues.getInstance().IsDebug()) {
             Log.d(TAG, "onCreate");
         }
-        
+
         super.onCreate();
     }
 
@@ -176,7 +176,7 @@ public class ProximityLocationService extends Service implements
 
     @Override
     public void onLocationChanged(Location location) {
-        currentLocation = location;
+        currentSearchedLocation = location;
     }
 
     private class LocationObserver extends AsyncTask<Void, Void, Boolean> {
@@ -194,29 +194,41 @@ public class ProximityLocationService extends Service implements
 
             while (isRunning) {
                 try {
-                    prevLocation = currentLocation;
-                    currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                    prevSearchedLocation = currentSearchedLocation;
+                    currentSearchedLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
-                    if (prevLocation != null) {
-                        distance = currentLocation.distanceTo(prevLocation);
-                        // currentLocation 와 prevLocation의 거리를 비교시 150m이상 위치변동이 있을경우 or 서비스 시작 후 Refresh 2회 이하의 경우
-                        if (distance >= PREV_CURRENT_DISTANCE || refreshCount <= 2) {
+                    if (prevSearchedLocation != null) {
+                        // 마지막 근접했던 위치에 지속적으로 근접하고 있을경우
+                        if (isLastProximityLocation != null) {
+                            if (objectReaderWriter.findObject(isLastProximityLocation).toDistance(currentSearchedLocation.getLatitude(), currentSearchedLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
+                                if (SettingValues.getInstance().IsDebug()) {
+                                    Log.d(TAG, "마지막 저장위치로부터 200m범위내에 있으므로 세부탐색을 생략합니다.");
+                                }
+                            }
+                        } else {
+                            // currentSearchedLocation 와 prevLocation의 거리를 비교시 150m이상 위치변동이 있을경우 or 서비스 시작 후 Refresh 2회 이하의 경우
                             mEnabledTargetLocation = objectReaderWriter.readObject();
                             for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
                                 // 사용자 등록지점과 200m 이내로 근접할 경우
-                                if (mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
+                                if (mEnabledTargetLocation.get(i).toDistance(currentSearchedLocation.getLatitude(), currentSearchedLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
+                                    isLastProximityLocation = mEnabledTargetLocation.get(i).getLocationName();
                                     settingsChangeManager.setSavedTargetLocation(mEnabledTargetLocation.get(i));
                                     settingsChangeManager.SettingChangeTrigger();
                                     showNotification(mEnabledTargetLocation.get(i).getLocationName());
                                     if (SettingValues.getInstance().IsDebug()) {
                                         Log.d(TAG, mEnabledTargetLocation.get(i).getLocationName() + "지점과 근접합니다! : " +
-                                                mEnabledTargetLocation.get(i).toDistance(currentLocation.getLatitude(), currentLocation.getLongitude()) + "m");
+                                                mEnabledTargetLocation.get(i).toDistance(currentSearchedLocation.getLatitude(), currentSearchedLocation.getLongitude()) + "m");
                                     }
+                                    break;
+                                }else{
+                                    isLastProximityLocation = null;
                                 }
                             }
                         }
+
                     } else {
-                        if (SettingValues.getInstance().IsDebug()) Log.d(TAG, "Fail getLastLocation... ");
+                        if (SettingValues.getInstance().IsDebug())
+                            Log.d(TAG, "Fail getLastLocation... ");
                     }
 
                     refreshCount++;
@@ -228,11 +240,12 @@ public class ProximityLocationService extends Service implements
                     e.printStackTrace();
                 } finally {
                     if (SettingValues.getInstance().IsDebug()) {
-                        if (currentLocation != null) {
+                        if (currentSearchedLocation != null) {
                             Log.d(TAG, "========================== LocationObserver Thread is Runnig =============================");
-                            Log.d(TAG, "Lat : " + currentLocation.getLatitude());
-                            Log.d(TAG, "Long : " + currentLocation.getLongitude());
+                            Log.d(TAG, "Lat : " + currentSearchedLocation.getLatitude());
+                            Log.d(TAG, "Long : " + currentSearchedLocation.getLongitude());
                             Log.d(TAG, "Refresh Count : " + refreshCount);
+                            Log.d(TAG, "Lasted Proximity Location :" + isLastProximityLocation);
                             Log.d(TAG, "==========================================================================================");
                         } else {
                             Log.d(TAG, "Fail the current location to get!");
