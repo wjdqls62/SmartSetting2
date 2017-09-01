@@ -263,7 +263,6 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             sProgressDialog.setMessage("잠시만 기다려주세요...");
             sProgressDialog.setCancelable(false);
             sProgressDialog.show();
-
         }
 
         @Override
