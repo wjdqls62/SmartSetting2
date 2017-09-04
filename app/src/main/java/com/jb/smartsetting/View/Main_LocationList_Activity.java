@@ -1,5 +1,6 @@
 package com.jb.smartsetting.View;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -25,6 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.jb.smartsetting.Common_Utility.ObjectReaderWriter;
 import com.jb.smartsetting.Common_Utility.PermissionManager;
 import com.jb.smartsetting.GPS_Utility.ProximityLocationService;
@@ -60,6 +63,8 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private ArrayList<CustomLocation> arrLocationList;
     private ObjectReaderWriter objectReaderWriter;
     private Bundle bundle;
+
+    private int isGooglePlayServicesAvailable;
 
 
 
@@ -114,12 +119,30 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         selectedCount = (TextView) findViewById(R.id.selected_delete_count);
         emptyLocationData = (TextView) findViewById(R.id.no_data);
         setSupportActionBar(toolbar);
+        onCheckGooglePlayServices();
     }
 
     private void init_Listener() {
         fab_newLocation.setOnClickListener(this);
         btn_delete_ok.setOnClickListener(this);
         btn_delete_cancel.setOnClickListener(this);
+    }
+
+    private boolean onCheckGooglePlayServices(){
+        int resultCode = 0;
+        resultCode = isGooglePlayServicesAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+        if(resultCode == ConnectionResult.SUCCESS){
+            return true;
+        }else{
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, 0);
+            if(dialog != null){
+                dialog.setCancelable(false);
+                dialog.show();
+            }
+        }
+        return false;
+
+
     }
 
     @Override
