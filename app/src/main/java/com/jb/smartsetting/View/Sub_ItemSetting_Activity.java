@@ -238,6 +238,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                         stubLocation.setWiFiType(txWiFiMode.getText().toString());
                         objectReaderWriter.saveObject(stubLocation);
                         MODE_CURRENT = -1;
+                        Toast.makeText(getApplicationContext(), "위치가 저장되었습니다", Toast.LENGTH_SHORT).show();
                         move_LocationList_Activity();
                         break;
                     }
