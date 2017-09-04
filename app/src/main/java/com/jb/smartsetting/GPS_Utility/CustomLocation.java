@@ -103,6 +103,9 @@ public class CustomLocation implements Serializable {
         } catch (IOException e) {
             Toast.makeText(context, "주소를 가져 올 수 없습니다.", Toast.LENGTH_LONG).show();
             e.printStackTrace();
+        } catch (RuntimeException e){
+            Toast.makeText(context, "주소를 가져 올 수 없습니다.", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
         this.address = nowAddress;
     }

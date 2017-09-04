@@ -23,6 +23,8 @@ public class ObjectReaderWriter {
     private Context context;
     private ArrayList<CustomLocation> arrLoccationList;
 
+    private ObjectInputStream ois = null;
+
     private String TAG = getClass().getName();
     private boolean isDebug = true;
 
@@ -31,7 +33,7 @@ public class ObjectReaderWriter {
         arrLoccationList = new ArrayList<CustomLocation>();
     }
 
-    public void deleteObject(CustomLocation location){
+    public synchronized void deleteObject(CustomLocation location){
         File objFile = new File(location.objFilePath + location.objFileName);
         File imgFile = new File(location.objFilePath +"crop_"+location.imgFileName);
 
@@ -45,7 +47,7 @@ public class ObjectReaderWriter {
         }
     }
 
-    public void saveObject(CustomLocation location) {
+    public synchronized void saveObject(CustomLocation location) {
         try {
             FileOutputStream fos = new FileOutputStream(location.objFilePath + location.objFileName, false);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -57,9 +59,9 @@ public class ObjectReaderWriter {
         }
     }
 
-    public CustomLocation findObject(String locationName){
+    public synchronized CustomLocation findObject(String locationName){
         ArrayList<CustomLocation> searchFileList = new ArrayList<CustomLocation>();
-        int discoverIndex = 0 ;
+        int discoverIndex = -1 ;
         searchFileList = readObject();
         for(int i=0; i<searchFileList.size(); i++){
             if(searchFileList.get(i).getLocationName().equals(locationName)){
@@ -67,15 +69,20 @@ public class ObjectReaderWriter {
                 break;
             }
         }
-        return searchFileList.get(discoverIndex);
+        if(discoverIndex != -1){
+            return searchFileList.get(discoverIndex);
+        }else{
+            return null;
+        }
     }
 
-    public ArrayList<CustomLocation> readObject() {
+    public synchronized ArrayList<CustomLocation> readObject() {
         try {
+            arrLoccationList.clear();
             File[] searchFileList = new File("/data/data/com.jb.smartsetting/files/").listFiles();
             for (int i = 0; i < searchFileList.length; i++) {
                 if (searchFileList[i].getName().contains(".sjb")) {
-                    ObjectInputStream ois = new ObjectInputStream(new FileInputStream("/data/data/com.jb.smartsetting/files/"+searchFileList[i].getName()));
+                     ois = new ObjectInputStream(new FileInputStream("/data/data/com.jb.smartsetting/files/"+searchFileList[i].getName()));
                     CustomLocation readLoaction = (CustomLocation) ois.readObject();
                     arrLoccationList.add(readLoaction);
                     ois.close();

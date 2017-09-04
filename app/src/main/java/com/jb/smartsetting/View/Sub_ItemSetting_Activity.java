@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,7 +30,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         View.OnClickListener,
         TextWatcher {
 
-    private int MODE_CURRENT = 0;
+    private int MODE_CURRENT = -1;
     private final int MODE_WRITE = 1;
     private final int MODE_MODIFY = 2;
 
@@ -66,6 +67,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
     @Override
     protected void onStop() {
         super.onStop();
+        Log.d(TAG, "onStop");
         if(MODE_CURRENT == MODE_WRITE){
             deleteTempCustomLocation();
         }
@@ -235,7 +237,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                         stubLocation.setSoundType(txSoundMode.getText().toString());
                         stubLocation.setWiFiType(txWiFiMode.getText().toString());
                         objectReaderWriter.saveObject(stubLocation);
-                        Toast.makeText(getApplicationContext(), "저장되었습니다", Toast.LENGTH_SHORT).show();
+                        MODE_CURRENT = -1;
                         move_LocationList_Activity();
                         break;
                     }

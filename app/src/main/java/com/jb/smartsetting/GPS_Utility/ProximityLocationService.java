@@ -43,7 +43,7 @@ public class ProximityLocationService extends Service implements
         ConnectionCallbacks,
         LocationListener {
     // Thread 반복 Delay 주기(초 단위)
-    private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
+    private int SEARCH_LOCATION_DELAY_TIME = 10000;
     // 세부탐색을 하기위한 PREV<->CURRENT 위치변동 기준 (150m)
     private double PREV_CURRENT_DISTANCE = 150;
     // 세부탐색 중 사용자 지정 위치와 현재위치간의 기준거리 (200m)
@@ -66,7 +66,7 @@ public class ProximityLocationService extends Service implements
     private boolean isDebug, isShowNotification;
     private String TAG = getClass().getName();
     private boolean isRunning;
-    private String isLastProximityLocation = null;
+    private String lastProximityLocation = null;
 
     private void getPreference() {
         SharedPreferences pref = getSharedPreferences("settings", MODE_PRIVATE);
@@ -101,7 +101,7 @@ public class ProximityLocationService extends Service implements
         settingsChangeManager = new SettingsChangeManager(getApplicationContext());
         getPreference();
 
-        if (googleApiClient == null) {
+        if (!(googleApiClient.isConnected()) || googleApiClient == null) {
             initGoogleApiClient();
         }
 
@@ -154,6 +154,7 @@ public class ProximityLocationService extends Service implements
     @Override
     public void onDestroy() {
         if (SettingValues.getInstance().IsDebug()) Log.d(TAG, "onDestory");
+        googleApiClient.disconnect();
         locationObserver.onCancelled(false);
 
 
@@ -190,50 +191,53 @@ public class ProximityLocationService extends Service implements
         @Override
         protected Boolean doInBackground(Void... params) {
             int refreshCount = 0;
-            float distance = 0f;
 
             while (isRunning) {
                 try {
+                    mEnabledTargetLocation = objectReaderWriter.readObject();
                     prevSearchedLocation = currentSearchedLocation;
                     currentSearchedLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
                     if (prevSearchedLocation != null) {
                         // 마지막 근접했던 위치에 지속적으로 근접하고 있을경우
-                        if (isLastProximityLocation != null) {
-                            if (objectReaderWriter.findObject(isLastProximityLocation).toDistance(currentSearchedLocation.getLatitude(), currentSearchedLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
-                                if (SettingValues.getInstance().IsDebug()) {
-                                    Log.d(TAG, "마지막 저장위치로부터 200m범위내에 있으므로 세부탐색을 생략합니다.");
+                        if (lastProximityLocation != null) {
+                            if(objectReaderWriter.findObject(lastProximityLocation) != null){
+                                if (objectReaderWriter.findObject(lastProximityLocation).toDistance(currentSearchedLocation.getLatitude(), currentSearchedLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
+                                    if (SettingValues.getInstance().IsDebug()) {
+                                        Log.d(TAG, "마지막 저장위치로부터 200m범위내에 있으므로 세부탐색을 생략합니다.");
+                                    }
+                                }else{
+                                    lastProximityLocation = null;
                                 }
+                            }else{
+                                lastProximityLocation = null;
                             }
                         } else {
-                            // currentSearchedLocation 와 prevLocation의 거리를 비교시 150m이상 위치변동이 있을경우 or 서비스 시작 후 Refresh 2회 이하의 경우
-                            mEnabledTargetLocation = objectReaderWriter.readObject();
                             for (int i = 0; i < mEnabledTargetLocation.size(); i++) {
-                                // 사용자 등록지점과 200m 이내로 근접할 경우
-                                if (mEnabledTargetLocation.get(i).toDistance(currentSearchedLocation.getLatitude(), currentSearchedLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
-                                    isLastProximityLocation = mEnabledTargetLocation.get(i).getLocationName();
-                                    settingsChangeManager.setSavedTargetLocation(mEnabledTargetLocation.get(i));
-                                    settingsChangeManager.SettingChangeTrigger();
-                                    showNotification(mEnabledTargetLocation.get(i).getLocationName());
-                                    if (SettingValues.getInstance().IsDebug()) {
-                                        Log.d(TAG, mEnabledTargetLocation.get(i).getLocationName() + "지점과 근접합니다! : " +
-                                                mEnabledTargetLocation.get(i).toDistance(currentSearchedLocation.getLatitude(), currentSearchedLocation.getLongitude()) + "m");
+                                // 등록지점과 근접한지 세부탐색
+                                if(mEnabledTargetLocation.get(i).isEnabled){
+                                    if (mEnabledTargetLocation.get(i).toDistance(currentSearchedLocation.getLatitude(), currentSearchedLocation.getLongitude()) <= PROXIMITY_ALERT_DISTANCE) {
+                                        lastProximityLocation = mEnabledTargetLocation.get(i).getLocationName();
+                                        settingsChangeManager.setSavedTargetLocation(mEnabledTargetLocation.get(i));
+                                        settingsChangeManager.SettingChangeTrigger();
+                                        showNotification(mEnabledTargetLocation.get(i).getLocationName());
+                                        if (SettingValues.getInstance().IsDebug()) {
+                                            Log.d(TAG, mEnabledTargetLocation.get(i).getLocationName() + "지점과 근접합니다! : " +
+                                                    mEnabledTargetLocation.get(i).toDistance(currentSearchedLocation.getLatitude(), currentSearchedLocation.getLongitude()) + "m");
+                                        }
+                                        break;
+                                    }else{
+                                        lastProximityLocation = null;
                                     }
-                                    break;
-                                }else{
-                                    isLastProximityLocation = null;
                                 }
                             }
                         }
-
                     } else {
                         if (SettingValues.getInstance().IsDebug())
                             Log.d(TAG, "Fail getLastLocation... ");
                     }
-
                     refreshCount++;
                     Thread.sleep(SEARCH_LOCATION_DELAY_TIME);
-
                 } catch (SecurityException e) {
 
                 } catch (InterruptedException e) {
@@ -245,10 +249,8 @@ public class ProximityLocationService extends Service implements
                             Log.d(TAG, "Lat : " + currentSearchedLocation.getLatitude());
                             Log.d(TAG, "Long : " + currentSearchedLocation.getLongitude());
                             Log.d(TAG, "Refresh Count : " + refreshCount);
-                            Log.d(TAG, "Lasted Proximity Location :" + isLastProximityLocation);
+                            Log.d(TAG, "Lasted Proximity Location :" + lastProximityLocation);
                             Log.d(TAG, "==========================================================================================");
-                        } else {
-                            Log.d(TAG, "Fail the current location to get!");
                         }
                     }
                 }
@@ -264,7 +266,7 @@ public class ProximityLocationService extends Service implements
                         .setSmallIcon(android.R.drawable.ic_menu_myplaces)
                         .setLargeIcon(bitmap)
                         .setContentTitle("SmartSetting")
-                        .setContentText(targetLocationName + " 지점에 근접합니다.")
+                        .setContentText(targetLocationName + " 지점에 근접합니다!")
                         .setAutoCancel(true)
                         .setSound(soundUri);
                 NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);

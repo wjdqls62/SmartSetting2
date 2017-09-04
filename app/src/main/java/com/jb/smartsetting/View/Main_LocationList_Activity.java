@@ -278,16 +278,15 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                     // 활성화 -> 비활성화
                     if (arrLocationList.get(position).isEnabled) {
                         arrLocationList.get(position).setEnabled(false);
-                        objectReaderWriter.saveObject(arrLocationList.get(position));
                     } else {
                         arrLocationList.get(position).setEnabled(true);
-                        objectReaderWriter.saveObject(arrLocationList.get(position));
                         startService(new Intent(getApplicationContext(), ProximityLocationService.class));
                     }
+                    objectReaderWriter.saveObject(arrLocationList.get(position));
 
                     for(int j=0; j<arrLocationList.size(); j++){
                         if(arrLocationList.get(j).isEnabled){
-                            break;
+                            continue;
                         }else if(j == arrLocationList.size()-1 && !arrLocationList.get(j).isEnabled){
                             stopService(new Intent(getApplicationContext(), ProximityLocationService.class));
                         }
