@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -31,62 +32,63 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_add_location_white_48px" />
 
-        <RelativeLayout
-            android:id="@+id/main_delete_layout"
+    <RelativeLayout
+        android:id="@+id/main_delete_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#FFFFFF"
+        android:clipToPadding="false"
+        android:visibility="gone">
+
+        <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="0.1px"
+            android:background="@color/listitem_divider" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="#FFFFFF"
-            android:visibility="gone">
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:visibility="visible">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0.1px"
-                android:background="@color/listitem_divider" />
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/selected_delete_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:visibility="visible">
+                android:text="0" />
 
-                <TextView
-                    android:id="@+id/selected_delete_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="개 선택됨" />
-            </LinearLayout>
-
-
-            <Button
-                android:id="@+id/btn_delte_cancel"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toLeftOf="@+id/btn_delte_ok"
-                android:layout_toStartOf="@+id/btn_delte_ok"
-                android:theme="@style/button"
-                android:text="취소" />
+                android:text="개 선택됨" />
+        </LinearLayout>
 
-            <Button
-                android:id="@+id/btn_delte_ok"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:theme="@style/button"
-                android:text="삭제" />
 
-        </RelativeLayout>
+        <Button
+            android:id="@+id/btn_delte_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/btn_delte_ok"
+            android:layout_toStartOf="@+id/btn_delte_ok"
+            android:text="취소"
+            android:theme="@style/button" />
+
+        <Button
+            android:id="@+id/btn_delte_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text="삭제"
+            android:theme="@style/button" />
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/no_data"

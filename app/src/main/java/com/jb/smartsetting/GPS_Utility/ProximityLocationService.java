@@ -43,9 +43,7 @@ public class ProximityLocationService extends Service implements
         ConnectionCallbacks,
         LocationListener {
     // Thread 반복 Delay 주기(초 단위)
-    private int SEARCH_LOCATION_DELAY_TIME = 10000;
-    // 세부탐색을 하기위한 PREV<->CURRENT 위치변동 기준 (150m)
-    private double PREV_CURRENT_DISTANCE = 150;
+    private int SEARCH_LOCATION_DELAY_TIME = 60000 * 5;
     // 세부탐색 중 사용자 지정 위치와 현재위치간의 기준거리 (200m)
     private double PROXIMITY_ALERT_DISTANCE = 200;
 

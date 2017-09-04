@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
@@ -44,7 +45,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
     private RelativeLayout delete_layout;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    private LinearLayout ItemLayout;
     private TextView selectedCount, emptyLocationData;
     private Button btn_delete_ok, btn_delete_cancel;
     private Intent intent;
@@ -293,6 +293,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                     }
                 }
             });
+
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -339,7 +340,6 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         public int getItemCount() {
             return arrLocationList.size();
         }
-
     }
 
     public class LocationListViewHolder extends RecyclerView.ViewHolder {
@@ -348,7 +348,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
         public ImageView locationImage;
         public Switch toggleButton;
         public CheckBox checkBox;
-        public LinearLayout cardView;
+        public CardView cardView;
         public TextView indentification;
 
         public LocationListViewHolder(View itemView) {
@@ -357,7 +357,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
             locationName = (TextView) itemView.findViewById(R.id.location_name);
             toggleButton = (Switch) itemView.findViewById(R.id.toggle);
             checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
-            cardView = (LinearLayout) itemView.findViewById(R.id.card_layout);
+            cardView = (CardView) itemView.findViewById(R.id.card_layout);
             indentification = (TextView) itemView.findViewById(R.id.indentification);
         }
     }
