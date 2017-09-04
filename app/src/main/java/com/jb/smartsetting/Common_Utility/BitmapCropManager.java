@@ -72,7 +72,6 @@ public class BitmapCropManager {
                     afterBitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
                     fos.close();
                 }
-
             } else if (!onCheckDistanceLimit(location)) {
                 afterBitmap = null;
             } else {

@@ -15,14 +15,14 @@
         android:scrollbars="vertical"
         card_view:cardCornerRadius="10dp"
         card_view:cardElevation="5dp"
-        card_view:cardUseCompatPadding="true">
+        card_view:cardUseCompatPadding="true"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?attr/selectableItemBackground"
-            android:orientation="vertical"
-            android:showDividers="middle">
+            android:orientation="vertical" >
 
             <LinearLayout
                 android:id="@+id/contents"
