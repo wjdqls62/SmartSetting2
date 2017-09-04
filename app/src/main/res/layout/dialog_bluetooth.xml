@@ -36,7 +36,7 @@
                     android:layout_height="40dp"
                     android:focusable="false"
                     android:scrollHorizontally="false"
-                    android:text="변경 안함"
+                    android:text="None"
                     android:textSize="14sp" />
 
                 <LinearLayout
@@ -49,7 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:focusable="false"
-                    android:text="켜짐"
+                    android:text="On"
                     android:textSize="14sp" />
 
                 <LinearLayout
@@ -62,7 +62,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:focusable="false"
-                    android:text="꺼짐"
+                    android:text="Off"
                     android:textSize="14sp" />
 
                 <LinearLayout
