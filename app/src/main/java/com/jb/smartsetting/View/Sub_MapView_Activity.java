@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -173,6 +174,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             bundle = new Bundle();
             if (lastLocation != null) {
                 savedCustomLocation.parseLocation(lastLocation);
+                savedCustomLocation.setAddress(getApplicationContext());
             }
             bundle.putSerializable("Location", savedCustomLocation);
             bundle.putString("DISPLAY_MODE", "WRITE");
@@ -279,7 +281,8 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
                 startActivity(intent);
                 finish();
             }else{
-                Toast.makeText(getApplicationContext(), "기등록된 위치가 있습니다\n"+"위치이동 후 재시도 하세요", Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(android.R.id.content), "이미 등록된지점으로부터 200m내에 재등록할 수 없습니다 \n" + "위치이동 후 재시도 하세요", Snackbar.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "등록된지점으로부터 200m이내에 재등록할 수 없습니다 \n"+"위치이동 후 재시도 하세요", Toast.LENGTH_SHORT).show();
             }
         }
     }
