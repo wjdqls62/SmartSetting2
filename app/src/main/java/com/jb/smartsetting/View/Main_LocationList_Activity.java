@@ -173,7 +173,7 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                     delete_layout.setVisibility(View.VISIBLE);
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "저장된 위치정보가 없습니다", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), getResources().getText(R.string.toast_trash_empty), Toast.LENGTH_SHORT).show();
             }
         }
         return super.onOptionsItemSelected(item);
@@ -210,11 +210,11 @@ public class Main_LocationList_Activity extends AppCompatActivity implements Vie
                     for (int i = 0; i < selectedItems.size(); i++) {
                         objectReaderWriter.deleteObject(selectedItems.get(i));
                     }
-                    Toast.makeText(getApplicationContext(), "삭제가 완료되었습니다", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getResources().getText(R.string.toast_delete_success), Toast.LENGTH_SHORT).show();
                     locationItemAdapter.setRECYCLER_VIEW_MODE(RECYCLER_VIEW_NORMAL_MODE);
                     onRefreshAdapter();
                 }else{
-                    Toast.makeText(getApplicationContext(), "1개이상 선택하세요", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getResources().getText(R.string.toast_delete_one), Toast.LENGTH_SHORT).show();
                 }
                 break;
 

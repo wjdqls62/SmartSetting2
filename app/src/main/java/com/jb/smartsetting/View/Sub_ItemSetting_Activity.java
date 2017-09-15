@@ -80,7 +80,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         initView();
 
         setSupportActionBar(toolbar);
-        toolbarLayout.setTitle("Location Name");
+        toolbarLayout.setTitle(getResources().getText(R.string.edittext_hint_location));
         btn_save.setOnClickListener(this);
         item_setting_sound.setOnClickListener(this);
         item_setting_bluetooth.setOnClickListener(this);
@@ -139,7 +139,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
     private boolean onValidateForm() {
         String inputedLocationName = etLocationName.getText().toString();
         if (inputedLocationName.isEmpty() && inputedLocationName.equals("")) {
-            Toast.makeText(getApplicationContext(), "1글자 이상 입력하세요", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getResources().getText(R.string.toast_input_char), Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -152,7 +152,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         stubLocation.WiFiType = txWiFiMode.getText().toString();
 
         objectReaderWriter.saveObject(stubLocation);
-        Toast.makeText(getApplicationContext(), "수정되었습니다", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), getResources().getText(R.string.toast_item_edit_success), Toast.LENGTH_SHORT).show();
         move_LocationList_Activity();
     }
 
@@ -238,7 +238,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
                         stubLocation.setWiFiType(txWiFiMode.getText().toString());
                         objectReaderWriter.saveObject(stubLocation);
                         MODE_CURRENT = -1;
-                        Toast.makeText(getApplicationContext(), "위치가 저장되었습니다", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getResources().getText(R.string.toast_item_add_success), Toast.LENGTH_SHORT).show();
                         move_LocationList_Activity();
                         break;
                     }
@@ -269,7 +269,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
         if (MODE_CURRENT == MODE_WRITE) {
             for (int i = 0; i < arrStubLocation.size(); i++) {
                 if (arrStubLocation.get(i).indentificationNumber == stubLocation.indentificationNumber) {
-                    Toast.makeText(getApplicationContext(), "기존 등록된 위치와 중복됩니다", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getResources().getText(R.string.toast_item_add_duplicate), Toast.LENGTH_SHORT).show();
                     return true;
                 }
             }
@@ -285,7 +285,7 @@ public class Sub_ItemSetting_Activity extends AppCompatActivity implements
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         if(s.toString().isEmpty()){
-            toolbarLayout.setTitle("Location Name");
+            toolbarLayout.setTitle(getResources().getText(R.string.edittext_hint_location));
         }else{
             toolbarLayout.setTitle(s.toString());
         }

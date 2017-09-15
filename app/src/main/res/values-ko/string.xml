@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Info-->
+    <string name="app_name">스마트설정</string>
+    <string name="title_activity_sub_item_setting">null</string>
+    <string name="action_settings">설정</string>
+
+    <!-- Common String -->
+    <string name="button_ok">확인</string>
+    <string name="button_cancel">취소</string>
+    <string name="button_delete">삭제</string>
+
+    <!-- Main_LocationList_Activity -->
+    <string name="view_empty">저장된 위치가 없습니다\n위치를 추가해 보세요</string>
+    <string name="toast_trash_empty">저장된 위치정보가 없습니다</string>
+    <string name="toast_delete_success">삭제가 완료되었습니다</string>
+    <string name="icon_trash">휴지통</string>
+    <string name="icon_setting">설정</string>
+
+    <string name="toast_delete_one">1개이상 선택하세요</string>
+    <string name="textview_delete_selected">개 선택됨</string>
+
+    <!-- Sub_MapView_Activity -->
+    <string name="button_refresh">새로고침</string>
+    <string name="dialog_snapshot">잠시만 기다려주세요...</string>
+    <string name="dialog_limit_distance">이미 등록된지점으로부터 200m내에 재등록할 수 없습니다\n위치이동 후 재시도 하세요</string>
+
+    <!-- Sub_ItemSetting_Activity -->
+    <string name="edittext_hint_location">위치 이름</string>
+    <string name="category_setting">설정</string>
+    <string name="textview_sound">소리 및 진동 설정</string>
+    <string name="textview_bt">Bluetooth</string>
+    <string name="textview_wifi">Wi-Fi</string>
+    <string name="toast_input_char">1글자 이상 입력하세요</string>
+    <string name="toast_item_edit_success">수정되었습니다</string>
+    <string name="toast_item_add_success">위치가 저장되었습니다</string>
+    <string name="toast_item_add_duplicate">기존 등록된 위치와 중복됩니다</string>
+
+</resources>

@@ -258,7 +258,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
             bitmapCropManager = new BitmapCropManager(getApplicationContext());
             sProgressDialog = new ProgressDialog(Sub_MapView_Activity.this);
             sProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            sProgressDialog.setMessage("잠시만 기다려주세요...");
+            sProgressDialog.setMessage(getResources().getText(R.string.dialog_snapshot));
             sProgressDialog.setCancelable(false);
             sProgressDialog.show();
         }
@@ -281,7 +281,7 @@ public class Sub_MapView_Activity extends AppCompatActivity implements View.OnCl
                 startActivity(intent);
                 finish();
             }else{
-                Snackbar.make(findViewById(android.R.id.content), "이미 등록된지점으로부터 200m내에 재등록할 수 없습니다 \n" + "위치이동 후 재시도 하세요", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(android.R.id.content), getResources().getText(R.string.dialog_limit_distance), Snackbar.LENGTH_SHORT).show();
                 //Toast.makeText(getApplicationContext(), "등록된지점으로부터 200m이내에 재등록할 수 없습니다 \n"+"위치이동 후 재시도 하세요", Toast.LENGTH_SHORT).show();
             }
         }

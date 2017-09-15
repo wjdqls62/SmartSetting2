@@ -64,7 +64,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="개 선택됨" />
+                android:text="@string/textview_delete_selected" />
         </LinearLayout>
 
 
@@ -75,7 +75,7 @@
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/btn_delte_ok"
             android:layout_toStartOf="@+id/btn_delte_ok"
-            android:text="취소"
+            android:text="@string/button_cancel"
             android:theme="@style/button" />
 
         <Button
@@ -85,9 +85,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:text="삭제"
+            android:text="@string/button_delete"
             android:theme="@style/button" />
-
     </RelativeLayout>
 
     <TextView
@@ -95,7 +94,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:text="저장된 위치가 없습니다\n 위치를 추가해 보세요"
+        android:text="@string/view_empty"
+        android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"
         android:visibility="gone"

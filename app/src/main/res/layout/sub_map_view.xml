@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
-                android:text="취소"
+                android:text="@string/button_cancel"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:theme="@style/button"/>
@@ -72,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:text="확인"
+                android:text="@string/button_ok"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:theme="@style/button" />
