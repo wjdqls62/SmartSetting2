@@ -2,7 +2,7 @@
 사용자가 지정한 위치마다 Wi-Fi, Sound Setting, Bluetooth등의 설정을 자동으로 변경한다.
 야외에서 불안정한 Wi-Fi 접속상태로 인해 모바일 데이터로 사용중 집에 들어왔을때 실수로,</br>
 Wi-Fi On을 하지 않아 등록된 Wi-Fi에 자동연결되지 않아 LTE 데이터를 자신도 모르게 대량소비한 점을 계기로,</br>
-개인사용목적으로 개발
+개인사용목적으로 개발</br>
 ![Screenshot_2018-02-20-13-06-34](https://user-images.githubusercontent.com/8287502/151957008-23cef5a8-5161-4961-987d-a8e603f0bae6.png)
 ![Screenshot_2018-02-20-13-06-49](https://user-images.githubusercontent.com/8287502/151957012-c7b504d7-9cc6-44ff-903f-d7a9fbf9659a.png)
 ![Screenshot_2018-02-20-13-07-05](https://user-images.githubusercontent.com/8287502/151957014-aa9aeb1b-0911-42ff-abc9-a0971555c854.png)
